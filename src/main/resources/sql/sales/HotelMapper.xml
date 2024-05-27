@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 맵퍼네임 -->
+<mapper namespace="kr.happytravel.erp.sales.dao.HotelDao">
+
+    <!-- 전체 호텔 목록 조회 -->
+    <select id="getHotelList" resultType="kr.happytravel.erp.sales.model.HotelModel" parameterType="hashmap">
+        SELECT
+        hotel_code,
+        hotel_name,
+        phone,
+        country,
+        region,
+        address,
+        price,
+        is_used
+        FROM
+        TB_HOTEL_INFO
+        ORDER BY
+        hotel_code
+<!--        LIMIT #{pageIndex}, #{pageSize}-->
+    </select>
+
+    <!-- 전체 목록 카운트 -->
+    <select id="getHotelCnt" resultType="int" parameterType="hashmap">
+        SELECT COUNT(hotel_code)
+        FROM tb_erp_hotel
+    </select>
+
+    <!-- 단건조회 -->
+    <select id="selectHotel" resultType="kr.happytravel.erp.sales.model.HotelModel">
+        SELECT
+        hotel_code,
+        hotel_name,
+        phone,
+        country,
+        region,
+        address,
+        price,
+        is_used
+        TB_HOTEL_INFO
+        WHERE hotel_code = #{hotel_code};
+    </select>
+
+    <!-- 신규등록 -->
+    <insert id="insertHotel">
+        INSERT INTO TB_HOTEL_INFO (
+        hotel_code,
+        hotel_name,
+        phone,
+        country,
+        region,
+        address,
+        price,
+        is_used
+        ) VALUES (
+        #{hotel_code},
+        #{hotel_name},
+        #{phone},
+        #{country},
+        #{region},
+        #{address},
+        #{price},
+        #{is_used}
+        )
+    </insert>
+
+    <!-- 단건수정 -->
+    <update id="updateHotel">
+        UPDATE TB_HOTEL_INFO
+        SET
+        hotel_name = #{hotel_name},
+        phone = #{phone},
+        country = #{country},
+        region = #{region},
+        address = #{address},
+        price = #{price},
+        is_used = #{is_used}
+        WHERE
+        hotel_code = #{hotel_code}
+    </update>
+
+    <!-- 단건삭제 -->
+    <delete id="deleteHotel">
+        DELETE FROM TB_HOTEL_INFO WHERE hotel_code = #{hotel_code}
+    </delete>
+
+</mapper>
