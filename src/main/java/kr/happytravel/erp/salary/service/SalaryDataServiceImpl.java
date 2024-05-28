@@ -65,8 +65,12 @@ public class SalaryDataServiceImpl implements SalaryDataService {
 			}
 			salaryDataModelList.add(new SalaryDataModel(empId, "000000", salaryItemModel.getSalaryItemCode(), amount));
 		}
-
-		return salaryDao.insertInitSalaryData(salaryDataModelList);
+		
+		if (salaryDao.selectInitSalaryData(empId) > 0) {
+			return salaryDao.updateInitSalaryData(empId, salaryDataModelList);
+		} else {
+			return salaryDao.insertInitSalaryData(salaryDataModelList);
+		}
 	}
 
 }

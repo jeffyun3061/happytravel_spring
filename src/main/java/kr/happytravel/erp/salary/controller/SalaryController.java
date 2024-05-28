@@ -47,9 +47,15 @@ public class SalaryController {
 		}
 	}
 	
-	@GetMapping("/test")
-	public void test(@RequestParam Map<String, Object> paramMap,
+	@GetMapping("/test1")
+	public void test1(@RequestParam Map<String, Object> paramMap,
 			HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
 		salaryDataService.insertInitSalaryData("EMP30003", 60000000);
+	}
+	
+	@GetMapping("/test2")
+	public void test2(@RequestParam Map<String, Object> paramMap,
+			HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
+		salaryDataService.insertInitSalaryData("EMP30003", 120000000);
 	}
 }

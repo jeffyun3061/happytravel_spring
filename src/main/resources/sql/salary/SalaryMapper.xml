@@ -7,6 +7,11 @@
 		SELECT * FROM TB_SALARY_ITEM_INFO
 	</select>
 
+	<!-- 급여 기본 데이터 조회: 있는지 여부 -->
+	<select id="selectInitSalaryData" resultType="int">
+		SELECT COUNT(*) FROM TB_SALARY_DATA_INFO WHERE EMP_ID = #{empId} AND SALARY_DATE = "000000"
+	</select>
+
 	<!-- 급여 기본 데이터 추가 -->
 	<insert id="insertInitSalaryData" parameterType="list">
 		INSERT INTO TB_SALARY_DATA_INFO (
@@ -23,6 +28,17 @@
 			#{salary.salaryItemCode},
 			#{salary.amount}
 			)
+		</foreach>
+	</insert>
+
+	<!-- 급여 기본 데이터 추가 -->
+	<insert id="updateInitSalaryData" parameterType="map">
+		<foreach collection="salaryDataModelList" item="salary" separator=";">
+			UPDATE TB_SALARY_DATA_INFO
+			SET AMOUNT = #{salary.amount}
+			WHERE EMP_ID = #{empId}
+			AND SALARY_DATE = "000000"
+			AND SALARY_ITEM_CODE = #{salary.salaryItemCode}
 		</foreach>
 	</insert>
 </mapper>
