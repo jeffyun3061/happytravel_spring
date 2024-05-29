@@ -2,37 +2,46 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.happytravel.erp.salary.dao.SalaryDao">
-	<!-- 급여 항목 조회 -->
+	<!-- ==================================================================================================== -->
+	<!-- 급여 항목 - 조회 -->
 	<select id="selectAllSalaryItem" resultType="kr.happytravel.erp.salary.model.SalaryItemModel">
 		SELECT * FROM TB_SALARY_ITEM_INFO
 	</select>
 
-	<!-- 급여 기본 데이터 조회: 있는지 여부 -->
+	<!-- 사원 정보 - 조회 -->
+	<select id="selectAllEmployment" resultType="kr.happytravel.erp.salary.model.EmploymentModel">
+		SELECT EMP.EMP_ID, EMP.EMP_NAME, EMP.DEPT_CODE, DEPT.DEPT_NAME, EMP.POS_CODE, POS.POS_NAME
+		FROM TB_EMPLOYMENT_INFO EMP
+		<!-- 퇴직 제외, 단 퇴직 일자 이전은 불러옴 -->
+		WHERE LEAVE_DATE == null OR LEAVE_DATE > STR_TO_DATE(#{salaryDate}, '%Y%m')
+		LEFT JOIN TB_DEPARTMENT_INFO DEPT ON EMP.DEPT_CODE = DEPT.DEPT_CODE
+		LEFT JOIN TB_POSITION_INFO POS ON EMP.POS_CODE = POS.POS_CODE
+	</select>
+
+	<!-- 급여 총계 - 조회 -->
+	<select id="selectAllTotalSalaryData" resultType="kr.happytravel.erp.salary.model.SalaryDataModel">
+		SELECT SALARY_DATE, SALARY_ITEM_CODE, SUM(AMOUNT)
+		FROM TB_SALARY_DATA_INFO
+		WHERE SALARY_DATE = #{salaryDate}
+		GROUP BY SALARY_DATE, SALARY_ITEM_CODE
+	</select>
+	<!-- ==================================================================================================== -->
+	<!-- 급여 기본 정보 - 조회 -->
 	<select id="selectInitSalaryData" resultType="int">
 		SELECT COUNT(*) FROM TB_SALARY_DATA_INFO WHERE EMP_ID = #{empId} AND SALARY_DATE = "000000"
 	</select>
 
-	<!-- 급여 기본 데이터 추가 -->
+	<!-- 급여 기본 정보 - 추가 -->
 	<insert id="insertInitSalaryData" parameterType="list">
-		INSERT INTO TB_SALARY_DATA_INFO (
-		EMP_ID,
-		SALARY_DATE,
-		SALARY_ITEM_CODE,
-		AMOUNT
-		)
+		INSERT INTO TB_SALARY_DATA_INFO ( EMP_ID, SALARY_DATE, SALARY_ITEM_CODE, AMOUNT )
 		VALUES
 		<foreach collection="list" item="salary" separator=",">
-			(
-			#{salary.empId},
-			#{salary.salaryDate},
-			#{salary.salaryItemCode},
-			#{salary.amount}
-			)
+			( #{salary.empId}, #{salary.salaryDate}, #{salary.salaryItemCode}, #{salary.amount} )
 		</foreach>
 	</insert>
 
-	<!-- 급여 기본 데이터 추가 -->
-	<insert id="updateInitSalaryData" parameterType="map">
+	<!-- 급여 기본 정보 - 수정 -->
+	<update id="updateInitSalaryData" parameterType="map">
 		<foreach collection="salaryDataModelList" item="salary" separator=";">
 			UPDATE TB_SALARY_DATA_INFO
 			SET AMOUNT = #{salary.amount}
@@ -40,5 +49,65 @@
 			AND SALARY_DATE = "000000"
 			AND SALARY_ITEM_CODE = #{salary.salaryItemCode}
 		</foreach>
+	</update>
+
+	<!-- ==================================================================================================== -->
+	<!-- 월급 내역 - 일괄 처리 & 단건 처리 -->
+	<insert id="insertSalaryData">
+		INSERT INTO TB_SALARY_DATA_INFO (EMP_ID, SALARY_DATE, SALARY_ITEM_CODE, AMOUNT)
+		SELECT EMP_ID, #{salaryDate}, SALARY_ITEM_CODE, AMOUNT
+		FROM TB_SALARY_DATA_INFO
+		WHERE SALARY_DATE = "000000"
+		<if test="empId != null and empId != ''">
+			AND EMP_ID = #{empId}
+		</if>
 	</insert>
+
+	<!-- 월급 내역 - 수정 -->
+	<update id="updateSalaryData" parameterType="map">
+		<foreach collection="salaryDataModelList" item="salary" separator=";">
+			UPDATE TB_SALARY_DATA_INFO
+			SET AMOUNT = #{salary.amount}
+			WHERE EMP_ID = #{empId}
+			AND SALARY_DATE = #{salaryDate}
+			AND SALARY_ITEM_CODE = #{salary.salaryItemCode}
+		</foreach>
+	</update>
+
+	<!-- ==================================================================================================== -->
+	<!-- 급여 지급 내역 - 조회 -->
+	<select id="selectAllSalaryPayment" resultType="kr.happytravel.erp.salary.model.SalaryPaymentModel">
+		SELECT
+		EMP.EMP_ID, EMP.EMP_NAME,
+		EMP.DEPT_CODE, DEPT.DEPT_NAME,
+		EMP.POS_CODE, POS.POS_NAME,
+		SAL.YEAR,
+		SAL.MONTH01, SAL.MONTH02, SAL.MONTH03, SAL.MONTH04, SAL.MONTH05, SAL.MONTH06,
+		SAL.MONTH07, SAL.MONTH08, SAL.MONTH09, SAL.MONTH10, SAL.MONTH11, SAL.MONTH12
+		FROM (
+		SELECT
+		EMP_ID,
+		SUBSTRING(SALARY_DATE, 1, 4) AS 'YEAR',
+		SUM(CASE WHEN SUBSTRING(SALARY_DATE, 5, 2) = '01' THEN AMOUNT ELSE 0 END) AS 'MONTH01',
+		SUM(CASE WHEN SUBSTRING(SALARY_DATE, 5, 2) = '02' THEN AMOUNT ELSE 0 END) AS 'MONTH02',
+		SUM(CASE WHEN SUBSTRING(SALARY_DATE, 5, 2) = '03' THEN AMOUNT ELSE 0 END) AS 'MONTH03',
+		SUM(CASE WHEN SUBSTRING(SALARY_DATE, 5, 2) = '04' THEN AMOUNT ELSE 0 END) AS 'MONTH04',
+		SUM(CASE WHEN SUBSTRING(SALARY_DATE, 5, 2) = '05' THEN AMOUNT ELSE 0 END) AS 'MONTH05',
+		SUM(CASE WHEN SUBSTRING(SALARY_DATE, 5, 2) = '06' THEN AMOUNT ELSE 0 END) AS 'MONTH06',
+		SUM(CASE WHEN SUBSTRING(SALARY_DATE, 5, 2) = '07' THEN AMOUNT ELSE 0 END) AS 'MONTH07',
+		SUM(CASE WHEN SUBSTRING(SALARY_DATE, 5, 2) = '08' THEN AMOUNT ELSE 0 END) AS 'MONTH08',
+		SUM(CASE WHEN SUBSTRING(SALARY_DATE, 5, 2) = '09' THEN AMOUNT ELSE 0 END) AS 'MONTH09',
+		SUM(CASE WHEN SUBSTRING(SALARY_DATE, 5, 2) = '10' THEN AMOUNT ELSE 0 END) AS 'MONTH10',
+		SUM(CASE WHEN SUBSTRING(SALARY_DATE, 5, 2) = '11' THEN AMOUNT ELSE 0 END) AS 'MONTH11',
+		SUM(CASE WHEN SUBSTRING(SALARY_DATE, 5, 2) = '12' THEN AMOUNT ELSE 0 END) AS 'MONTH12'
+		FROM TB_SALARY_DATA_INFO
+		WHERE SALARY_ITEM_CODE = '9200'
+		AND SUBSTRING(SALARY_DATE, 1, 4) = #{salaryYear}
+		GROUP BY EMP_ID, SUBSTRING(SALARY_DATE, 1, 4)
+		) AS SAL
+		LEFT JOIN TB_EMPLOYMENT_INFO EMP ON SAL.EMP_ID = EMP.EMP_ID
+		LEFT JOIN TB_DEPARTMENT_INFO DEPT ON EMP.DEPT_CODE = DEPT.DEPT_CODE
+		LEFT JOIN TB_POSITION_INFO POS ON EMP.POS_CODE = POS.POS_CODE
+	</select>
+
 </mapper>

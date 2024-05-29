@@ -15,10 +15,11 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SalaryItemModel {
-	private String salaryItemCode; // SALARY ITEM_CODE
-	private String salaryItemName; // SALARY_ITEM_NAME
-	private String salaryItemtype; // SALARY_ITEM_TYPE
-	private String salaryItemTax; // SALARY_ITEM_TAX
-	private String isUsed; // IS_USED
+public class EmploymentModel {
+	private String empId; // EMP_ID
+	private String empName; // EMP_NAME
+	private String deptCode; // DEPT_CODE
+	private String deptName; // DEPT_NAME
+	private String posCode; // POS_CODE
+	private String posName; // POS_NAME
 }
