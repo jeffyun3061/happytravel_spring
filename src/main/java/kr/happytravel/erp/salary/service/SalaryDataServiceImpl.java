@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import kr.happytravel.erp.salary.dao.SalaryDao;
 import kr.happytravel.erp.salary.model.SalaryDataModel;
 import kr.happytravel.erp.salary.model.SalaryItemModel;
+import kr.happytravel.erp.salary.model.SalaryPaymentDetailModel;
 import kr.happytravel.erp.salary.model.SalaryPaymentModel;
 import lombok.RequiredArgsConstructor;
 
@@ -87,6 +88,11 @@ public class SalaryDataServiceImpl implements SalaryDataService {
 	@Override
 	public List<SalaryPaymentModel> selectAllSalaryPayment(String salaryYear) throws Exception {
 		return salaryDao.selectAllSalaryPayment(salaryYear);
+	}
+
+	@Override
+	public List<SalaryPaymentDetailModel> selectAllSalaryPaymentDetail(String empId, String salaryYear) throws Exception {
+		return salaryDao.selectAllSalaryPaymentDetail(empId, salaryYear);
 	}
 
 }

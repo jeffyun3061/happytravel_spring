@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import kr.happytravel.erp.salary.model.EmploymentModel;
 import kr.happytravel.erp.salary.model.SalaryDataModel;
 import kr.happytravel.erp.salary.model.SalaryItemModel;
+import kr.happytravel.erp.salary.model.SalaryPaymentDetailModel;
 import kr.happytravel.erp.salary.model.SalaryPaymentModel;
 import kr.happytravel.erp.salary.service.ListsService;
 import kr.happytravel.erp.salary.service.SalaryDataService;
@@ -79,7 +80,7 @@ public class SalaryController {
 			return ResponseEntity.badRequest().build();
 		} catch (Exception e) {
 			// 기타 예외 발생 시 로그 메시지 기록 및 500 Internal Server Error 반환
-			logger.error("An error occurred while fetching salary items: {}", e.getMessage(), e);
+			logger.error("An error occurred while fetching total salary list: {}", e.getMessage(), e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
@@ -103,8 +104,8 @@ public class SalaryController {
 	}
 
 	// 월급 내역 - 수정
-	@PatchMapping("/update/{empId}/{salaryDate}")
-	public ResponseEntity<Void> updateSalaryData(@PathVariable String empId, @PathVariable String salaryDate, @RequestParam Map<String, Object> paramMap) throws Exception {
+	@PatchMapping("/update/{salaryDate}/{empId}")
+	public ResponseEntity<Void> updateSalaryData(@PathVariable String salaryDate, @PathVariable String empId, @RequestParam Map<String, Object> paramMap) throws Exception {
 		// paramMap -> { "1100": 1000, "1200": 2000, "1300": 1500, "1400": 1200 }
 		try {
 			// 로그 메시지로 요청 파라미터 기록
@@ -131,7 +132,7 @@ public class SalaryController {
 			return ResponseEntity.badRequest().build();
 		} catch (Exception e) {
 			// 기타 예외 발생 시 로그 메시지 기록 및 500 Internal Server Error 반환
-			logger.error("An error occurred while fetching salary items: {}", e.getMessage(), e);
+			logger.error("An error occurred while fetching salary data: {}", e.getMessage(), e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
@@ -145,6 +146,7 @@ public class SalaryController {
 
 			// 급여 지급 내역 - 조회
 			List<SalaryPaymentModel> salaryPaymentModelList = salaryDataService.selectAllSalaryPayment(salaryYear);
+
 			// 급여 지급 내역이 없는 경우 로그 메시지 기록 및 204 No Content 반환
 			if (salaryPaymentModelList.isEmpty()) {
 				logger.info("No total salary payment list found.");
@@ -159,9 +161,37 @@ public class SalaryController {
 			return ResponseEntity.badRequest().build();
 		} catch (Exception e) {
 			// 기타 예외 발생 시 로그 메시지 기록 및 500 Internal Server Error 반환
-			logger.error("An error occurred while fetching salary items: {}", e.getMessage(), e);
+			logger.error("An error occurred while fetching salary payment list: {}", e.getMessage(), e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
-	// 급여 지급 상세 내역
+
+	// 급여 지급 상세 내역 - 조회
+	@GetMapping("/payment/{salaryYear}/{empId}")
+	public ResponseEntity<List<SalaryPaymentDetailModel>> selectAllSalaryPaymentDetail(@PathVariable String salaryYear, @PathVariable String empId) throws Exception {
+		try {
+			// 로그 메시지로 요청 파라미터 기록
+			logger.info("Received request for salary payment detail for employee ID: {} on year: {}", empId, salaryYear);
+
+			// 급여 지급 상세 내역 - 조회
+			List<SalaryPaymentDetailModel> salaryPaymentDetailModelList = salaryDataService.selectAllSalaryPaymentDetail(empId, salaryYear);
+
+			// 급여 지급 상세 내역이 없는 경우 로그 메시지 기록 및 204 No Content 반환
+			if (salaryPaymentDetailModelList.isEmpty()) {
+				logger.info("No total salary payment detail list found.");
+				return ResponseEntity.noContent().build();
+			}
+			logger.info("Fetched {} salary payment detail list.", salaryPaymentDetailModelList.size());
+
+			return ResponseEntity.ok(salaryPaymentDetailModelList);
+		} catch (IllegalArgumentException e) {
+			// 잘못된 인자 예외 발생 시 로그 메시지 기록 및 400 Bad Request 반환
+			logger.warn("Invalid argument: {}", e.getMessage());
+			return ResponseEntity.badRequest().build();
+		} catch (Exception e) {
+			// 기타 예외 발생 시 로그 메시지 기록 및 500 Internal Server Error 반환
+			logger.error("An error occurred while fetching salary payment detail list: {}", e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 }

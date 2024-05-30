@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import kr.happytravel.erp.salary.model.EmploymentModel;
 import kr.happytravel.erp.salary.model.SalaryDataModel;
 import kr.happytravel.erp.salary.model.SalaryItemModel;
+import kr.happytravel.erp.salary.model.SalaryPaymentDetailModel;
 import kr.happytravel.erp.salary.model.SalaryPaymentModel;
 
 public interface SalaryDao {
@@ -34,6 +35,9 @@ public interface SalaryDao {
 	// 월급 내역 - 수정
 	int updateSalaryData(@Param("empId") String empId, @Param("salaryDate") String salaryDate, @Param("salaryDataModelList") List<SalaryDataModel> salaryDataModelList) throws Exception;
 
-	//급여 지급 내역 - 조회
+	// 급여 지급 내역 - 조회
 	List<SalaryPaymentModel> selectAllSalaryPayment(@Param("salaryYear") String salaryYear) throws Exception;
+
+	// 급여 지급 상세 대역 - 조회
+	List<SalaryPaymentDetailModel> selectAllSalaryPaymentDetail(@Param("empId") String empId, @Param("salaryYear") String salaryYear) throws Exception;
 }
