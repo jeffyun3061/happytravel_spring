@@ -25,7 +25,13 @@
 		WHERE LEAVE_DATE IS NULL
 		      OR LEAVE_DATE > STR_TO_DATE(#{salaryDate}, '%Y%m')
 	</select>
-	<!-- 급여 총계 - 조회 -->
+	<!-- 급여 총계 - 조회 - 체크 -->
+	<select id="checkIfTotalSalaryDataExists" resultType="boolean">
+		SELECT COUNT(*) > 0
+		FROM TB_SALARY_DATA_INFO
+		WHERE SALARY_DATE = #{salaryDate}
+	</select>
+	<!-- 급여 총계 - 조회 - True -->
 	<select id="selectAllTotalSalaryData" resultType="kr.happytravel.erp.salary.model.SalaryDataModel">
 		SELECT SALARY_DATE,
 		       SALARY_ITEM_CODE,
@@ -34,13 +40,21 @@
 		WHERE SALARY_DATE = #{salaryDate}
 		GROUP BY SALARY_DATE, SALARY_ITEM_CODE
 	</select>
+	<!-- 급여 총계 - 조회 - False -->
+	<select id="selectDefaultTotalSalaryData" resultType="kr.happytravel.erp.salary.model.SalaryDataModel">
+		SELECT '000000' AS SALARY_DATE,
+		       SALARY_ITEM_CODE,
+		       0 AS AMOUNT
+		FROM TB_SALARY_DATA_INFO
+		GROUP BY SALARY_ITEM_CODE
+	</select>
 	<!-- ==================================================================================================== -->
 	<!-- 급여 기본 정보 - 조회 -->
 	<select id="selectInitSalaryData" resultType="int">
 		SELECT COUNT(*)
 		FROM TB_SALARY_DATA_INFO
 		WHERE EMP_ID = #{empId}
-		      AND SALARY_DATE = "000000"
+		      AND SALARY_DATE = '000000'
 	</select>
 	<!-- 급여 기본 정보 - 추가 -->
 	<insert id="insertInitSalaryData" parameterType="list">

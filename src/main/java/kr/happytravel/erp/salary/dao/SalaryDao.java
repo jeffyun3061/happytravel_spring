@@ -17,8 +17,14 @@ public interface SalaryDao {
 	// 사원 정보 - 조회
 	List<EmploymentModel> selectAllEmployment(@Param("salaryDate") String salaryDate) throws Exception;
 
-	// 급여 총계 - 조회
+	// 급여 총계 - 조회 - 체크
+	boolean checkIfTotalSalaryDataExists(@Param("salaryDate") String salaryDate) throws Exception;
+
+	// 급여 총계 - 조회 - True
 	List<SalaryDataModel> selectAllTotalSalaryData(@Param("salaryDate") String salaryDate) throws Exception;
+
+	// 급여 총계 - 조회 - False
+	List<SalaryDataModel> selectDefaultTotalSalaryData() throws Exception;
 
 	// 급여 기본 정보 - 조회
 	int selectInitSalaryData(@Param("empId") String empId) throws Exception;

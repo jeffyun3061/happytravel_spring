@@ -27,6 +27,12 @@ public class ListsServiceImpl implements ListsService {
 
 	@Override
 	public List<SalaryDataModel> selectAllTotalSalaryData(String salaryDate) throws Exception {
-		return salaryDao.selectAllTotalSalaryData(salaryDate);
+		boolean totalSalaryDataExists = salaryDao.checkIfTotalSalaryDataExists(salaryDate);
+		
+		if (totalSalaryDataExists) {
+			return salaryDao.selectAllTotalSalaryData(salaryDate);
+		} else {
+			return salaryDao.selectDefaultTotalSalaryData();
+		}
 	}
 }
