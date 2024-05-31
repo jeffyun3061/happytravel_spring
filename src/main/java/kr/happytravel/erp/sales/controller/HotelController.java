@@ -74,7 +74,7 @@ public class HotelController {
     public ResponseEntity<Boolean> updateHotel(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to update package: " + paramMap);
+            logger.info("Received request to update hotel: " + paramMap);
             return ResponseEntity.ok(hotelService.updateHotel(paramMap) == 1);
         }  catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);

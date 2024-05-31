@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AgencyModel {
+
     private String agencyCode; // AGENCY_CODE
     private String agencyNmae; // AGENCY_NAME
     private String phone; // PHONE
@@ -23,4 +24,5 @@ public class AgencyModel {
     private String address; // ADDRESS
     private int price; // PRICE
     private String isUsed; // IS_USED
+
 }

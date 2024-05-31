@@ -27,16 +27,11 @@ public class AgencyController {
     public ResponseEntity<String> createAgency(@RequestBody AgencyModel agency, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to create agency: " + agency);
-            int result = agencyService.insertAgency(agency);
-            logger.info("Created agency, result: " + result);
-            return ResponseEntity.ok("Agency created successfully");
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
+            logger.info("Received request to create hotel: " + agency);
+            return ResponseEntity.ok("Hotel created successfully");
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
+            return ResponseEntity.ok("error");
         }
     }
 
@@ -82,45 +77,27 @@ public class AgencyController {
 
     // Update
     @PutMapping("/agency")
-    public ResponseEntity<String> updateAgency(@RequestBody AgencyModel agency, HttpServletRequest request,
+    public ResponseEntity<Boolean> updateAgency(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to update agency: " + agency);
-            int result = agencyService.updateAgency(agency);
-            if (result == 0) {
-                logger.warn("No agency updated: " + agency);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agency not found for update");
-            }
-            logger.info("Updated agency, result: " + result);
-            return ResponseEntity.ok("Agency updated successfully");
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
+            logger.info("Received request to update agency: " + paramMap);
+            return ResponseEntity.ok(agencyService.updateAgency(paramMap) == 1);
+        }  catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
+            return ResponseEntity.ok(false);
         }
     }
 
-    // Delete
-    @DeleteMapping("/agency")
-    public ResponseEntity<String> deleteAgency(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                               HttpServletResponse response, HttpSession session) throws Exception {
+    // Y/N UPDATE
+    @PutMapping("/agency-yn")
+    public ResponseEntity<Boolean> updateAgencyYN(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+                                                 HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to delete agency with parameters: " + paramMap);
-            int result = agencyService.deleteAgency(paramMap);
-            if (result == 0) {
-                logger.warn("No agency deleted with parameters: " + paramMap);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agency not found for deletion");
-            }
-            logger.info("Deleted agency, result: " + result);
-            return ResponseEntity.ok("Agency deleted successfully");
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
+            logger.info("Received request to Y/N package with parameters: " + paramMap);
+            return ResponseEntity.ok(agencyService.updateAgencyYN(paramMap) == 1);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
+            return ResponseEntity.ok(false);
         }
     }
 }
