@@ -57,6 +57,7 @@
 
 
     <select id="selectHotel" resultType="kr.happytravel.erp.sales.model.sales.HotelModel" parameterType="hashmap">
+
         SELECT
         hotel_code,
         hotel_name,
@@ -71,7 +72,9 @@
         AND hotel_code = #{hotel_code};
     </select>
 
+
     <insert id="insertHotel" parameterType="hashmap">
+
         INSERT INTO TB_HOTEL_INFO (
         hotel_code,
         hotel_name,
@@ -94,8 +97,8 @@
     </insert>
 
 
-
     <update id="updateHotel" parameterType="hashmap">
+
         UPDATE TB_HOTEL_INFO
         SET
         hotel_name = #{hotel_name},
@@ -109,7 +112,6 @@
         hotel_code = #{hotel_code}
         AND <include refid="CRUDCondition"/>;
     </update>
-
 
     <!-- 단건 IS_USED 비활성화  -->
     <update id="updateHotelYN" parameterType="map">
