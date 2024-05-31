@@ -15,7 +15,11 @@
 		       EMP.DEPT_CODE,
 		       DEPT.DEPT_NAME,
 		       EMP.POS_CODE,
-		       POS.POS_NAME
+		       POS.POS_NAME,
+		       CASE
+		           WHEN DATE_FORMAT(EMP.LEAVE_DATE, '%Y%m') = #{salaryDate} THEN 'FALSE'
+		           ELSE 'TRUE'
+		       END AS LEAVE_STAT
 		FROM TB_EMPLOYMENT_INFO EMP
 		LEFT JOIN TB_DEPARTMENT_INFO DEPT
 		       ON EMP.DEPT_CODE = DEPT.DEPT_CODE
@@ -49,9 +53,9 @@
 		GROUP BY SALARY_ITEM_CODE
 	</select>
 	<!-- ==================================================================================================== -->
-	<!-- 급여 기본 정보 - 조회 -->
-	<select id="selectInitSalaryData" resultType="int">
-		SELECT COUNT(*)
+	<!-- 급여 기본 정보 - 존재 체크 -->
+	<select id="selectInitSalaryData" resultType="boolean">
+		SELECT COUNT(*) > 0
 		FROM TB_SALARY_DATA_INFO
 		WHERE EMP_ID = #{empId}
 		      AND SALARY_DATE = '000000'
@@ -88,7 +92,14 @@
 			AND EMP_ID = #{empId}
 		</if>
 	</insert>
-	<!-- 월급 내역 - 수정 -->
+	<!-- 급여 내역 - 조회 -->
+	<select id="selectAllSalaryData" resultType="kr.happytravel.erp.salary.model.SalaryDataModel">
+		SELECT *
+		FROM TB_SALARY_DATA_INFO
+		WHERE EMP_ID = #{empId}
+		      AND SALARY_DATE = #{salaryDate}
+	</select>
+	<!-- 급여 내역 - 수정 -->
 	<update id="updateSalaryData" parameterType="map">
 		<foreach collection="salaryDataModelList" item="salary" separator=";">
 			UPDATE TB_SALARY_DATA_INFO

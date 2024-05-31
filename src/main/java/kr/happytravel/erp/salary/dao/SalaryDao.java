@@ -26,8 +26,8 @@ public interface SalaryDao {
 	// 급여 총계 - 조회 - False
 	List<SalaryDataModel> selectDefaultTotalSalaryData() throws Exception;
 
-	// 급여 기본 정보 - 조회
-	int selectInitSalaryData(@Param("empId") String empId) throws Exception;
+	// 급여 기본 정보 - 체크
+	boolean selectInitSalaryData(@Param("empId") String empId) throws Exception;
 
 	// 급여 기본 정보 - 추가
 	int insertInitSalaryData(@Param("salaryDataModelList") List<SalaryDataModel> salaryDataModelList) throws Exception;
@@ -35,15 +35,18 @@ public interface SalaryDao {
 	// 급여 기본 정보 - 수정
 	int updateInitSalaryData(@Param("empId") String empId, @Param("salaryDataModelList") List<SalaryDataModel> salaryDataModelList) throws Exception;
 
-	// 월급 내역 - 일괄 처리 & 단건 처리
+	// 급여 내역 - 생성 - 일괄 처리 & 단건 처리
 	int insertSalaryData(@Param("empId") String empId, @Param("salaryDate") String salaryDate) throws Exception;
 
-	// 월급 내역 - 수정
+	// 급여 내역 - 조회
+	List<SalaryDataModel> selectAllSalaryData(@Param("empId") String empId, @Param("salaryDate") String salaryDate) throws Exception;
+
+	// 급여 내역 - 수정
 	int updateSalaryData(@Param("empId") String empId, @Param("salaryDate") String salaryDate, @Param("salaryDataModelList") List<SalaryDataModel> salaryDataModelList) throws Exception;
 
 	// 급여 지급 내역 - 조회
 	List<SalaryPaymentModel> selectAllSalaryPayment(@Param("salaryYear") String salaryYear) throws Exception;
 
-	// 급여 지급 상세 대역 - 조회
+	// 급여 지급 상세 내역 - 조회
 	List<SalaryPaymentDetailModel> selectAllSalaryPaymentDetail(@Param("empId") String empId, @Param("salaryYear") String salaryYear) throws Exception;
 }
