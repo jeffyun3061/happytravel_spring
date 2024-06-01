@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/sales")
@@ -42,9 +43,11 @@ public class FlightController {
                                                          HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request with parameters: " + paramMap);
-            List<FlightModel> hotels = flightService.getFlightList(paramMap);
-            logger.info("Fetched " + hotels.size() + " hotels.");
-            return ResponseEntity.ok(hotels);
+            String empId = Optional.ofNullable((String) paramMap.get("empId")).orElse("EMP30002"); // 기본 empId 설정
+            paramMap.put("empId", empId);
+            List<FlightModel> flights = flightService.getFlightList(paramMap);
+            logger.info("Fetched " + flights.size() + " flights.");
+            return ResponseEntity.ok(flights);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             throw e;

@@ -19,7 +19,10 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public List<FlightModel> getFlightList(Map<String, Object> paramMap) throws Exception {
-        return flightDao.getFlightList(paramMap);
+        logger.info("Fetching flight list with parameters: " + paramMap);
+        List<FlightModel> flightList = flightDao.getFlightList(paramMap);
+        logger.info("Fetched flight list: " + flightList);
+        return flightList;
     }
 
     @Override
@@ -34,7 +37,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public int insertFlight(Map<String, Object> paramMap) throws Exception {
-        logger.info("Starting transaction for insertFlight");
+        logger.info("Starting for insertFlight");
         int result = flightDao.insertFlight(paramMap);
         logger.info("Insert result: " + result);
         return result;

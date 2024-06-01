@@ -2,6 +2,7 @@ package kr.happytravel.erp.sales.service;
 
 import kr.happytravel.erp.sales.dao.AgencyDao;
 import kr.happytravel.erp.sales.model.sales.AgencyModel;
+import kr.happytravel.erp.sales.model.sales.FlightModel;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +20,10 @@ public class AgencyServiceImpl implements AgencyService {
 
     @Override
     public List<AgencyModel> getAgencyList(Map<String, Object> paramMap) throws Exception {
-        return agencyDao.getAgencyList(paramMap);
+        logger.info("Fetching agency list with parameters: " + paramMap);
+        List<AgencyModel> agencyList = agencyDao.getAgencyList(paramMap);
+        logger.info("Fetched agency list: " + agencyList);
+        return agencyList;
     }
 
     @Override

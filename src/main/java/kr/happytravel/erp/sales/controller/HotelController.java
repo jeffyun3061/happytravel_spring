@@ -1,5 +1,6 @@
 package kr.happytravel.erp.sales.controller;
 
+import kr.happytravel.erp.sales.model.sales.FlightModel;
 import kr.happytravel.erp.sales.model.sales.HotelModel;
 import kr.happytravel.erp.sales.service.HotelService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/sales")
@@ -41,8 +43,10 @@ public class HotelController {
                                                          HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request with parameters: " + paramMap);
+            String empId = Optional.ofNullable((String) paramMap.get("empId")).orElse("EMP30002"); // 기본 empId 설정
+            paramMap.put("empId", empId);
             List<HotelModel> hotels = hotelService.getHotelList(paramMap);
-            logger.info("Fetched " + hotels.size() + " hotels.");
+            logger.info("Fetched " + hotels.size() + " flights.");
             return ResponseEntity.ok(hotels);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);

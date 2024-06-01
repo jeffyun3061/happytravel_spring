@@ -1,6 +1,7 @@
 package kr.happytravel.erp.sales.controller;
 
 import kr.happytravel.erp.sales.model.sales.AgencyModel;
+import kr.happytravel.erp.sales.model.sales.FlightModel;
 import kr.happytravel.erp.sales.service.AgencyService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/sales")
@@ -41,12 +43,11 @@ public class AgencyController {
                                                            HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request with parameters: " + paramMap);
-            List<AgencyModel> agencies = agencyService.getAgencyList(paramMap);
-            logger.info("Fetched " + agencies.size() + " agencies.");
-            return ResponseEntity.ok(agencies);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
+            String empId = Optional.ofNullable((String) paramMap.get("empId")).orElse("EMP30002"); // 기본 empId 설정
+            paramMap.put("empId", empId);
+            List<AgencyModel> agencys = agencyService.getAgencyList(paramMap);
+            logger.info("Fetched " + agencys.size() + " flights.");
+            return ResponseEntity.ok(agencys);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             throw e;
