@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happytravel.erp.attendances.dao.AttendanceManagementDao">
+
+	<!-- 전체 에이전시 목록 조회 -->
+	<select id="getAttendanceManagementList" resultType="kr.happytravel.erp.attendances.model.AttendanceManagementModel" parameterType="hashmap">
+		SELECT
+			attendance_code,
+			emp_id,
+			attendance_type_code,
+			start_date,
+			end_date,
+			assign_code,
+			assign_emp_id,
+			creation_date
+		FROM
+			TB_ATTENDANCE_MANAGEMENT
+		ORDER BY
+			attendance_code
+		<!-- LIMIT #{pageIndex}, #{pageSize} -->
+	</select>
+
+	<!-- 단건 조회 -->
+	<select id="selectAttendanceManagement" resultType="kr.happytravel.erp.attendances.model.AttendanceManagementModel">
+		SELECT
+			attendance_code,
+			emp_id,
+			attendance_type_code,
+			start_date,
+			end_date,
+			assign_code,
+			assign_emp_id,
+			creation_date
+		FROM
+			TB_ATTENDANCE_MANAGEMENT
+		WHERE
+			attendance_code = #{attendance_code}
+	</select>
+
+	<!-- 신규 등록 -->
+	<insert id="insertAttendanceManagement">
+		INSERT INTO TB_ATTENDANCE_MANAGEMENT (
+				attendance_code,
+				emp_id,
+				attendance_type_code,
+				start_date,
+				end_date,
+				assign_code,
+				assign_emp_id,
+				creation_date
+		) VALUES (
+				 #{attendance_code},
+				 #{emp_id},
+				 #{attendance_type_code},
+				 #{start_date},
+				 #{end_date},
+				 #{assign_code},
+				 #{assign_emp_id},
+				 #{creation_date}
+		)
+	</insert>
+
+	<!-- 단건 수정 -->
+	<update id="updateAttendanceManagement">
+		UPDATE TB_ATTENDANCE_MANAGEMENT
+		SET
+			emp_id = #{emp_id},
+			attendance_type_code = #{attendance_type_code},
+			start_date = #{start_date},
+			end_date = #{end_date},
+			assign_code = #{assign_code},
+			assign_emp_id = #{assign_emp_id},
+			creation_date = #{creation_date}
+		WHERE
+			attendance_code = #{attendance_code}
+	</update>
+
+	<!-- 단건 삭제 -->
+	<delete id="deleteAttendanceManagement">
+		DELETE FROM TB_ATTENDANCE_MANAGEMENT
+		WHERE
+			attendance_code = #{attendance_code}
+	</delete>
+
+</mapper>
