@@ -52,7 +52,7 @@ public class PackageController {
     }
 
     // Read (Single)
-    @GetMapping("/package")
+    @GetMapping("/package-detail")
     public ResponseEntity<PackageModel> getPackage(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                    HttpServletResponse response, HttpSession session) throws Exception {
         try {

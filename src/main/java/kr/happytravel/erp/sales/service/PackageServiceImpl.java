@@ -31,6 +31,7 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public PackageModel selectPackage(Map<String, Object> paramMap) throws Exception {
+        logger.info(paramMap);
         return packageDao.selectPackage(paramMap);
     }
 

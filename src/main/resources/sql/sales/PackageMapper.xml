@@ -113,7 +113,7 @@
         WHERE <include refid="readCondition"/>
         AND IS_USED != 'N'
         ORDER BY
-        package_code;
+        package_code
     </select>
 
     <!-- 전체 목록 카운트 -->
@@ -121,7 +121,7 @@
         SELECT COUNT(package_code)
         FROM TB_PACKAGE_INFO
         WHERE <include refid="readCondition"/>
-        AND IS_USED != 'N';
+        AND IS_USED != 'N'
     </select>
 
     <!-- 단건 조회 -->
@@ -144,7 +144,7 @@
         FROM
         TB_PACKAGE_INFO
         WHERE
-        <include refid="readCondition"/>;
+        <include refid="readCondition"/>
         AND package_code = #{packageCode}
     </select>
 
@@ -190,7 +190,7 @@
         WHERE PACKAGE_CODE LIKE 'PKG%'
         ) AS subquery
         WHERE <include refid="countryRegionCheck" />
-        AND <include refid="CRUDCondition" />;
+        AND <include refid="CRUDCondition" />
     </insert>
 
     <!-- UPDATE 쿼리 -->
@@ -211,7 +211,7 @@
         WHERE
         PACKAGE_CODE = #{packageCode}
         AND <include refid="countryRegionCheck"/>
-        AND <include refid="CRUDCondition"/>;
+        AND <include refid="CRUDCondition"/>
     </update>
 
     <!-- 단건 IS_USED 비활성화  -->
@@ -220,7 +220,7 @@
         SET IS_USED = 'N'
         WHERE
         PACKAGE_CODE = #{packageCode}
-        AND <include refid="CRUDCondition"/>;
+        AND <include refid="CRUDCondition"/>
     </update>
 
     <!--생성된후 진행중인 패키지 승인여부(1000= 진행중, 2000=승인, 3000=반려)-->
@@ -229,6 +229,6 @@
         SET ASSIGN_CODE = #{assignCode}
         WHERE
         PACKAGE_CODE = #{packageCode}
-        AND <include refid="managerCondition"/>;
+        AND <include refid="managerCondition"/>
     </update>
 </mapper>
