@@ -1,6 +1,7 @@
 package kr.happytravel.erp.sales.controller;
 
-import kr.happytravel.erp.sales.model.sales.PackageModel;
+import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
+import kr.happytravel.erp.sales.model.sales.packages.PackageModel;
 import kr.happytravel.erp.sales.service.PackageService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -37,11 +38,11 @@ public class PackageController {
 
     // Read (List)
     @GetMapping("/package-list")
-    public ResponseEntity<List<PackageModel>> getPackageList(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+    public ResponseEntity<List<PackageListDTO>> getPackageList(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                              HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request with parameters: " + paramMap);
-            List<PackageModel> packages = packageService.getPackageList(paramMap);
+            List<PackageListDTO> packages = packageService.getPackageList(paramMap);
             logger.info("Fetched " + packages.size() + " packages.");
             return ResponseEntity.ok(packages);
         } catch (Exception e) {

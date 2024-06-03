@@ -1,18 +1,14 @@
 package kr.happytravel.erp.sales.service;
 
-import kr.happytravel.erp.sales.dao.AgencyDao;
-import kr.happytravel.erp.sales.dao.FlightDao;
-import kr.happytravel.erp.sales.dao.HotelDao;
 import kr.happytravel.erp.sales.dao.PackageDao;
-import kr.happytravel.erp.sales.model.sales.*;
+import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
+import kr.happytravel.erp.sales.model.sales.packages.PackageModel;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +20,7 @@ public class PackageServiceImpl implements PackageService {
     private final PackageDao packageDao;
 
     @Override
-    public List<PackageModel> getPackageList(Map<String, Object> paramMap) throws Exception {
+    public List<PackageListDTO> getPackageList(Map<String, Object> paramMap) throws Exception {
         return packageDao.getPackageList(paramMap);
     }
 

@@ -1,13 +1,14 @@
 package kr.happytravel.erp.sales.service;
 
-import kr.happytravel.erp.sales.model.sales.PackageModel;
+import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
+import kr.happytravel.erp.sales.model.sales.packages.PackageModel;
 
 import java.util.List;
 import java.util.Map;
 
 public interface PackageService {
     // 전체 조회
-    List<PackageModel> getPackageList(Map<String, Object> paramMap) throws Exception;
+    List<PackageListDTO> getPackageList(Map<String, Object> paramMap) throws Exception;
 
     // 전체 조회 카운트
     int getPackageCnt(Map<String, Object> paramMap) throws Exception;
