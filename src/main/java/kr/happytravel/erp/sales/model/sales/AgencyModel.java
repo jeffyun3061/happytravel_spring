@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class AgencyModel {
 
     private String agencyCode; // AGENCY_CODE
-    private String agencyNmae; // AGENCY_NAME
+    private String agencyName; // AGENCY_NAME
     private String phone; // PHONE
     private String country; // COUNTRY
     private String region; // REGION
