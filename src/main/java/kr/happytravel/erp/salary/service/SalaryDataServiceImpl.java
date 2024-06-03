@@ -20,7 +20,7 @@ public class SalaryDataServiceImpl implements SalaryDataService {
 	@Override
 	public int initSalaryData(String empId, int salary) throws Exception {
 		List<SalaryDataModel> salaryDataModelList = new ArrayList<SalaryDataModel>();
-		
+
 		// 급여 항목 조회
 		List<SalaryItemModel> salaryItemModelList = salaryDao.selectAllSalaryItem();
 
@@ -77,7 +77,7 @@ public class SalaryDataServiceImpl implements SalaryDataService {
 
 	@Override
 	public int insertSalaryData(String empId, String salaryDate) throws Exception {
-		return salaryDao.insertSalaryData(empId, salaryDate);
+		return salaryDao.existSalaryData(empId, salaryDate) ? 1 : salaryDao.insertSalaryData(empId, salaryDate);
 	}
 
 	@Override
