@@ -1,8 +1,8 @@
 package kr.happytravel.erp.sales.service;
 
 import kr.happytravel.erp.sales.dao.PackageDao;
-import kr.happytravel.erp.sales.model.sales.PackageReqModel;
-import kr.happytravel.erp.sales.model.sales.PackageResModel;
+import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
+import kr.happytravel.erp.sales.model.sales.packages.PackageModel;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,10 +16,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PackageServiceImpl implements PackageService {
     private final Logger logger = LogManager.getLogger(this.getClass());
+
     private final PackageDao packageDao;
 
     @Override
-    public List<PackageResModel> getPackageList(Map<String, Object> paramMap) throws Exception {
+    public List<PackageListDTO> getPackageList(Map<String, Object> paramMap) throws Exception {
         return packageDao.getPackageList(paramMap);
     }
 
@@ -29,41 +30,42 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public PackageResModel selectPackage(Map<String, Object> paramMap) throws Exception {
+    public PackageModel selectPackage(Map<String, Object> paramMap) throws Exception {
         return packageDao.selectPackage(paramMap);
     }
 
     @Override
     @Transactional
-    public int insertPackage(PackageReqModel packageReqModel) throws Exception {
+    public int insertPackage(Map<String, Object> paramMap) throws Exception {
         logger.info("Starting transaction for insertPackage");
-        int result = packageDao.insertPackage(packageReqModel);
+        int result = packageDao.insertPackage(paramMap);
         logger.info("Insert result: " + result);
         return result;
     }
 
     @Override
     @Transactional
-    public int updatePackage(PackageReqModel packageReqModel) throws Exception {
+    public int updatePackage(Map<String, Object> paramMap) throws Exception {
         logger.info("Starting transaction for updatePackage");
-        int result = packageDao.updatePackage(packageReqModel);
+        int result = packageDao.updatePackage(paramMap);
         logger.info("Update result: " + result);
         return result;
     }
 
     @Override
-    public int updatePackageYN(PackageReqModel packageReqModel) throws Exception {
+    public int updatePackageYN(Map<String, Object> paramMap) throws Exception {
         logger.info("Starting for updatePackage IS_USED Y/N");
-        int result = packageDao.updatePackageYN(packageReqModel);
+        int result = packageDao.updatePackageYN(paramMap);
         logger.info("Update Y/N result: " + result);
         return result;
+
     }
 
     @Override
-    public int assignPackage(PackageReqModel packageReqModel) throws Exception {
+    public int assignPackage(Map<String, Object> paramMap) throws Exception {
         logger.info("Starting for updatePackage ASSIGN_CODE to 1000 OR 2000 OR 3000");
-        int result = packageDao.assignPackage(packageReqModel);
-        logger.info("Update assign result: " + packageReqModel.toString());
+        int result = packageDao.assignPackage(paramMap);
+        logger.info("Update assign result: " + paramMap.values());
         return result;
     }
 }

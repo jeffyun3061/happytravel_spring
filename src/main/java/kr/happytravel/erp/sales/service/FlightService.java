@@ -16,11 +16,11 @@ public interface FlightService {
     FlightModel selectFlight(Map<String, Object> paramMap) throws Exception;
 
     // 항공권 단건 등록
-    int insertFlight(FlightModel flight) throws Exception;
+    int insertFlight(Map<String, Object> paramMap) throws Exception;
 
     // 항공권 단건 수정
-    int updateFlight(FlightModel flight) throws Exception;
+    int updateFlight(Map<String, Object> paramMap) throws Exception;
 
-    // 항공권 단건 삭제
-    int deleteFlight(Map<String, Object> paramMap) throws Exception;
+    // 호텔 단건 삭제
+    int updateFlightYN(Map<String, Object> paramMap) throws Exception;
 }
