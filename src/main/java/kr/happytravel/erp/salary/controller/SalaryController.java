@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -69,7 +71,7 @@ public class SalaryController {
 
 			// 결과를 Map에 담기
 			Map<String, Object> response = new HashMap<String, Object>();
-			response.put("salaryItems", salaryItemModelList);
+			response.put("salaryItem", salaryItemModelList);
 			response.put("employmentInfo", employmentModelList);
 			response.put("totalSalaryData", totalSalaryDataModelList);
 
@@ -85,22 +87,50 @@ public class SalaryController {
 		}
 	}
 
-	// 급여 기본 데이터 관련 테스트
-	@GetMapping("/test1")
-	public void test1(@RequestParam Map<String, Object> paramMap) throws Exception {
-		// localhost/salary/test1?emp_id=EMP30001&salary=120000000
-		String empId = (String) paramMap.get("emp_id");
-		int salary = (int) paramMap.get("salary");
-		salaryDataService.initSalaryData(empId, salary);
+	// 급여 내역 - 생성 - 일괄 처리 & 단건 처리
+	@PostMapping("/insert/{salaryDate}")
+	public ResponseEntity<Boolean> insertSalaryData(@PathVariable String salaryDate, @RequestBody EmploymentModel employmentModel) throws Exception {
+		try {
+			// 로그 메시지로 요청 파라미터 기록
+			logger.info("Received request for salary data insert for employee ID: {} on date: {}", employmentModel.getEmpId(), salaryDate);
+
+			return ResponseEntity.ok(salaryDataService.insertSalaryData(employmentModel.getEmpId(), salaryDate) > 0);
+		} catch (IllegalArgumentException e) {
+			// 잘못된 인자 예외 발생 시 로그 메시지 기록 및 400 Bad Request 반환
+			logger.warn("Invalid argument: {}", e.getMessage());
+			return ResponseEntity.badRequest().build();
+		} catch (Exception e) {
+			// 기타 예외 발생 시 로그 메시지 기록 및 500 Internal Server Error 반환
+			logger.error("An error occurred while fetching salary data: {}", e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
-	// 월급 내역 - 일괄처리 & 단건 처리 관련 테스트
-	@GetMapping("/test2")
-	public void test2(@RequestParam Map<String, Object> paramMap) throws Exception {
-		// localhost/salary/test2?emp_id=EMP30001&date=202412
-		String empId = (String) paramMap.get("emp_id");
-		String salaryDate = (String) paramMap.get("salaryDate");
-		salaryDataService.insertSalaryData(empId, salaryDate);
+	// 월급 내역 - 조회
+	@GetMapping("/select/{salaryDate}/{empId}")
+	public ResponseEntity<List<SalaryDataModel>> selectAllSalaryData(@PathVariable String salaryDate, @PathVariable String empId) {
+		try {
+			// 로그 메시지로 요청 파라미터 기록
+			logger.info("Received request for salary data select for employee ID: {} on date: {}", empId, salaryDate);
+
+			List<SalaryDataModel> salaryDataModelList = salaryDataService.selectAllSalaryData(empId, salaryDate);
+			// 급여 총계가 없는 경우 로그 메시지 기록 및 204 No Content 반환
+			if (salaryDataModelList.isEmpty()) {
+				logger.info("No total salary list data found.");
+				return ResponseEntity.noContent().build();
+			}
+			logger.info("Fetched {} total salary data list.", salaryDataModelList.size());
+
+			return ResponseEntity.ok(salaryDataModelList);
+		} catch (IllegalArgumentException e) {
+			// 잘못된 인자 예외 발생 시 로그 메시지 기록 및 400 Bad Request 반환
+			logger.warn("Invalid argument: {}", e.getMessage());
+			return ResponseEntity.badRequest().build();
+		} catch (Exception e) {
+			// 기타 예외 발생 시 로그 메시지 기록 및 500 Internal Server Error 반환
+			logger.error("An error occurred while fetching salary data: {}", e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 	// 월급 내역 - 수정
@@ -194,4 +224,14 @@ public class SalaryController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
+
+	// 급여 기본 데이터 관련 테스트
+	@GetMapping("/test1")
+	public void test1(@RequestParam Map<String, Object> paramMap) throws Exception {
+		// localhost/salary/test1?emp_id=EMP30001&salary=120000000
+		String empId = (String) paramMap.get("emp_id");
+		int salary = (int) paramMap.get("salary");
+		salaryDataService.initSalaryData(empId, salary);
+	}
+
 }

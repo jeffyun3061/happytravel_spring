@@ -68,7 +68,7 @@ public class SalaryDataServiceImpl implements SalaryDataService {
 			salaryDataModelList.add(new SalaryDataModel(empId, "000000", salaryItemModel.getSalaryItemCode(), amount));
 		}
 
-		if (salaryDao.selectInitSalaryData(empId) > 0) {
+		if (salaryDao.selectInitSalaryData(empId)) {
 			return salaryDao.updateInitSalaryData(empId, salaryDataModelList);
 		} else {
 			return salaryDao.insertInitSalaryData(salaryDataModelList);
@@ -77,7 +77,12 @@ public class SalaryDataServiceImpl implements SalaryDataService {
 
 	@Override
 	public int insertSalaryData(String empId, String salaryDate) throws Exception {
-		return salaryDao.insertSalaryData(empId, salaryDate);
+		return salaryDao.existSalaryData(empId, salaryDate) ? 1 : salaryDao.insertSalaryData(empId, salaryDate);
+	}
+
+	@Override
+	public List<SalaryDataModel> selectAllSalaryData(String empId, String salaryDate) throws Exception {
+		return salaryDao.selectAllSalaryData(empId, salaryDate);
 	}
 
 	@Override

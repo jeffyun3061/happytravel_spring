@@ -22,4 +22,5 @@ public class EmploymentModel {
 	private String deptName; // DEPT_NAME
 	private String posCode; // POS_CODE
 	private String posName; // POS_NAME
+	private boolean leaveStat; // LEAVE_STAT
 }
