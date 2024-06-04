@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import kr.happytravel.erp.salary.dao.SalaryDao;
+import kr.happytravel.erp.salary.model.EmploymentModel;
 import kr.happytravel.erp.salary.model.SalaryDataModel;
 import kr.happytravel.erp.salary.model.SalaryItemModel;
 import kr.happytravel.erp.salary.model.SalaryPaymentDetailModel;
@@ -18,12 +19,13 @@ public class SalaryDataServiceImpl implements SalaryDataService {
 	private final SalaryDao salaryDao;
 
 	@Override
-	public int initSalaryData(String empId, int salary) throws Exception {
+	public int initSalaryData(String empId, int salaryYear) throws Exception {
 		List<SalaryDataModel> salaryDataModelList = new ArrayList<SalaryDataModel>();
 
 		// 급여 항목 조회
 		List<SalaryItemModel> salaryItemModelList = salaryDao.selectAllSalaryItem();
 
+		int salary = salaryYear * 10000;
 		int taxable_amount = 0; // 과세
 		int non_taxable_amount = 0; // 비과세
 		int total_current_amount = 0; // 지급액 계
@@ -67,7 +69,7 @@ public class SalaryDataServiceImpl implements SalaryDataService {
 			}
 			salaryDataModelList.add(new SalaryDataModel(empId, "000000", salaryItemModel.getSalaryItemCode(), amount));
 		}
-
+		System.out.println(salaryDataModelList.get(0).getAmount());
 		if (salaryDao.selectInitSalaryData(empId)) {
 			return salaryDao.updateInitSalaryData(empId, salaryDataModelList);
 		} else {
@@ -77,7 +79,11 @@ public class SalaryDataServiceImpl implements SalaryDataService {
 
 	@Override
 	public int insertSalaryData(String empId, String salaryDate) throws Exception {
-		return salaryDao.existSalaryData(empId, salaryDate) ? 1 : salaryDao.insertSalaryData(empId, salaryDate);
+		List<EmploymentModel> employmentModelList = salaryDao.selectAllEmployment(salaryDate);
+		if (empId != null && !empId.isEmpty()) {
+			employmentModelList.removeIf(emp -> !emp.getEmpId().equals(empId));
+		}
+		return salaryDao.insertSalaryData(empId, salaryDate, employmentModelList);
 	}
 
 	@Override

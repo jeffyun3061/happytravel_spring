@@ -79,27 +79,24 @@
 		</foreach>
 	</update>
 	<!-- ==================================================================================================== -->
-	<!-- 급여 내역 - 체크 - 일괄 처리 & 단건 처리 -->
-	<select id="existSalaryData" resultType="boolean" parameterType="map">
-		SELECT COUNT(*) > 0
-		FROM TB_SALARY_DATA_INFO
-		WHERE SALARY_DATE = #{salaryDate}
-	    <if test="empId != null and empId != ''">
-			AND EMP_ID = #{empId}
-	    </if>
-	</select>
 	<!-- 급여 내역 - 생성 - 일괄 처리 & 단건 처리 -->
 	<insert id="insertSalaryData" parameterType="map">
-		INSERT INTO TB_SALARY_DATA_INFO (EMP_ID, SALARY_DATE, SALARY_ITEM_CODE, AMOUNT)
-		SELECT EMP_ID,
-		       #{salaryDate},
-		       SALARY_ITEM_CODE,
-		       AMOUNT
-		FROM TB_SALARY_DATA_INFO
-		WHERE SALARY_DATE = '000000'
-		<if test="empId != null and empId != ''">
-			AND EMP_ID = #{empId}
-		</if>
+		<foreach collection="employmentModelList" item="emp" separator=";">
+			INSERT INTO TB_SALARY_DATA_INFO (EMP_ID, SALARY_DATE, SALARY_ITEM_CODE, AMOUNT)
+			SELECT #{emp.empId},
+				   #{salaryDate},
+				   SALARY_ITEM_CODE,
+				   AMOUNT
+			FROM TB_SALARY_DATA_INFO
+			WHERE EMP_ID = #{emp.empId}
+			      AND NOT EXISTS (
+				      SELECT 1
+				      FROM TB_SALARY_DATA_INFO
+				      WHERE EMP_ID = #{emp.empId}
+				            AND SALARY_DATE = #{salaryDate}
+				            AND SALARY_ITEM_CODE = TB_SALARY_DATA_INFO.SALARY_ITEM_CODE
+			      )
+		</foreach>
 	</insert>
 	<!-- 급여 내역 - 조회 -->
 	<select id="selectAllSalaryData" resultType="kr.happytravel.erp.salary.model.SalaryDataModel" parameterType="map">
@@ -118,7 +115,6 @@
 			      AND SALARY_ITEM_CODE = #{salary.salaryItemCode}
 		</foreach>
 	</update>
-
 	<!-- ==================================================================================================== -->
 	<!-- 급여 지급 내역 - 조회 -->
 	<select id="selectAllSalaryPayment" resultType="kr.happytravel.erp.salary.model.SalaryPaymentModel">

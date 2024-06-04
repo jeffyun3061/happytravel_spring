@@ -227,10 +227,8 @@ public class SalaryController {
 
 	// 급여 기본 데이터 관련 테스트
 	@GetMapping("/test1")
-	public void test1(@RequestParam Map<String, Object> paramMap) throws Exception {
-		// localhost/salary/test1?emp_id=EMP30001&salary=120000000
-		String empId = (String) paramMap.get("emp_id");
-		int salary = (int) paramMap.get("salary");
+	public void test1(@RequestParam String empId, @RequestParam int salary) throws Exception {
+		// localhost/salary/test1?emp_id=EMP30001&salary=120000
 		salaryDataService.initSalaryData(empId, salary);
 	}
 
