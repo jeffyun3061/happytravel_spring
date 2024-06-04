@@ -13,12 +13,14 @@ import lombok.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class HotelModel {
-    private String hotelCode;
-    private String hotelName;
-    private String phone;
-    private String country;
-    private String region;
-    private String address;
-    private int price;
-    private String isUsed;
+
+    private String hotelCode; // HOTEL_CODE
+    private String hotelName; // HOTEL_NAME
+    private String phone; // PHONE
+    private String country; // COUNTRY
+    private String region; // REGION
+    private String address; // ADDRESS
+    private int price; // PRICE
+    private String isUsed; // IS_USED
+
 }

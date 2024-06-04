@@ -19,16 +19,19 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FlightModel {
 
-    private String flightCode;
-    private String airline;
-    private String flightNumber;
-    private String phone;
-    private String departure;
+    private String flightCode; // FLIGHT_CODE
+    private String airline; // AIRLINE
+    private String flightNumber; //FLIGHT_NUMBER
+    private String phone; //PHONE
+    private String departure; //DEPARTURE
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMddHHmm")
-    private Date departureTime;
-    private String destination;
+    private Date departureTime; // DEPARTURE_TIME
+    private String destination; // DESTINATION
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMddHHmm")
-    private Date arrivalTime;
-    private int price;
-    private String isUsed;
+    private Date arrivalTime; // ARRIVAL_TIME
+    private int price; // PRICE
+    private String isUsed; // IS_USED
+
 }

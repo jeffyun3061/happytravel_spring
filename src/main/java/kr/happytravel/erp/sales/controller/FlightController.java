@@ -2,6 +2,7 @@ package kr.happytravel.erp.sales.controller;
 
 
 import kr.happytravel.erp.sales.model.sales.FlightModel;
+import kr.happytravel.erp.sales.model.sales.HotelModel;
 import kr.happytravel.erp.sales.service.FlightService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/sales")
@@ -28,16 +30,11 @@ public class FlightController {
     public ResponseEntity<String> createFlight(@RequestBody FlightModel flight, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to create flight: " + flight);
-            int result = flightService.insertFlight(flight);
-            logger.info("Created flight, result: " + result);
-            return ResponseEntity.ok("flight created successfully");
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
+            logger.info("Received request to create hotel: " + flight);
+            return ResponseEntity.ok("Hotel created successfully");
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
+            return ResponseEntity.ok("error");
         }
     }
 
@@ -46,12 +43,11 @@ public class FlightController {
                                                          HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request with parameters: " + paramMap);
+            String empId = Optional.ofNullable((String) paramMap.get("empId")).orElse("EMP30002"); // 기본 empId 설정
+            paramMap.put("empId", empId);
             List<FlightModel> flights = flightService.getFlightList(paramMap);
             logger.info("Fetched " + flights.size() + " flights.");
             return ResponseEntity.ok(flights);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             throw e;
@@ -63,63 +59,44 @@ public class FlightController {
     public ResponseEntity<FlightModel> getFlight(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to get hotel with parameters: " + paramMap);
+            logger.info("Received request to get flight with parameters: " + paramMap);
             FlightModel flight = flightService.selectFlight(paramMap);
             if (flight == null) {
-                logger.warn("flight not found with parameters: " + paramMap);
+                logger.warn("Flight not found with parameters: " + paramMap);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
             logger.info("Fetched flight: " + flight);
             return ResponseEntity.ok(flight);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
-        }
-    }
-    // Update
-    @PutMapping("/flight")
-    public ResponseEntity<String> updateFlight(@RequestBody FlightModel flight, HttpServletRequest request,
-                                              HttpServletResponse response, HttpSession session) throws Exception {
-        try {
-            logger.info("Received request to update flight: " + flight);
-            int result = flightService.updateFlight(flight);
-            if (result == 0) {
-                logger.warn("No flight updated: " + flight);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Flight not found for update");
-            }
-            logger.info("Updated flight, result: " + result);
-            return ResponseEntity.ok("Flight updated successfully");
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
-    // Delete
-    @DeleteMapping("/flight")
-    public ResponseEntity<String> deleteFlight(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                              HttpServletResponse response, HttpSession session) throws Exception {
+    // Update
+    @PutMapping("/flight")
+    public ResponseEntity<Boolean> updateFlight(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
+                                               HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to delete flight with parameters: " + paramMap);
-            int result = flightService.deleteFlight(paramMap);
-            if (result == 0) {
-                logger.warn("No flight deleted with parameters: " + paramMap);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Flight not found for deletion");
-            }
-            logger.info("Deleted flight, result: " + result);
-            return ResponseEntity.ok("Hotel deleted successfully");
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
+            logger.info("Received request to update flight: " + paramMap);
+            return ResponseEntity.ok(flightService.updateFlight(paramMap) == 1);
+        }  catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
+            return ResponseEntity.ok(false);
         }
     }
+
+    // Y/N UPDATE
+    @PutMapping("/flight-yn")
+    public ResponseEntity<Boolean> updateFlightYN(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+                                              HttpServletResponse response, HttpSession session) throws Exception {
+        try {
+            logger.info("Received request to update package: " + paramMap);
+            return ResponseEntity.ok(flightService.updateFlightYN(paramMap) == 1);
+        }  catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.ok(false);
+        }
+    }
+
 }
