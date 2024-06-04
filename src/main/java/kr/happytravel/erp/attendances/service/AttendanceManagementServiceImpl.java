@@ -39,4 +39,14 @@ public class AttendanceManagementServiceImpl implements AttendanceManagementServ
     public int deleteAttendanceManagement(Map<String, Object> paramMap) throws Exception {
         return attendanceManagementDao.deleteAttendanceManagement(paramMap);
     }
+
+    @Override
+    public String getMaxAttendanceTypeCode(String creationDate) throws Exception {
+        return attendanceManagementDao.getMaxAttendanceTypeCode(creationDate);
+    }
+
+    @Override
+    public String getManagerIdByDeptCode(String deptCode) throws Exception {
+        return attendanceManagementDao.getManagerIdByDeptCode(deptCode);
+    }
 }

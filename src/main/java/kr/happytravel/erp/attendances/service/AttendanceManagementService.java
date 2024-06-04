@@ -21,4 +21,9 @@ public interface AttendanceManagementService {
     // 단건 삭제
     int deleteAttendanceManagement(Map<String, Object> paramMap) throws Exception;
 
+    // 날짜 조회
+    String getMaxAttendanceTypeCode(String creationDate) throws Exception;
+
+    // 부장 조회
+    String getManagerIdByDeptCode(String deptCode) throws Exception;
 }

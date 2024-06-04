@@ -20,7 +20,7 @@
     public class AttendanceModel {
         private String empId; //     EMP_ID
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
-        private Date day;  // DAY
+        private String today;  // TODAY
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         private Date inTime; // IN_TIME
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")

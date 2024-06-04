@@ -7,7 +7,7 @@
 	<select id="getAttendanceList" resultType="kr.happytravel.erp.attendances.model.AttendanceModel" parameterType="hashmap">
 		SELECT
 		emp_id AS empId,
-		`day` AS day,
+		today,
 		in_time AS inTime,
 		out_time AS outTime
 		FROM
@@ -21,7 +21,7 @@
 	<select id="selectAttendance" resultType="kr.happytravel.erp.attendances.model.AttendanceModel">
 		SELECT
 			emp_id AS empId,
-			`day` AS day,
+			today,
             in_time AS inTime,
             out_time AS outTime
 		FROM
@@ -34,11 +34,11 @@
 	<insert id="insertAttendance">
 		INSERT INTO TB_ATTENDANCE (
 			emp_id,
-			`day`,
+			today,
 			in_time
 		) VALUES (
 				 #{empId},
-				 #{day},
+				 #{today},
 				 #{inTime}
 			 )
 	</insert>
@@ -48,7 +48,7 @@
 		SET
 			out_time = #{outTime}
 		WHERE
-			emp_id = #{empId} --AND `day` = #{day}
+			emp_id = #{empId} AND today = #{today}
 	</update>
 
 
