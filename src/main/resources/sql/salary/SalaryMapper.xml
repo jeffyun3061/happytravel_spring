@@ -89,6 +89,7 @@
 				   AMOUNT
 			FROM TB_SALARY_DATA_INFO
 			WHERE EMP_ID = #{emp.empId}
+			      AND SALARY_DATE = '000000'
 			      AND NOT EXISTS (
 				      SELECT 1
 				      FROM TB_SALARY_DATA_INFO
