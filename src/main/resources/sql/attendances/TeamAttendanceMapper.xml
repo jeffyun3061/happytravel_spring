@@ -9,11 +9,13 @@
             ati.ATTENDANCE_TYPE_NAME AS attendanceType,
             am.START_DATE AS startDate,
             am.END_DATE AS endDate,
-            u.DEPT_CODE AS deptCode
+            u.DEPT_CODE AS deptCode,
+            pi.POS_NAME AS position
         FROM
             TB_ATTENDANCE_MANAGEMENT am
                 JOIN TB_EMPLOYMENT_INFO u ON am.EMP_ID = u.EMP_ID
                 JOIN TB_ATTENDANCE_TYPE_INFO ati ON am.ATTENDANCE_TYPE_CODE = ati.ATTENDANCE_TYPE_CODE
+                JOIN TB_POSITION_INFO pi ON u.POS_CODE = pi.POS_CODE
         WHERE
             u.DEPT_CODE = #{department}
           AND am.ASSIGN_CODE = '2000'
