@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SalaryPaymentDetailModel {
-	private String empId; // EMP_ID
 	private String salaryMonth; // SALARY_MONTH
 	private String item1100; // ITEM1100 - 기본급
 	private String item1200; // ITEM1200 - 식대
