@@ -112,7 +112,7 @@
 			UPDATE TB_SALARY_DATA_INFO
 			SET AMOUNT = #{salary.amount}
 			WHERE EMP_ID = #{empId}
-			      AND SALARY_DATE = #{salaryDate}
+			      AND SALARY_DATE = #{salary.salaryDate}
 			      AND SALARY_ITEM_CODE = #{salary.salaryItemCode}
 		</foreach>
 	</update>

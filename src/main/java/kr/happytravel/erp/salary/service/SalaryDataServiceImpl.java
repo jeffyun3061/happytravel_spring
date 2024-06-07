@@ -50,8 +50,48 @@ public class SalaryDataServiceImpl implements SalaryDataService {
 	}
 
 	@Override
-	public int updateSalaryData(String empId, String salaryDate, List<SalaryDataModel> salaryDataModelList) throws Exception {
-		return salaryDao.updateSalaryData(empId, salaryDate, salaryDataModelList);
+	public int updateSalaryData(String empId, String salaryDate, List<SalaryDataModel> updateSalaryDataModelList) throws Exception {
+		// 급여 항목 조회
+		List<SalaryItemModel> salaryItemModelList = salaryDao.selectAllSalaryItem();
+		// 급여 항목 데이터 추출
+		SalaryCalculateModel salaryCalculateModel = new SalaryCalculateModel();
+		for (SalaryDataModel salaryDataModel : updateSalaryDataModelList) {
+			switch (salaryDataModel.getSalaryItemCode()) {
+			case "1100":
+				// 기본급
+				salaryCalculateModel.setBaseSalary(salaryDataModel.getAmount());
+				break;
+			case "1200":
+				// 식대
+				salaryCalculateModel.setMealAllowance(salaryDataModel.getAmount());
+				break;
+			case "1300":
+				// 연장근로수당
+				salaryCalculateModel.setOvertimeAllowance(salaryDataModel.getAmount());
+				break;
+			case "1400":
+				// 야간근로수당
+				salaryCalculateModel.setNightWorkAllowance(salaryDataModel.getAmount());
+				break;
+			case "1500":
+				// 휴일근로수당
+				salaryCalculateModel.setHolidayWorkAllowance(salaryDataModel.getAmount());
+				break;
+			case "1600":
+				// 가족수당
+				salaryCalculateModel.setFamilyAllowance(salaryDataModel.getAmount());
+				break;
+			case "1700":
+				// 직책수당
+				salaryCalculateModel.setPositionAllowance(salaryDataModel.getAmount());
+			default:
+				break;
+			}
+		}
+		// 급여 계산
+		List<SalaryDataModel> salaryDataModelList = new SocialInsurance().socialInsuranceCalculate(salaryItemModelList, empId, salaryDate, salaryCalculateModel);
+
+		return salaryDao.updateSalaryData(empId, salaryDataModelList);
 	}
 
 	@Override

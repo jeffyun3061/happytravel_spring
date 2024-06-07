@@ -42,7 +42,7 @@ public interface SalaryDao {
 	List<SalaryDataModel> selectAllSalaryData(@Param("empId") String empId, @Param("salaryDate") String salaryDate) throws Exception;
 
 	// 급여 내역 - 수정
-	int updateSalaryData(@Param("empId") String empId, @Param("salaryDate") String salaryDate, @Param("salaryDataModelList") List<SalaryDataModel> salaryDataModelList) throws Exception;
+	int updateSalaryData(@Param("empId") String empId, @Param("salaryDataModelList") List<SalaryDataModel> salaryDataModelList) throws Exception;
 
 	// 급여 지급 내역 - 조회
 	List<SalaryPaymentModel> selectAllSalaryPayment(@Param("salaryYear") String salaryYear) throws Exception;

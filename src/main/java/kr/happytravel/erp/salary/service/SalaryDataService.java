@@ -19,10 +19,10 @@ public interface SalaryDataService {
 	List<SalaryDataModel> selectAllSalaryData(String empId, String salaryDate) throws Exception;
 
 	// 급여 내역 - 수정
-	int updateSalaryData(String empId, String salaryDate, List<SalaryDataModel> salaryDataModelList) throws Exception;
+	int updateSalaryData(String empId, String salaryDate, List<SalaryDataModel> updateSalaryDataModelList) throws Exception;
 
 	// 급여 지급 내역 - 조회
-	List<SalaryPaymentModel> selectAllSalaryPayment(String salaryYeㄴar) throws Exception;
+	List<SalaryPaymentModel> selectAllSalaryPayment(String salaryYear) throws Exception;
 
 	// 급여 지급 상세 내역 - 조회
 	List<SalaryPaymentDetailModel> selectAllSalaryPaymentDetail(String empId, String salaryYear) throws Exception;
