@@ -12,6 +12,8 @@ public interface AgencyDao {
     // 에이전시 전체 조회 카운트
     int getAgencyCnt(Map<String, Object> paramMap) throws Exception;
 
+    String getLastAgencyCode();
+
     // 에이전시 단건 조회
     AgencyModel selectAgency(Map<String, Object> paramMap) throws Exception;
 

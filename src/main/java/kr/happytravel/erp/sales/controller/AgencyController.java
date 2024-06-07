@@ -1,8 +1,10 @@
 package kr.happytravel.erp.sales.controller;
 
+import kr.happytravel.erp.sales.dto.AgencyDto;
 import kr.happytravel.erp.sales.model.sales.AgencyModel;
 import kr.happytravel.erp.sales.model.sales.FlightModel;
 import kr.happytravel.erp.sales.service.AgencyService;
+import kr.happytravel.erp.util.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,11 +28,18 @@ public class AgencyController {
 
     // Create
     @PostMapping("/agency")
-    public ResponseEntity<String> createAgency(@RequestBody AgencyModel agency, HttpServletRequest request,
+    public ResponseEntity<String> createAgency(@RequestBody AgencyDto agency, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to create hotel: " + agency);
-            return ResponseEntity.ok("Hotel created successfully");
+
+            String lastAgencyCode = agencyService.getLastAgencyCode();
+            String newAgencyCode = CodeGenerator.generateNewCode(lastAgencyCode, "A");
+
+            agency.setAgencyCode(newAgencyCode);
+
+            agencyService.insertAgency(agency);
+            return ResponseEntity.ok("Agency created successfully");
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.ok("error");
@@ -56,17 +65,17 @@ public class AgencyController {
 
     // Read (Single)
     @GetMapping("/agency")
-    public ResponseEntity<AgencyModel> getAgency(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+    public ResponseEntity<AgencyModel> getAgency(AgencyDto agency, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                  HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to get agency with parameters: " + paramMap);
-            AgencyModel agency = agencyService.selectAgency(paramMap);
+            AgencyModel agencyModel = agencyService.selectAgency(agency);
             if (agency == null) {
                 logger.warn("Agency not found with parameters: " + paramMap);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
             logger.info("Fetched agency: " + agency);
-            return ResponseEntity.ok(agency);
+            return ResponseEntity.ok(agencyModel);
         } catch (IllegalArgumentException e) {
             logger.warn("Invalid argument: " + e.getMessage());
             throw e;
@@ -94,7 +103,7 @@ public class AgencyController {
     public ResponseEntity<Boolean> updateAgencyYN(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                  HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to Y/N package with parameters: " + paramMap);
+            logger.info("Received request to Y/N with parameters: " + paramMap);
             return ResponseEntity.ok(agencyService.updateAgencyYN(paramMap) == 1);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);

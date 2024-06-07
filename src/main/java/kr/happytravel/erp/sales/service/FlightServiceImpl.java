@@ -1,6 +1,7 @@
 package kr.happytravel.erp.sales.service;
 
 import kr.happytravel.erp.sales.dao.FlightDao;
+import kr.happytravel.erp.sales.dto.FlightDto;
 import kr.happytravel.erp.sales.model.sales.FlightModel;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class FlightServiceImpl implements FlightService {
@@ -31,14 +33,19 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightModel selectFlight(Map<String, Object> paramMap) throws Exception {
-        return flightDao.selectFlight(paramMap);
+    public String getLastFlightCode() {
+        return flightDao.getLastFlightCode();
     }
 
     @Override
-    public int insertFlight(Map<String, Object> paramMap) throws Exception {
+    public FlightModel selectFlight(FlightDto flight) throws Exception {
+        return flightDao.selectFlight(flight);
+    }
+
+    @Override
+    public int insertFlight(FlightDto flight) throws Exception {
         logger.info("Starting for insertFlight");
-        int result = flightDao.insertFlight(paramMap);
+        int result = flightDao.insertFlight(flight);
         logger.info("Insert result: " + result);
         return result;
     }
@@ -50,6 +57,7 @@ public class FlightServiceImpl implements FlightService {
         logger.info("Update result: " + result);
         return result;
     }
+
     @Override
     public int updateFlightYN(Map<String, Object> paramMap) throws Exception {
         logger.info("Starting for updateFlight IS_USED Y/N");

@@ -70,6 +70,13 @@
         AND agency_code = #{agencyCode}
     </select>
 
+    <select id="getLastAgencyCode" resultType="string">
+        SELECT agency_code
+        FROM TB_AGENCY_INFO
+        ORDER BY agency_code DESC
+        LIMIT 1
+    </select>
+
     <!-- 신규 등록 -->
     <insert id="insertAgency" parameterType="hashmap">
         INSERT INTO TB_AGENCY_INFO (

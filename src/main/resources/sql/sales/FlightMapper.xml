@@ -74,6 +74,13 @@
         AND flight_code = #{flightCode}
     </select>
 
+    <select id="getLastFlightCode" resultType="string">
+        SELECT flight_code
+        FROM TB_FLIGHT_INFO
+        ORDER BY flight_code DESC
+        LIMIT 1
+    </select>
+
     <!-- 신규 등록 -->
     <insert id="insertFlight">
         INSERT INTO TB_FLIGHT_INFO (
@@ -106,16 +113,16 @@
         UPDATE TB_FLIGHT_INFO
         SET
         airline = #{airline},
-        flight_number = #{flightNumber},
+        flight_number = #{flight_number},
         phone = #{phone},
         departure = #{departure},
-        departure_time = #{departureTime},
+        departure_time = #{departure_time},
         destination = #{destination},
-        arrival_time = #{arrivalTime},
+        arrival_time = #{arrival_time},
         price = #{price},
-        is_used = #{isUsed}
+        is_used = #{is_used}
         WHERE
-        flight_code = #{flightCode}
+        flight_code = #{flight_code}
         AND <include refid="CRUDCondition"/>;
     </update>
 

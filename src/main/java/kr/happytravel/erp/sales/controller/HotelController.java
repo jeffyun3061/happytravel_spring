@@ -109,7 +109,7 @@ public class HotelController {
             // empId 확인 및 로그 출력
             String empId = (String) paramMap.get("empId");
             if (empId == null) {
-                empId = "EMP30002"; // 기본 empId 설정
+                empId = "EMP30002";
                 paramMap.put("empId", empId);
             }
             logger.info("empId: " + empId);
