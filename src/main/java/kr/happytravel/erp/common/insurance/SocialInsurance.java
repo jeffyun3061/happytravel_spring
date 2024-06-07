@@ -72,8 +72,8 @@ public class SocialInsurance {
 				totalDeductions += amount;
 				break;
 			case "2200":
-				// 건강보험: 과세 * 0.3545(7.09 * 0.01 * 0.5)
-				amount = new BigDecimal(taxableIncome * 0.3545).setScale(0, RoundingMode.CEILING).intValue();
+				// 건강보험: 과세 * 0.03545(7.09 * 0.01 * 0.5)
+				amount = new BigDecimal(taxableIncome * 0.03545).setScale(0, RoundingMode.CEILING).intValue();
 				totalDeductions += amount;
 				break;
 			case "2300":
