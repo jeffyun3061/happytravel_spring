@@ -22,13 +22,6 @@ public class EmpController {
     private final Logger logger = LogManager.getLogger(this.getClass());
     private final EmpService empService;
 
-    // main 페이지
-//    @GetMapping("/")
-//    public ResponseEntity<List<EmpModel>> main(@RequestParam Map<String, Object> paramMap,
-//                                                     HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
-//        return null;
-//    }
-
     /** 사원 전체 조회 */
     @GetMapping("/emp-list")
     public ResponseEntity<List<EmpModel>> getEmpList(@RequestParam Map<String, Object> paramMap,
@@ -120,49 +113,34 @@ public class EmpController {
     public ResponseEntity<List<EmpModel>> getBankList(@RequestParam Map<String, Object> paramMap,
                                                      HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
         List<EmpModel> getBankList = empService.getBankList();
-        getBankList.forEach(bnk -> logger.info("Position: " + bnk.getStatName()));
+        getBankList.forEach(bnk -> logger.info("bank: " + bnk.getStatName()));
         return ResponseEntity.ok(getBankList);
     }
 
     /** 신규 사원 등록 */
-    @PostMapping("/emp-create")
-    public ResponseEntity<EmpModel> createEmp(@RequestBody EmpModel emp) {
-        try {
-            // 사원번호 자동 생성
-            String newEmpId = empService.generateEmpId();
-            emp.setEmpId(newEmpId);
-
-            //사원 정보 저장
-            empService.createEmp(emp);
-
-            return ResponseEntity.ok(emp);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
+    // 마지막 사원번호 가져오기
+    @GetMapping("/emp/generate-id")
+    public ResponseEntity<String> getNewEmpId() throws Exception {
+        try{
+            String empId = empService.generateNewEmpId();
+            return ResponseEntity.ok(empId);
+        }catch (Exception e){
             logger.error("An error occurred: " + e.getMessage(), e);
             throw e;
         }
+
     }
 
-    // 사원 정보 수정
-    @PutMapping("/update")
-    public ResponseEntity<List<EmpModel>> updateempinfo(@RequestParam Map<String, Object> paramMap,
-                                                    HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
+    //신규 사원 등록
+    @PostMapping("/emp/save")
+    public ResponseEntity<String> saveEmp(@RequestBody EmpModel saveEmpInfo) {
         try {
-            logger.info("Received request create emp_info");
-            logger.info("Received request with parameters: " + paramMap);
-            List<EmpModel> empList = empService.updateemp();
-            logger.info("Detched " + empList + " empList.");
-            return ResponseEntity.ok(empList);
-
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
+            logger.info("Received request to save emp with parameters: " + saveEmpInfo);
+            empService.saveEmp(saveEmpInfo);
+            return ResponseEntity.ok("Employee saved successfully");
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
         }
     }
-
 }

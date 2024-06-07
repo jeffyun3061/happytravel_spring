@@ -22,6 +22,9 @@ public class EmpModel {
     private String password;
     @Getter
     @Setter
+    private String photoUrl;
+    @Getter
+    @Setter
     private String empName;
     @Getter
     @Setter

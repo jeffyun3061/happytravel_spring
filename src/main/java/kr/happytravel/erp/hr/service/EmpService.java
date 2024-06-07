@@ -4,25 +4,38 @@ package kr.happytravel.erp.hr.service;
 import kr.happytravel.erp.hr.model.EmpModel;
 
 import java.util.List;
+import java.util.Map;
 
 public interface EmpService {
+    /** 사원 전체 조회 */
     List<EmpModel> totalEmpList() throws Exception;
 
-    List<EmpModel> getDeptName() throws Exception;
-
-    List<EmpModel> getPosList() throws Exception;
-
-    List<EmpModel> getEmpStatusList() throws Exception;
-
-    List<EmpModel> getBankList() throws Exception;
-
-    List<EmpModel> updateemp() throws Exception;
-
+    /** 사원 단건 조회 */
     EmpModel getEmpInfo(String empId) throws Exception;
 
+    /** 사원 검색 조회 */
     List<EmpModel> searchEmpList(String searchType,String searchQuery) throws Exception;
 
-    void createEmp(EmpModel emp);
+    /** 부서 리스트 조회 */
+    List<EmpModel> getDeptName() throws Exception;
 
-    String generateEmpId();
+    /** 직급 리스트 조회 */
+    List<EmpModel> getPosList() throws Exception;
+
+    /** 재직상태 리스트 조회 */
+    List<EmpModel> getEmpStatusList() throws Exception;
+
+    /** 은행 리스트 조회 */
+    List<EmpModel> getBankList() throws Exception;
+
+
+    /** 신규 사원 등록 */
+        // 마지막 사원번호 조회
+    String generateNewEmpId() throws Exception;
+
+    //신규 사원 등록
+    void saveEmp(EmpModel saveEmpInfo) throws Exception;
+
+
+    /** 사원 정보 수정 */
 }

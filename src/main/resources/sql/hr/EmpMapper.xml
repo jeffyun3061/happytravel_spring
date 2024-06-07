@@ -152,120 +152,77 @@
     </select>
 
     <!-- 마지막 사원번호 조회 -->
-    <select id="getLastEmpId" resultType="java.lang.String">
+    <select id="generateNewEmpId" resultType="java.lang.String">
         select EMP_ID
         from TB_EMPLOYMENT_INFO
         order by EMP_ID desc
         limit 1;
     </select>
 
-    <insert id="insertEmp" parameterType="kr.happytravel.erp.hr.model.EmpModel">
+    <insert id="saveEmp" parameterType="kr.happytravel.erp.hr.model.EmpModel">
         INSERT INTO TB_EMPLOYMENT_INFO (
             EMP_ID
-            , PASSWORD
-            , EMP_NAME
-            , DEPT_CODE
-            , POS_CODE
-            , JOIN_DATE
-            , SSN
-            , ZIP_CODE
-            , ADDRESS
-            , ADDRESS_DETAIL
-            , PHONE
-            , MOBILE
-            , STATUS_CODE
-            , LEAVE_DATE
-            , BANK_CODE
-            , ACCOUNT_NO
-            , SALARY
-            , REMARKS)
+            ,PASSWORD
+            ,PHOTO_URL
+            ,EMP_NAME
+            ,DEPT_CODE
+            ,POS_CODE
+            ,JOIN_DATE
+            ,SSN
+            ,ZIP_CODE
+            ,ADDRESS
+            ,ADDRESS_DETAIL
+            ,PHONE
+            ,MOBILE
+            ,STATUS_CODE
+            ,LEAVE_DATE
+            ,BANK_CODE
+            ,ACCOUNT_NO
+            ,SALARY
+            ,REMAERKS)
         VALUES (
             #{empId}
-            , #{password}
-            , #{empName}
-            , #{deptCode}
-            , #{posCode}
-            , #{joinDate}
-            , #{ssn}
-            , #{zipCode}
-            , #{address}
-            , #{addressDetail}
-            , #{phone}
-            , #{mobile}
-            , #{statusCode}
-            , #{leaveDate}
-            , #{bankCode}
-            , #{accountNo}
-            , #{salary}
-            , #{remarks}
+            ,#{password}
+            ,#{photoUrl}
+            ,#{empName}
+            ,#{deptCode}
+            ,#{posCode}
+            ,#{joinDate}
+            ,#{ssn}
+            ,#{zipCode}
+            ,#{address}
+            ,#{addressDetail}
+            ,#{phone}
+            ,#{mobile}
+            ,#{statusCode}
+            ,#{leaveDate}
+            ,#{bankCode}
+            ,#{accountNo}
+            ,#{salary}
+            ,#{remaerks}
             )
     </insert>
 
-    <!-- 신규 사원 등록 -->
-<!--    <insert id="insertemp">-->
-<!--        insert into TB_EMPLOYMENT_INFO-->
-<!--        (PHOTO_URL-->
-<!--        ,EMP_ID-->
-<!--        ,PASSWORD-->
-<!--        ,EMP_NAME-->
-<!--        ,JOIN_DATE-->
-<!--        ,SSN-->
-<!--        ,ZIP_CODE-->
-<!--        ,ADDRESS-->
-<!--        ,ADDRESS_DETAIL-->
-<!--        ,PHONE-->
-<!--        ,MOBILE-->
-<!--        ,DEPT_CODE-->
-<!--        ,POS_CODE-->
-<!--        ,STATUS_CODE-->
-<!--        ,LEAVE_DATE-->
-<!--        ,BANK_CODE-->
-<!--        ,ACCOUNT_NO-->
-<!--        ,SALARY-->
-<!--        ,REMAERKS-->
-<!--        ) values (-->
-<!--        #{photoUrl},-->
-<!--        #{empId},-->
-<!--        #{password}-->
-<!--        #{empName},-->
-<!--        #{joinDate},-->
-<!--        #{ssn},-->
-<!--        #{zipCode},-->
-<!--        #{address},-->
-<!--        #{addressDetail},-->
-<!--        #{phone},-->
-<!--        #{mobile},-->
-<!--        #{deptCode},-->
-<!--        #{posCode},-->
-<!--        #{statusCode},-->
-<!--        #{leaveDate},-->
-<!--        #{bankCode},-->
-<!--        #{accountNo},-->
-<!--        #{salary},-->
-<!--        #{remaerks}-->
-<!--        )-->
-<!--    </insert>-->
-
-    <!-- 사원 정보 수정 -->
-    <update id="updateemp">
-        update TB_EMPLOYMENT_INFO
-        set PHOTO_URL = #{photoUrl}
-        ,PASSWORD = #{password}
-        ,ZIP_CODE = #{zipCode}
-        ,ADDRESS = #{address}
-        ,ADDRESS_DETAIL = #{addressDetail}
-        ,PHONE = #{phone}
-        ,MOBILE = #{mobile}
-        ,DEPT_CODE = #{deptCode}
-        ,POS_CODE = #{posCode}
-        ,STATUS_CODE = #{statusCode}
-        ,LEAVE_DATE = #{leaveDate}
-        ,BANK_CODE = #{bankCode}
-        ,ACCOUNT_NO = #{accountNo}
-        ,SALARY = #{salary}
-        ,REMAERKS = #{remaerks}
-        where EMP_ID = #{empId}
-    </update>
+<!--    &lt;!&ndash; 사원 정보 수정 &ndash;&gt;-->
+<!--    <update id="updateEmpInfo">-->
+<!--        update TB_EMPLOYMENT_INFO-->
+<!--        set PHOTO_URL = #{photoUrl}-->
+<!--        ,PASSWORD = #{password}-->
+<!--        ,ZIP_CODE = #{zipCode}-->
+<!--        ,ADDRESS = #{address}-->
+<!--        ,ADDRESS_DETAIL = #{addressDetail}-->
+<!--        ,PHONE = #{phone}-->
+<!--        ,MOBILE = #{mobile}-->
+<!--        ,DEPT_CODE = #{deptCode}-->
+<!--        ,POS_CODE = #{posCode}-->
+<!--        ,STATUS_CODE = #{statusCode}-->
+<!--        ,LEAVE_DATE = #{leaveDate}-->
+<!--        ,BANK_CODE = #{bankCode}-->
+<!--        ,ACCOUNT_NO = #{accountNo}-->
+<!--        ,SALARY = #{salary}-->
+<!--        ,REMAERKS = #{remaerks}-->
+<!--        where EMP_ID = #{empId}-->
+<!--    </update>-->
 
 
 
