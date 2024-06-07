@@ -2,6 +2,7 @@ package kr.happytravel.erp.hr.service;
 
 import kr.happytravel.erp.hr.dao.EmpDao;
 import kr.happytravel.erp.hr.model.EmpModel;
+import kr.happytravel.erp.salary.service.SalaryDataServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -64,29 +65,28 @@ private final EmpDao empDao;
         // 마지막 사원번호 조회
     @Override
     public String generateNewEmpId() throws Exception {
-        String lastEmpId =  empDao.generateNewEmpId();
         String currentYear = String.valueOf(Year.now().getValue());
+        String lastEmpId =  empDao.findLastEmpIdByYear(currentYear);
+
         //마지막 사원번호가 null인경우 (초기상태)
         if(lastEmpId == null) {
             return currentYear+"0001";
         }
 
-        String lastEmpYear = lastEmpId.substring(0,4);
+        int newEmpId = Integer.parseInt(lastEmpId.substring(4)) +1;
+        return currentYear + String.format("%04d", newEmpId);
 
-        if(lastEmpYear.equals(currentYear)){
-            //마지막 사원번호의 년도가 현재의 년도와 같다면
-            int newEmpId = Integer.parseInt(lastEmpId.substring(4)) + 1;
-            return currentYear + String.format("%04d",newEmpId);
-        }else{
-            //마지막 사원번호의 년도가 현재 년도와 다르다면
-            return currentYear + "0001";
-        }
 
     }
 
     @Override
     public void saveEmp(EmpModel saveEmpInfo) throws Exception {
         empDao.saveEmp(saveEmpInfo);
+    }
+
+    @Override
+    public void updateEmp(EmpModel updateEmpInfo) throws Exception {
+        empDao.updateEmp(updateEmpInfo);
     }
 
 

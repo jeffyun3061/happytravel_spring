@@ -159,6 +159,15 @@
         limit 1;
     </select>
 
+    <!-- 현재 연도에 해당하는 마지막 사원번호 조회 -->
+    <select id="findLastEmpIdByYear" parameterType="java.lang.String" resultType="java.lang.String">
+        select EMP_ID
+        from TB_EMPLOYMENT_INFO
+        where EMP_ID like concat(#{year}, '%')
+        order by EMP_ID desc
+        limit 1;
+    </select>
+
     <insert id="saveEmp" parameterType="kr.happytravel.erp.hr.model.EmpModel">
         INSERT INTO TB_EMPLOYMENT_INFO (
             EMP_ID
@@ -203,26 +212,30 @@
             )
     </insert>
 
-<!--    &lt;!&ndash; 사원 정보 수정 &ndash;&gt;-->
-<!--    <update id="updateEmpInfo">-->
-<!--        update TB_EMPLOYMENT_INFO-->
-<!--        set PHOTO_URL = #{photoUrl}-->
-<!--        ,PASSWORD = #{password}-->
-<!--        ,ZIP_CODE = #{zipCode}-->
-<!--        ,ADDRESS = #{address}-->
-<!--        ,ADDRESS_DETAIL = #{addressDetail}-->
-<!--        ,PHONE = #{phone}-->
-<!--        ,MOBILE = #{mobile}-->
-<!--        ,DEPT_CODE = #{deptCode}-->
-<!--        ,POS_CODE = #{posCode}-->
-<!--        ,STATUS_CODE = #{statusCode}-->
-<!--        ,LEAVE_DATE = #{leaveDate}-->
-<!--        ,BANK_CODE = #{bankCode}-->
-<!--        ,ACCOUNT_NO = #{accountNo}-->
-<!--        ,SALARY = #{salary}-->
-<!--        ,REMAERKS = #{remaerks}-->
-<!--        where EMP_ID = #{empId}-->
-<!--    </update>-->
+    <!-- 사원 정보 수정 -->
+    <update id="updateEmp" parameterType="kr.happytravel.erp.hr.model.EmpModel">
+        UPDATE TB_EMPLOYMENT_INFO
+        SET EMP_ID = #{empId},
+            PASSWORD = #{password},
+            PHOTO_URL = #{photoUrl},
+            EMP_NAME = #{empName},
+            DEPT_CODE = #{deptCode},
+            POS_CODE = #{posCode},
+            JOIN_DATE = #{joinDate},
+            SSN = #{ssn},
+            ZIP_CODE = #{zipCode},
+            ADDRESS = #{address},
+            ADDRESS_DETAIL = #{addressDetail},
+            PHONE = #{phone},
+            MOBILE = #{mobile},
+            STATUS_CODE = #{statusCode},
+            LEAVE_DATE = #{leaveDate},
+            BANK_CODE = #{bankCode},
+            ACCOUNT_NO = #{accountNo},
+            SALARY = #{salary},
+            REMAERKS = #{remaerks}
+        WHERE EMP_ID = #{empId}
+    </update>
 
 
 

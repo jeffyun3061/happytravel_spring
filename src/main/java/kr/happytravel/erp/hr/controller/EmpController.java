@@ -2,6 +2,8 @@ package kr.happytravel.erp.hr.controller;
 import kr.happytravel.erp.hr.model.EmpModel;
 import kr.happytravel.erp.hr.service.EmpService;
 
+import kr.happytravel.erp.salary.service.SalaryDataService;
+import kr.happytravel.erp.salary.service.SalaryDataServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +23,7 @@ import java.util.Map;
 public class EmpController {
     private final Logger logger = LogManager.getLogger(this.getClass());
     private final EmpService empService;
+    private final SalaryDataService salaryDataService;
 
     /** 사원 전체 조회 */
     @GetMapping("/emp-list")
@@ -118,7 +121,21 @@ public class EmpController {
     }
 
     /** 신규 사원 등록 */
-    // 마지막 사원번호 가져오기
+    //신규 사원 등록
+    @PostMapping("/emp/save")
+    public ResponseEntity<String> saveEmp(@RequestBody EmpModel saveEmpInfo) {
+        try {
+            logger.info("Received request to save emp with parameters: " + saveEmpInfo);
+            empService.saveEmp(saveEmpInfo);
+            salaryDataService.initSalaryData(saveEmpInfo.getEmpId(), Integer.parseInt(saveEmpInfo.getSalary())); // updqte 만들때도 추가해주기~
+            return ResponseEntity.ok("Employee saved successfully");
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        }
+    }
+
+    // 새로운 사원번호 생성
     @GetMapping("/emp/generate-id")
     public ResponseEntity<String> getNewEmpId() throws Exception {
         try{
@@ -131,16 +148,19 @@ public class EmpController {
 
     }
 
-    //신규 사원 등록
-    @PostMapping("/emp/save")
-    public ResponseEntity<String> saveEmp(@RequestBody EmpModel saveEmpInfo) {
+    /** 사원 정보 수정 */
+    @PutMapping("/emp/update")
+    public ResponseEntity<String> updateEmp(@RequestBody EmpModel updateEmpInfo) {
         try {
-            logger.info("Received request to save emp with parameters: " + saveEmpInfo);
-            empService.saveEmp(saveEmpInfo);
-            return ResponseEntity.ok("Employee saved successfully");
+            logger.info("Received request to save emp with parameters: " + updateEmpInfo);
+            empService.updateEmp(updateEmpInfo);
+            salaryDataService.initSalaryData(updateEmpInfo.getEmpId(), Integer.parseInt(updateEmpInfo.getSalary()));
+            return ResponseEntity.ok("Employee updated successfully");
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
         }
     }
+
+
 }

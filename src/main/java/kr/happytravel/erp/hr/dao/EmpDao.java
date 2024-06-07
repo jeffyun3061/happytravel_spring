@@ -28,9 +28,12 @@ public interface EmpDao {
     /** 은행 리스트 조회 */
     List<EmpModel> getBankList() throws Exception;
 
-    /** 마지막 사원번호 조회  */
-    String generateNewEmpId() throws Exception;
+    /** 현재 연도에 해당하는 마지막 사원번호 조회 */
+    String findLastEmpIdByYear(@Param("year") String year) throws Exception;
 
     /** 신규 사원 등록 */
     void saveEmp(EmpModel saveEmpInfo) throws Exception;
+
+    /** 신규 사원 등록 */
+    void updateEmp(EmpModel updateEmpInfo) throws Exception;
 }

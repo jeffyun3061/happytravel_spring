@@ -36,6 +36,6 @@ public interface EmpService {
     //신규 사원 등록
     void saveEmp(EmpModel saveEmpInfo) throws Exception;
 
-
     /** 사원 정보 수정 */
+    void updateEmp(EmpModel updateEmpInfo) throws Exception;
 }
