@@ -31,4 +31,5 @@ public class FlightModel {
     private Date arrivalTime;
     private int price;
     private String isUsed;
+    private String countryCode;
 }

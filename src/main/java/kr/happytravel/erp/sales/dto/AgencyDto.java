@@ -19,7 +19,6 @@ public class AgencyDto {
     private String agencyNmae; // AGENCY_NAME
     private String phone; // PHONE
     private String country; // COUNTRY
-    private String region; // REGION
     private String address; // ADDRESS
     private int price; // PRICE
     private String isUsed; // IS_USED

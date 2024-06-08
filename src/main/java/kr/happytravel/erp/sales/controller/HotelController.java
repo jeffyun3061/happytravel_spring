@@ -71,7 +71,7 @@ public class HotelController {
             String empId = Optional.ofNullable((String) paramMap.get("empId")).orElse("EMP30002"); // 기본 empId 설정
             paramMap.put("empId", empId);
             List<HotelModel> hotels = hotelService.getHotelList(paramMap);
-            logger.info("Fetched " + hotels.size() + " flights.");
+            logger.info("Fetched " + hotels.size() + " hotels.");
             return ResponseEntity.ok(hotels);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);

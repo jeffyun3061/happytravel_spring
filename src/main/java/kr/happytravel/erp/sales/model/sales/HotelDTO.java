@@ -14,8 +14,7 @@ public class HotelDTO {
     private String hotelCode;
     private String hotelName;
     private String phone;
-    private String country;
-    private String region;
+    private String countryCode;
     private String address;
     private int price;
     private String isUsed;

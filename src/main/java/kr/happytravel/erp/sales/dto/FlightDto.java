@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
-import org.intellij.lang.annotations.Pattern;
 
 import java.util.Date;
 
@@ -27,4 +26,5 @@ public class FlightDto {
     private Date arrivalTime;
     private int price;
     private String isUsed;
+    private String country;
 }
