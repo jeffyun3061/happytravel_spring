@@ -1,7 +1,7 @@
 package kr.happytravel.erp.sales.controller;
 
+import kr.happytravel.erp.sales.model.sales.packages.PackageDTO;
 import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
-import kr.happytravel.erp.sales.model.sales.packages.PackageModel;
 import kr.happytravel.erp.sales.service.PackageService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -53,17 +53,17 @@ public class PackageController {
 
     // Read (Single)
     @GetMapping("/package-detail")
-    public ResponseEntity<PackageModel> getPackage(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                                   HttpServletResponse response, HttpSession session) throws Exception {
+    public ResponseEntity<PackageDTO> getPackage(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+                                                 HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to get package with parameters: " + paramMap);
-            PackageModel packageModel = packageService.selectPackage(paramMap);
-            if (packageModel == null) {
+            PackageDTO packageDTO = packageService.selectPackage(paramMap);
+            if (packageDTO == null) {
                 logger.warn("Package not found with parameters: " + paramMap);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
-            logger.info("Fetched package: " + packageModel);
-            return ResponseEntity.ok(packageModel);
+            logger.info("Fetched package: " + packageDTO);
+            return ResponseEntity.ok(packageDTO);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

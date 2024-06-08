@@ -1,8 +1,8 @@
 package kr.happytravel.erp.sales.service;
 
 import kr.happytravel.erp.sales.dao.PackageDao;
+import kr.happytravel.erp.sales.model.sales.packages.PackageDTO;
 import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
-import kr.happytravel.erp.sales.model.sales.packages.PackageModel;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,11 +29,11 @@ public class PackageServiceImpl implements PackageService {
         return packageDao.getPackageCnt(paramMap);
     }
 
-    @Override
-    public PackageModel selectPackage(Map<String, Object> paramMap) throws Exception {
-        logger.info(paramMap);
-        return packageDao.selectPackage(paramMap);
-    }
+//    @Override
+//    public PackageModel selectPackage(Map<String, Object> paramMap) throws Exception {
+//        logger.info(paramMap);
+//        return packageDao.selectPackage(paramMap);
+//    }
 
     @Override
     @Transactional
@@ -68,5 +68,12 @@ public class PackageServiceImpl implements PackageService {
         int result = packageDao.assignPackage(paramMap);
         logger.info("Update assign result: " + paramMap.values());
         return result;
+    }
+
+    @Override
+    @Transactional
+    public PackageDTO selectPackage(Map<String, Object> paramMap) throws Exception {
+        logger.info("Selecting PackagePartners from DAO");
+        return packageDao.selectPackage(paramMap);
     }
 }
