@@ -1,6 +1,6 @@
 package kr.happytravel.erp.sales.controller;
 
-import kr.happytravel.erp.sales.model.sales.FlightModel;
+import kr.happytravel.erp.sales.model.sales.HotelDTO;
 import kr.happytravel.erp.sales.model.sales.HotelModel;
 import kr.happytravel.erp.sales.service.HotelService;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/sales")
@@ -26,14 +24,41 @@ public class HotelController {
     // 확인
     // Create
     @PostMapping("/hotel")
-    public ResponseEntity<String> createHotel(@RequestBody HotelModel hotel, HttpServletRequest request,
+    public ResponseEntity<String> insertHotel(@RequestBody HotelDTO hotel, HttpServletRequest request,
                                               HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to create hotel: " + hotel);
-            return ResponseEntity.ok("Hotel created successfully");
+
+            String lastHotelCode = hotelService.getLastHotelCode();
+            String newHotelCode;
+            logger.info("lastHotelCode : " + lastHotelCode);
+
+            if (lastHotelCode != null) {
+                int numericPart = Integer.parseInt(lastHotelCode.replace("H", ""));
+                int newNumericPart = numericPart + 1;
+                newHotelCode = "H" + String.format("%03d", newNumericPart);
+                logger.info("newNumericPart : " + newHotelCode);
+            } else {
+                newHotelCode = "H001";
+            }
+            hotel.setHotelCode(newHotelCode);
+
+            hotelService.insertHotel(hotel);
+
+            return ResponseEntity.ok("Hotel created successfully with code: " + newHotelCode);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            return ResponseEntity.ok("error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating hotel");
+        }
+    }
+
+    @GetMapping("/last-hotel-code")
+    public ResponseEntity<String> getLastHotelCode() {
+        try {
+            String lastHotelCode = hotelService.getLastHotelCode();
+            return new ResponseEntity<>(lastHotelCode, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -56,17 +81,17 @@ public class HotelController {
 
     // Read (Single)
     @GetMapping("/hotel")
-    public ResponseEntity<HotelModel> getHotel(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+    public ResponseEntity<HotelModel> getHotel(HotelDTO hotel, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to get hotel with parameters: " + paramMap);
-            HotelModel hotel = hotelService.selectHotel(paramMap);
+            HotelModel hotelModel = hotelService.selectHotel(hotel);
             if (hotel == null) {
                 logger.warn("Hotel not found with parameters: " + paramMap);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
             logger.info("Fetched hotel: " + hotel);
-            return ResponseEntity.ok(hotel);
+            return ResponseEntity.ok(hotelModel);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -79,7 +104,16 @@ public class HotelController {
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to update hotel: " + paramMap);
-            paramMap.put("hotel_code", hotelCode);
+            paramMap.put("hotelCode", hotelCode);
+
+            // empId 확인 및 로그 출력
+            String empId = (String) paramMap.get("empId");
+            if (empId == null) {
+                empId = "EMP30002";
+                paramMap.put("empId", empId);
+            }
+            logger.info("empId: " + empId);
+
             return ResponseEntity.ok(hotelService.updateHotel(paramMap) == 1);
         }  catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);

@@ -1,5 +1,6 @@
 package kr.happytravel.erp.sales.service;
 
+import kr.happytravel.erp.sales.dto.AgencyDto;
 import kr.happytravel.erp.sales.model.sales.AgencyModel;
 import java.util.List;
 import java.util.Map;
@@ -11,11 +12,13 @@ public interface AgencyService {
     // 현지 전체 조회 카운트
     int getAgencyCnt(Map<String, Object> paramMap) throws Exception;
 
+    String getLastAgencyCode();
+
     // 현지 단건 조회
-    AgencyModel selectAgency(Map<String, Object> paramMap) throws Exception;
+    AgencyModel selectAgency(AgencyDto agency) throws Exception;
 
     // 현지 단건 등록
-    int insertAgency(Map<String, Object> paramMap) throws Exception;
+    int insertAgency(AgencyDto agency) throws Exception;
 
     // 현지 단건 수정
     int updateAgency(Map<String, Object> paramMap) throws Exception;
