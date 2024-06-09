@@ -8,10 +8,12 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Date;
 
 @Getter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -32,26 +34,23 @@ public class PackageDTO {
     private Date saleEndDate;
     private int saleAmount;
     private String assignCode;
-    private String packageCountry;
+    private String country;
 
     private String flightCode;
     private String airline;
     private String departure;
-    private String flightCountry;
     private String destination;
     private int flightPrice;
 
 
     private String hotelCode;
     private String hotelName;
-    private String hotelCountry;
     private String hotelRegion;
     private int hotelPrice;
 
 
     private String agencyCode;
     private String agencyName;
-    private String agencyCountry;
     private String agencyRegion;
     private int agencyPrice;
 

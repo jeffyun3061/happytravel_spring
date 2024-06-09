@@ -95,7 +95,7 @@
         sale_start_date,
         sale_end_date,
         assign_code,
-        c.KOREAN_NAME
+        c.KOREAN_NAME as country
         FROM
         TB_PACKAGE_INFO p
         LEFT JOIN TB_COUNTRY_INFO c ON c.COUNTRY_CODE = p.COUNTRY_CODE
@@ -129,7 +129,7 @@
         p.sale_end_date AS saleEndDate,
         p.sale_amount AS saleAmount,
         p.assign_code AS assignCode,
-
+        c.korean_name as country,
         <!--조인된 항공사 테이블-->
         f.flight_code AS flightCode,
         f.airline AS airline,
@@ -151,6 +151,7 @@
 
         FROM
         TB_PACKAGE_INFO p
+        LEFT JOIN TB_COUNTRY_INFO c ON p.country_code = c.country_code
         LEFT JOIN TB_FLIGHT_INFO f ON p.flight_code = f.flight_code
         LEFT JOIN TB_HOTEL_INFO h ON p.hotel_code = h.hotel_code
         LEFT JOIN TB_AGENCY_INFO a ON p.agency_code = a.agency_code
@@ -251,15 +252,11 @@
         AND
         <include refid="managerCondition"/>
     </update>
-    <!--    &lt;!&ndash;파트너사 정보 조회&ndash;&gt;-->
-    <!--    <select id="selectFlightInfo" resultType="kr.happytravel.erp.sales.model.sales.packages.packagePartners.FlightDTO" parameterType="hashmap">-->
 
+    <select id="getCountries" resultType="kr.happytravel.erp.sales.model.sales.packages.CountryDTO" parameterType="hashmap">
+        SELECT *
+        FROM TB_COUNTRY_INFO
+        ORDER BY KOREAN_NAME
+    </select>
 
-    <!--    </select>-->
-
-    <!--    <select id="selectHotelInfo" resultType="kr.happytravel.erp.sales.model.sales.packages.packagePartners.HotelDTO" parameterType="hashmap">-->
-    <!--    </select>-->
-
-    <!--    <select id="selectAgencyInfo" resultType="kr.happytravel.erp.sales.model.sales.packages.packagePartners.AgencyDTO" parameterType="hashmap">-->
-    <!--    </select>-->
 </mapper>

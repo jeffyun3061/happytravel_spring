@@ -1,11 +1,13 @@
 package kr.happytravel.erp.sales.service;
 
 import kr.happytravel.erp.sales.dao.PackageDao;
+import kr.happytravel.erp.sales.model.sales.packages.CountryDTO;
 import kr.happytravel.erp.sales.model.sales.packages.PackageDTO;
 import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,5 +77,11 @@ public class PackageServiceImpl implements PackageService {
     public PackageDTO selectPackage(Map<String, Object> paramMap) throws Exception {
         logger.info("Selecting PackagePartners from DAO");
         return packageDao.selectPackage(paramMap);
+    }
+
+    @Override
+    public List<CountryDTO> getCountries(Map<String, Object> paramMap) throws Exception {
+        logger.info("Selecting Countries from DAO");
+        return packageDao.getCountries(paramMap);
     }
 }

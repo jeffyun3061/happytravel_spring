@@ -1,5 +1,6 @@
 package kr.happytravel.erp.sales.controller;
 
+import kr.happytravel.erp.sales.model.sales.packages.CountryDTO;
 import kr.happytravel.erp.sales.model.sales.packages.PackageDTO;
 import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
 import kr.happytravel.erp.sales.service.PackageService;
@@ -105,6 +106,17 @@ public class PackageController {
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.ok(false);
+        }
+    }
+
+    @GetMapping("/get-countries")
+    public ResponseEntity<List<CountryDTO>> getCountries(@RequestParam Map<String, Object> paramMap) throws Exception {
+        try {
+            logger.info("Received request to get country informations");
+            return ResponseEntity.ok(packageService.getCountries(paramMap));
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }

@@ -1,8 +1,9 @@
 package kr.happytravel.erp.sales.dao;
 
+import kr.happytravel.erp.sales.model.sales.packages.CountryDTO;
 import kr.happytravel.erp.sales.model.sales.packages.PackageDTO;
 import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
-
+import org.springframework.http.ResponseEntity;
 
 
 import java.util.List;
@@ -31,4 +32,5 @@ public interface PackageDao {
 
     PackageDTO selectPackage(Map<String, Object> paramMap) throws Exception;
 
+    List<CountryDTO> getCountries(Map<String, Object> paramMap) throws Exception;
 }
