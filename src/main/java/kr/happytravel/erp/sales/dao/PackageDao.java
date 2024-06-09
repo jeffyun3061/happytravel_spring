@@ -1,7 +1,9 @@
 package kr.happytravel.erp.sales.dao;
 
+import kr.happytravel.erp.sales.model.sales.packages.CountryDTO;
+import kr.happytravel.erp.sales.model.sales.packages.PackageDTO;
 import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
-import kr.happytravel.erp.sales.model.sales.packages.PackageModel;
+import org.springframework.http.ResponseEntity;
 
 
 import java.util.List;
@@ -15,7 +17,7 @@ public interface PackageDao {
     int getPackageCnt(Map<String, Object> paramMap) throws Exception;
 
     // 단건 조회
-    PackageModel selectPackage(Map<String, Object> paramMap) throws Exception;
+//    PackageModel selectPackage(Map<String, Object> paramMap) throws Exception;
 
     // 단건 등록
     int insertPackage(Map<String, Object> paramMap) throws Exception;
@@ -27,4 +29,8 @@ public interface PackageDao {
     int updatePackageYN(Map<String, Object> paramMap) throws Exception;
 
     int assignPackage(Map<String, Object> paramMap) throws Exception;
+
+    PackageDTO selectPackage(Map<String, Object> paramMap) throws Exception;
+
+    List<CountryDTO> getCountries(Map<String, Object> paramMap) throws Exception;
 }

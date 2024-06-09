@@ -1,6 +1,7 @@
 package kr.happytravel.erp.sales.service;
 
 import kr.happytravel.erp.sales.dao.AgencyDao;
+import kr.happytravel.erp.sales.dto.AgencyDto;
 import kr.happytravel.erp.sales.model.sales.AgencyModel;
 import kr.happytravel.erp.sales.model.sales.FlightModel;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +33,19 @@ public class AgencyServiceImpl implements AgencyService {
     }
 
     @Override
-    public AgencyModel selectAgency(Map<String, Object> paramMap) throws Exception {
-        return agencyDao.selectAgency(paramMap);
+    public String getLastAgencyCode() {
+        return agencyDao.getLastAgencyCode();
     }
 
     @Override
-    public int insertAgency(Map<String, Object> paramMap) throws Exception {
+    public AgencyModel selectAgency(AgencyDto agency) throws Exception {
+        return agencyDao.selectAgency((Map<String, Object>) agency);
+    }
+
+    @Override
+    public int insertAgency(AgencyDto agency) throws Exception {
         logger.info("Starting for insertAgency");
-        int result = agencyDao.insertAgency(paramMap);
+        int result = agencyDao.insertAgency((Map<String, Object>) agency);
         logger.info("Insert result: " + result);
         return result;
     }

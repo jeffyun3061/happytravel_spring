@@ -1,5 +1,6 @@
 package kr.happytravel.erp.sales.dao;
 
+import kr.happytravel.erp.sales.dto.FlightDto;
 import kr.happytravel.erp.sales.model.sales.FlightModel;
 
 import java.util.List;
@@ -13,11 +14,13 @@ public interface FlightDao {
     // 항공권 전체 조회 카운트
     int getFlightCnt(Map<String, Object> paramMap) throws Exception;
 
+    String getLastFlightCode();
+
     // 항공권 리스트  단건 조회
-    FlightModel selectFlight(Map<String, Object> paramMap) throws Exception;
+    FlightModel selectFlight(FlightDto flight) throws Exception;
 
     // 항공권 단건 저장
-    int  insertFlight(Map<String, Object> paramMap) throws Exception;
+    int  insertFlight(FlightDto flight) throws Exception;
 
     // 항공권 단건 수정 *
     int updateFlight(Map<String, Object> paramMap) throws Exception;
