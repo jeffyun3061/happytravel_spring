@@ -116,7 +116,7 @@ public class EmpController {
     public ResponseEntity<List<EmpModel>> getBankList(@RequestParam Map<String, Object> paramMap,
                                                      HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
         List<EmpModel> getBankList = empService.getBankList();
-        getBankList.forEach(bnk -> logger.info("bank: " + bnk.getStatName()));
+        getBankList.forEach(bnk -> logger.info("bank: " + bnk.getBankName()));
         return ResponseEntity.ok(getBankList);
     }
 
