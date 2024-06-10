@@ -42,7 +42,6 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public int insertHotel(Map<String, Object> paramMap) throws Exception {
         logger.info("Starting for insert Hotel" + paramMap);
-        hotelDao.insertHotel(paramMap);
         int result = hotelDao.insertHotel(paramMap);
         logger.info("Insert result: " + result);
         return result;
