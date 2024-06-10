@@ -16,9 +16,6 @@ public interface PackageDao {
     // 전체 조회 카운트
     int getPackageCnt(Map<String, Object> paramMap) throws Exception;
 
-    // 단건 조회
-//    PackageModel selectPackage(Map<String, Object> paramMap) throws Exception;
-
     // 단건 등록
     int insertPackage(Map<String, Object> paramMap) throws Exception;
 

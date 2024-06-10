@@ -26,7 +26,7 @@ public class PackageController {
 
     // Create
     @PostMapping("/package")
-    public ResponseEntity<Boolean> createPackage(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
+    public ResponseEntity<Boolean> createPackage(@RequestBody(required = true) Map<String, Object> paramMap, HttpServletRequest request,
                                                  HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to create package: " + paramMap);
@@ -37,10 +37,27 @@ public class PackageController {
         }
     }
 
+    @GetMapping("/package-count")
+    public ResponseEntity<?> getPackageCnt(@RequestParam(required = true) Map<String, Object> paramMap) {
+        try {
+            logger.info("Received request with parameters: " + paramMap);
+            int result = packageService.getPackageCnt(paramMap);
+            if (result == 0) {
+                logger.warn("PackageCnt not found with parameters: " + paramMap);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+
+    }
+
     // Read (List)
     @GetMapping("/package-list")
     public ResponseEntity<List<PackageListDTO>> getPackageList(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                                             HttpServletResponse response, HttpSession session) throws Exception {
+                                                               HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request with parameters: " + paramMap);
             List<PackageListDTO> packages = packageService.getPackageList(paramMap);
@@ -87,7 +104,7 @@ public class PackageController {
     // Y/N UPDATE
     @PutMapping("/package-yn")
     public ResponseEntity<Boolean> updatePackageYN(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                             HttpServletResponse response, HttpSession session) throws Exception {
+                                                   HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to Y/N package with parameters: " + paramMap);
             return ResponseEntity.ok(packageService.updatePackageYN(paramMap) == 1);
@@ -99,7 +116,7 @@ public class PackageController {
 
     @PutMapping("/package-assign")
     public ResponseEntity<Boolean> assignPackage(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                                   HttpServletResponse response, HttpSession session) throws Exception {
+                                                 HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to assingn package with parameters: " + paramMap);
             return ResponseEntity.ok(packageService.assignPackage(paramMap) == 1);
