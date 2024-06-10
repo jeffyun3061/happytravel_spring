@@ -1,10 +1,12 @@
-package kr.happytravel.erp.sales.model;
+package kr.happytravel.erp.sales.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
@@ -12,8 +14,7 @@ import lombok.*;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class HotelModel {
-
+public class HotelDto {
     private String hotelCode;
     private String hotelName;
     private String phone;
@@ -21,5 +22,5 @@ public class HotelModel {
     private String address;
     private int price;
     private String isUsed;
-
 }
+
