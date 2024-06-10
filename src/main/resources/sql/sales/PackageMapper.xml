@@ -104,6 +104,7 @@
         AND IS_USED != 'N'
         ORDER BY
         package_code
+        LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <!-- 전체 목록 카운트 -->

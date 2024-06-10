@@ -23,6 +23,10 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public List<PackageListDTO> getPackageList(Map<String, Object> paramMap) throws Exception {
+        // limit와 offset를 정수형으로 변환
+        paramMap.put("limit", Integer.parseInt(paramMap.get("limit").toString()));
+        paramMap.put("offset", Integer.parseInt(paramMap.get("offset").toString()));
+
         return packageDao.getPackageList(paramMap);
     }
 
@@ -30,12 +34,6 @@ public class PackageServiceImpl implements PackageService {
     public int getPackageCnt(Map<String, Object> paramMap) throws Exception {
         return packageDao.getPackageCnt(paramMap);
     }
-
-//    @Override
-//    public PackageModel selectPackage(Map<String, Object> paramMap) throws Exception {
-//        logger.info(paramMap);
-//        return packageDao.selectPackage(paramMap);
-//    }
 
     @Override
     @Transactional
