@@ -30,8 +30,11 @@ public interface EmpService {
 
 
     /** 신규 사원 등록 */
-        // 마지막 사원번호 조회
+    // 마지막 사원번호 조회
     String generateNewEmpId() throws Exception;
+
+    // 사원 정보 중복 체크
+    boolean checkDuplicate(String field, String value) throws Exception;
 
     //신규 사원 등록
     void saveEmp(EmpModel saveEmpInfo) throws Exception;

@@ -6,6 +6,7 @@ import kr.happytravel.erp.salary.service.SalaryDataServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.rmi.server.ExportException;
 import java.time.Year;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,6 @@ private final EmpDao empDao;
         return empDao.getBankList();
     }
 
-    /** 사원 정보 수정 */
 
 
     /** 신규 사원 등록 */
@@ -75,14 +75,24 @@ private final EmpDao empDao;
 
         int newEmpId = Integer.parseInt(lastEmpId.substring(4)) +1;
         return currentYear + String.format("%04d", newEmpId);
+    }
 
-
+    @Override
+    public boolean checkDuplicate(String field, String value) throws Exception {
+        try {
+            int count = empDao.checkDuplicate(field, value);
+            return count > 0;
+        } catch (Exception e) {
+            throw new RuntimeException("Error checking duplicate for field: " + field + " with value: " + value, e);
+        }
     }
 
     @Override
     public void saveEmp(EmpModel saveEmpInfo) throws Exception {
         empDao.saveEmp(saveEmpInfo);
     }
+
+    /** 사원 정보 수정 */
 
     @Override
     public void updateEmp(EmpModel updateEmpInfo) throws Exception {

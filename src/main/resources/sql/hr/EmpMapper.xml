@@ -159,6 +159,25 @@
         limit 1;
     </select>
 
+    <!-- 사원 정보 중복 체크 -->
+    <select id="checkDuplicate" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_EMPLOYMENT_INFO
+        <where>
+            <choose>
+                <when test="field == 'ssn'">
+                    ssn = #{value}
+                </when>
+                <when test="field == 'mobile'">
+                    mobile = #{value}
+                </when>
+                <when test="field == 'bank'">
+                    CONCAT(bank_code, '-', account_no) = #{value}
+                </when>
+            </choose>
+        </where>
+    </select>
+
     <!-- 현재 연도에 해당하는 마지막 사원번호 조회 -->
     <select id="findLastEmpIdByYear" parameterType="java.lang.String" resultType="java.lang.String">
         select EMP_ID

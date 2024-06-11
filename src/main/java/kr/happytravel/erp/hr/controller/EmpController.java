@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.rmi.server.ExportException;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/hr")
@@ -121,19 +124,6 @@ public class EmpController {
     }
 
     /** 신규 사원 등록 */
-    //신규 사원 등록
-    @PostMapping("/emp/save")
-    public ResponseEntity<String> saveEmp(@RequestBody EmpModel saveEmpInfo) {
-        try {
-            logger.info("Received request to save emp with parameters: " + saveEmpInfo);
-            empService.saveEmp(saveEmpInfo);
-            salaryDataService.initSalaryData(saveEmpInfo.getEmpId(), Integer.parseInt(saveEmpInfo.getSalary())); // updqte 만들때도 추가해주기~
-            return ResponseEntity.ok("Employee saved successfully");
-        } catch (Exception e) {
-            logger.error("An error occurred: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
-        }
-    }
 
     // 새로운 사원번호 생성
     @GetMapping("/emp/generate-id")
@@ -145,14 +135,70 @@ public class EmpController {
             logger.error("An error occurred: " + e.getMessage(), e);
             throw e;
         }
+    }
 
+    // 사원 정보 중복 체크
+    @GetMapping("/emp/check-duplicate")
+    public ResponseEntity<Boolean> checkDuplicate(@RequestParam String field, @RequestParam String value) {
+        try {
+            logger.info("Checking for duplicate field: " + field + ", value: " + value);
+            boolean isDuplicate = empService.checkDuplicate(field, value);
+            return ResponseEntity.ok(isDuplicate);
+        } catch (Exception e) {
+            logger.error("An error occurred while checking duplicate: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+    }
+
+    /** 신규 사원 등록 */
+    @PostMapping("/emp/save")
+    public ResponseEntity<String> saveEmp(@RequestBody EmpModel saveEmpInfo) {
+        try {
+            logger.info("Received request to save emp with parameters: " + saveEmpInfo);
+            if (empService.checkDuplicate("ssn", saveEmpInfo.getSsn())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate SSN");
+            }
+            if (empService.checkDuplicate("mobile", saveEmpInfo.getMobile())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Mobile");
+            }
+            if (empService.checkDuplicate("bank_code", saveEmpInfo.getBankCode() + "-" + saveEmpInfo.getAccountNo())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Bank Account");
+            }
+            empService.saveEmp(saveEmpInfo);
+            salaryDataService.initSalaryData(saveEmpInfo.getEmpId(), Integer.parseInt(saveEmpInfo.getSalary()));
+            return ResponseEntity.ok("Employee saved successfully");
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        }
+    }
+
+    /** 비밀번호 수정 유효성 검사 */
+    private boolean isValidPassword(String password) {
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\d\\s]).{8,}$";
+        Pattern pattern = Pattern.compile(regex);
+        return pattern.matcher(password).matches();
     }
 
     /** 사원 정보 수정 */
     @PutMapping("/emp/update")
     public ResponseEntity<String> updateEmp(@RequestBody EmpModel updateEmpInfo) {
         try {
-            logger.info("Received request to save emp with parameters: " + updateEmpInfo);
+            logger.info("Received request to update emp with parameters: " + updateEmpInfo);
+
+            if (!isValidPassword(updateEmpInfo.getPassword())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Password");
+            }
+
+            if (empService.checkDuplicate("ssn", updateEmpInfo.getSsn())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate SSN");
+            }
+            if (empService.checkDuplicate("mobile", updateEmpInfo.getMobile())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Mobile");
+            }
+            if (empService.checkDuplicate("bank_code", updateEmpInfo.getBankCode() + "-" + updateEmpInfo.getAccountNo())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Bank Account");
+            }
             empService.updateEmp(updateEmpInfo);
             salaryDataService.initSalaryData(updateEmpInfo.getEmpId(), Integer.parseInt(updateEmpInfo.getSalary()));
             return ResponseEntity.ok("Employee updated successfully");

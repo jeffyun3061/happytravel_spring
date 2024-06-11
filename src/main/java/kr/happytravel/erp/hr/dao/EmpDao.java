@@ -31,6 +31,9 @@ public interface EmpDao {
     /** 현재 연도에 해당하는 마지막 사원번호 조회 */
     String findLastEmpIdByYear(@Param("year") String year) throws Exception;
 
+    /** 사원 정보 중복 체크 */
+    int checkDuplicate(@Param("field") String field, @Param("value") String value) throws Exception;
+
     /** 신규 사원 등록 */
     void saveEmp(EmpModel saveEmpInfo) throws Exception;
 
