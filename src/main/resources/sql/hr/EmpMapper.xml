@@ -57,7 +57,8 @@
         from TB_EMPLOYMENT_INFO emp
         inner join TB_DEPARTMENT_INFO dep
         join TB_POSITION_INFO pos
-        on emp.DEPT_CODE = dep.DEPT_CODE and emp.POS_CODE = pos.POS_CODE;
+        on emp.DEPT_CODE = dep.DEPT_CODE and emp.POS_CODE = pos.POS_CODE
+        order by emp.EMP_ID;
     </select>
 
     <!-- 사원 검색 조회 -->
