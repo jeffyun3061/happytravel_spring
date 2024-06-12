@@ -35,17 +35,14 @@ public interface SalaryDao {
 	// 급여 기본 정보 - 수정
 	int updateInitSalaryData(@Param("empId") String empId, @Param("salaryDataModelList") List<SalaryDataModel> salaryDataModelList) throws Exception;
 
-	// 급여 내역 - 체크 - 일괄 처리 & 단건 처리
-	boolean existSalaryData(@Param("empId") String empId, @Param("salaryDate") String salaryDate) throws Exception;
-
 	// 급여 내역 - 생성 - 일괄 처리 & 단건 처리
-	int insertSalaryData(@Param("empId") String empId, @Param("salaryDate") String salaryDate) throws Exception;
+	int insertSalaryData(@Param("empId") String empId, @Param("salaryDate") String salaryDate, @Param("employmentModelList") List<EmploymentModel> employmentModelList) throws Exception;
 
 	// 급여 내역 - 조회
 	List<SalaryDataModel> selectAllSalaryData(@Param("empId") String empId, @Param("salaryDate") String salaryDate) throws Exception;
 
 	// 급여 내역 - 수정
-	int updateSalaryData(@Param("empId") String empId, @Param("salaryDate") String salaryDate, @Param("salaryDataModelList") List<SalaryDataModel> salaryDataModelList) throws Exception;
+	int updateSalaryData(@Param("empId") String empId, @Param("salaryDataModelList") List<SalaryDataModel> salaryDataModelList) throws Exception;
 
 	// 급여 지급 내역 - 조회
 	List<SalaryPaymentModel> selectAllSalaryPayment(@Param("salaryYear") String salaryYear) throws Exception;

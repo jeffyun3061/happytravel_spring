@@ -6,28 +6,26 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Date;
 
-@Data
+@Getter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PackageModel {
+public class PackageDTO {
     private String packageCode;
     private String packageName;
-    private String country;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date endDate;
-    private String hotelCode;
-    private String flightCode;
-    private String agencyCode;
     private int totalPrice;
     private int salePrice;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -36,4 +34,24 @@ public class PackageModel {
     private Date saleEndDate;
     private int saleAmount;
     private String assignCode;
+    private String country;
+
+    private String flightCode;
+    private String airline;
+    private String departure;
+    private String destination;
+    private int flightPrice;
+
+
+    private String hotelCode;
+    private String hotelName;
+    private String hotelRegion;
+    private int hotelPrice;
+
+
+    private String agencyCode;
+    private String agencyName;
+    private String agencyRegion;
+    private int agencyPrice;
+
 }

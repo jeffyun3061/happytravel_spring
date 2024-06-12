@@ -1,6 +1,8 @@
 package kr.happytravel.erp.sales.service;
 
+import kr.happytravel.erp.sales.dto.FlightDto;
 import kr.happytravel.erp.sales.model.sales.FlightModel;
+import kr.happytravel.erp.sales.model.sales.HotelDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -12,11 +14,13 @@ public interface FlightService {
     // 항공권 수 조회
     int getFlightCnt(Map<String, Object> paramMap) throws Exception;
 
+    String getLastFlightCode();
+
     // 항공권 단건 조회
-    FlightModel selectFlight(Map<String, Object> paramMap) throws Exception;
+    FlightModel selectFlight(FlightDto flight) throws Exception;
 
     // 항공권 단건 등록
-    int insertFlight(Map<String, Object> paramMap) throws Exception;
+    int insertFlight(FlightDto flight) throws Exception;
 
     // 항공권 단건 수정
     int updateFlight(Map<String, Object> paramMap) throws Exception;

@@ -1,7 +1,10 @@
 package kr.happytravel.erp.sales.service;
 
+import kr.happytravel.erp.sales.model.sales.packages.CountryDTO;
+import kr.happytravel.erp.sales.model.sales.packages.PackageDTO;
 import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
-import kr.happytravel.erp.sales.model.sales.packages.PackageModel;
+import org.springframework.http.ResponseEntity;
+
 
 import java.util.List;
 import java.util.Map;
@@ -12,9 +15,6 @@ public interface PackageService {
 
     // 전체 조회 카운트
     int getPackageCnt(Map<String, Object> paramMap) throws Exception;
-
-    // 단건 조회
-    PackageModel selectPackage(Map<String, Object> paramMap) throws Exception;
 
     // 단건 등록
     int insertPackage(Map<String, Object> paramMap) throws Exception;
@@ -27,5 +27,8 @@ public interface PackageService {
 
     // 패키지  assign 승인 or 반려, default 대기중 1000
     int assignPackage(Map<String, Object> paramMap) throws Exception;
+    // 단건조회 with 항공권,호텔,여행사
+    PackageDTO selectPackage (Map<String, Object> paramMap) throws Exception;
 
+    List<CountryDTO> getCountries (Map<String, Object> paramMap) throws Exception;
 }
