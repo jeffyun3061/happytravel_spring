@@ -1,6 +1,7 @@
 package kr.happytravel.erp.attendances.service;
 
 import kr.happytravel.erp.attendances.dao.AttendanceManagementDao;
+import kr.happytravel.erp.attendances.model.AttendanceConfirmResponse;
 import kr.happytravel.erp.attendances.model.AttendanceManageResponse;
 import kr.happytravel.erp.attendances.model.AttendanceManagementModel;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,11 @@ public class AttendanceManagementServiceImpl implements AttendanceManagementServ
     @Override
     public void updateAssignCodeToRejected(String AttendanceCode) throws Exception {
         attendanceManagementDao.updateAssignCodeToRejected(AttendanceCode);
+    }
+
+    @Override
+    public List<AttendanceConfirmResponse> getAttendanceConfirmList() throws Exception {
+        return attendanceManagementDao.getAttendanceConfirmList();
     }
 
 

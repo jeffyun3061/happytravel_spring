@@ -45,7 +45,7 @@
 	</update>
 
 	<!-- 휴가 처리 리스트 -->
-	<select id="getAttendanceConfirmList" parameterType="kr.happytravel.erp.attendances.model.AttendanceConfirmResponse">
+	<select id="getAttendanceConfirmList" resultType="kr.happytravel.erp.attendances.model.AttendanceConfirmResponse">
 		SELECT
 		    am.EMP_ID AS empId,
 		    ei.EMP_NAME AS empName,

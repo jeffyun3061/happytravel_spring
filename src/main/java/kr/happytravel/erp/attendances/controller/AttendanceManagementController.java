@@ -1,5 +1,6 @@
 package kr.happytravel.erp.attendances.controller;
 
+import kr.happytravel.erp.attendances.model.AttendanceConfirmResponse;
 import kr.happytravel.erp.attendances.model.AttendanceManageResponse;
 import kr.happytravel.erp.attendances.model.AttendanceManagementModel;
 import kr.happytravel.erp.attendances.service.AttendanceManagementService;
@@ -45,6 +46,7 @@ public class AttendanceManagementController {
     @GetMapping("/attendanceManagement")
     public ResponseEntity<List<AttendanceManageResponse>> getAttendanceManagementList() throws Exception {
         try {
+            logger.info("Received request to get attendanceManagements: ");
             List<AttendanceManageResponse> attendanceManagements = attendanceManagementService.getAttendanceManagementList();
             logger.info("Fetched " + attendanceManagements.size() + " attendanceManagements.");
             return ResponseEntity.ok(attendanceManagements);
@@ -61,8 +63,9 @@ public class AttendanceManagementController {
     public ResponseEntity<String> updateAttendanceStatus(
             @PathVariable String attendanceCode,
             @RequestParam("status") String status) {
+        logger.info("Received request to update attendance code " + attendanceCode + " to status: " + status);
+
         try {
-            logger.info("Received request to update attendance code " + attendanceCode + " to status: " + status);
 
             if ("approved".equalsIgnoreCase(status)) {
                 attendanceManagementService.updateAssignCodeToApproved(attendanceCode);
@@ -77,6 +80,23 @@ public class AttendanceManagementController {
         } catch (Exception e) {
             logger.error("An error occurred while updating attendance code:", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating attendance code");
+        }
+    }
+
+    // Read (list)
+    @GetMapping("/attendanceConfirm")
+    public ResponseEntity<List<AttendanceConfirmResponse>> getAttendanceConfirmList() throws Exception {
+        try {
+            logger.info("Received request to get attendanceConfirm: ");
+            List<AttendanceConfirmResponse> attendanceConfirm = attendanceManagementService.getAttendanceConfirmList();
+            logger.info("Fetched " + attendanceConfirm + " attendanceConfirm.");
+            return ResponseEntity.ok(attendanceConfirm);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid argument: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            throw e;
         }
     }
 

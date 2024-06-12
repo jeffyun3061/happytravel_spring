@@ -2,6 +2,7 @@ package kr.happytravel.erp.attendances.dao;
 
 
 
+import kr.happytravel.erp.attendances.model.AttendanceConfirmResponse;
 import kr.happytravel.erp.attendances.model.AttendanceManageResponse;
 import kr.happytravel.erp.attendances.model.AttendanceManagementModel;
 import org.apache.ibatis.annotations.Param;
@@ -26,6 +27,8 @@ public interface AttendanceManagementDao {
      * @throws Exception
      */
     void updateAssignCodeToRejected(String AttendanceCode) throws Exception;
+
+    List<AttendanceConfirmResponse> getAttendanceConfirmList() throws Exception;
 
 
     // 단건 조회
