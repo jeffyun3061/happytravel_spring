@@ -3,21 +3,21 @@ import kr.happytravel.erp.hr.model.EmpModel;
 import kr.happytravel.erp.hr.service.EmpService;
 
 import kr.happytravel.erp.salary.service.SalaryDataService;
-import kr.happytravel.erp.salary.service.SalaryDataServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.rmi.server.ExportException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 @RestController
@@ -205,6 +205,20 @@ public class EmpController {
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        }
+    }
+
+    /** 사원 사진 저장 */
+    @PostMapping("/emp/upload-photo")
+    public ResponseEntity<Map<String, Object>> saveEmpImg(@RequestParam("file") MultipartFile file) {
+        Map<String, Object> result = new HashMap<>();
+        try{
+            String fileUrl = empService.uploadImg(file);
+            result.put("fileUrl", fileUrl);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.put("error", "파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         }
     }
 

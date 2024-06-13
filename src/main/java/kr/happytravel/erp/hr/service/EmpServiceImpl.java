@@ -2,19 +2,26 @@ package kr.happytravel.erp.hr.service;
 
 import kr.happytravel.erp.hr.dao.EmpDao;
 import kr.happytravel.erp.hr.model.EmpModel;
-import kr.happytravel.erp.salary.service.SalaryDataServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.rmi.server.ExportException;
+import java.io.File;
+import java.io.IOException;
 import java.time.Year;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class EmpServiceImpl implements EmpService {
 private final EmpDao empDao;
+
+    @Value("${IDPhoto.rootPath}")
+    private String rootPath;
+    @Value("${IDPhoto.subPath}")
+    private String subPath;
 
     /** 전체사원조회 */
     @Override
@@ -99,5 +106,21 @@ private final EmpDao empDao;
         empDao.updateEmp(updateEmpInfo);
     }
 
+    /** 사원 사진 저장 */
+    @Override
+    public String uploadImg(MultipartFile file) throws Exception {
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        File saveFile = new File(rootPath, fileName);
+
+        try {
+            file.transferTo(saveFile);
+
+            String fileUrl = subPath + "/" + fileName;
+
+            return fileUrl;
+        } catch (IOException e) {
+            throw new Exception("파일 업로드 중 오류가 발생했습니다.", e);
+        }
+    }
 
 }

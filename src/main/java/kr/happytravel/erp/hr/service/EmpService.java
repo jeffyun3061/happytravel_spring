@@ -2,9 +2,9 @@ package kr.happytravel.erp.hr.service;
 
 
 import kr.happytravel.erp.hr.model.EmpModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 public interface EmpService {
     /** 사원 전체 조회 */
@@ -41,4 +41,7 @@ public interface EmpService {
 
     /** 사원 정보 수정 */
     void updateEmp(EmpModel updateEmpInfo) throws Exception;
+
+    /** 사원 사진 저장 */
+    String uploadImg(MultipartFile file) throws Exception;
 }
