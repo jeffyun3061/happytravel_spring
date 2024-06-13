@@ -30,7 +30,7 @@
 
 
     <!-- 전체 호텔 목록 조회 -->
-    <select id="getHotelList" resultType="kr.happytravel.erp.sales.model.sales.HotelModel" parameterType="hashmap">
+    <select id="getHotelList" resultType="kr.happytravel.erp.sales.dto.HotelDto" parameterType="hashmap">
         SELECT
         h.hotel_code,
         h.hotel_name,
@@ -55,8 +55,7 @@
         WHERE <include refid="readCondition"/>;
     </select>
 
-
-    <select id="selectHotel" resultType="kr.happytravel.erp.sales.model.sales.HotelModel" parameterType="hashmap">
+    <select id="selectHotel" resultType="kr.happytravel.erp.sales.dto.HotelDto" parameterType="hashmap">
         SELECT
         h.hotel_code,
         h.hotel_name,
@@ -67,7 +66,7 @@
         h.is_used
         FROM TB_HOTEL_INFO h
         LEFT JOIN TB_COUNTRY_INFO c ON h.COUNTRY_CODE = c.COUNTRY_CODE
-        WHERE hotel_code = #{hotel_code}
+        WHERE hotel_code = #{hotelCode}
         AND EXISTS (
             SELECT 1
             FROM happytravel.TB_EMPLOYMENT_INFO
@@ -77,37 +76,26 @@
         )
     </select>
 
-
-<!-- HOTEL CODE 조회 -->
-    <select id="getLastHotelCode" resultType="String">
-        SELECT hotel_code
-        FROM TB_HOTEL_INFO
-        ORDER BY hotel_code DESC
-        LIMIT 1
-    </select>
-
-
-
-    <insert id="insertHotel" parameterType="map">
+    <insert id="insertHotel" parameterType="hashmap">
         INSERT INTO TB_HOTEL_INFO (
         hotel_code,
         hotel_name,
         phone,
         country_code,
-        region,
         address,
         price,
         is_used
-        ) VALUES (
-        #{hotelCode},
-        #{hotelName},
+        )
+        VALUES (
+        (SELECT CONCAT('H', LPAD(IFNULL(MAX(CAST(SUBSTRING(hotel_code, 2) AS UNSIGNED)) + 1, 1), 3, '0'))
+        FROM TB_HOTEL_INFO h),
+        #{hotel_name},
         #{phone},
-        #{countryCode},
-        #{region},
+        #{country_code},
         #{address},
         #{price},
-        #{isUsed}
-        )
+        #{is_used}
+        );
     </insert>
 
     <update id="updateHotel" parameterType="hashmap">
@@ -116,14 +104,12 @@
         hotel_name = #{hotel_name},
         phone = #{phone},
         country_code = #{country_code},
-        region = #{region},
         address = #{address},
         price = #{price}
         WHERE
         hotel_code = #{hotel_code}
         AND <include refid="CRUDCondition"/>;
     </update>
-
 
     <!-- 단건 IS_USED 비활성화  -->
     <update id="updateHotelYN" parameterType="map">
@@ -133,5 +119,11 @@
         HOTEL_CODE = #{hotel_code}
         AND <include refid="CRUDCondition"/>;
     </update>
+
+    <select id="getCountries" resultType="kr.happytravel.erp.sales.dto.CountryDto" parameterType="hashmap">
+        SELECT *
+        FROM TB_COUNTRY_INFO
+        ORDER BY KOREAN_NAME
+    </select>
 
 </mapper>
