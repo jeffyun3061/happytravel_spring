@@ -130,6 +130,7 @@
         p.sale_end_date AS saleEndDate,
         p.sale_amount AS saleAmount,
         p.assign_code AS assignCode,
+        p.country_code AS countryCode,
         c.korean_name as country,
         <!--조인된 항공사 테이블-->
         f.flight_code AS flightCode,
