@@ -3,8 +3,32 @@
 
 <mapper namespace="kr.happytravel.erp.sales.dao.AgencyDao">
 
+    <!-- SQL 모듈 블록 -->
+    <!-- 영업부서가 아니면 영업쪽 READ 불가능 -->
+    <sql id="readCondition">
+        EXISTS (
+        SELECT 1
+        FROM happytravel.TB_EMPLOYMENT_INFO
+        WHERE (DEPT_CODE = 3000 OR 9000)
+        AND STATUS_CODE = 1000
+        AND EMP_ID = #{empId}
+        )
+    </sql>
+
+    <!-- 사원 권한정보 확인 쿼리 모듈화, 영업쪽에서 CREATE, UPDATE, DELETE는 대리부터 가능 -->
+    <sql id="CRUDCondition">
+        EXISTS (
+        SELECT 1
+        FROM happytravel.TB_EMPLOYMENT_INFO
+        WHERE DEPT_CODE = 3000
+        AND STATUS_CODE = 1000
+        AND POS_CODE NOT IN (1000, 1100)
+        AND EMP_ID = #{empId}
+        )
+    </sql>
+
     <!-- 전체 에이전시 목록 조회 -->
-    <select id="getAgencyList" resultType="kr.happytravel.erp.sales.model.AgencyModel" parameterType="hashmap">
+    <select id="getAgencyList" resultType="kr.happytravel.erp.sales.model.sales.AgencyModel" parameterType="hashmap">
         SELECT
         agency_code,
         agency_name,
@@ -16,6 +40,7 @@
         is_used
         FROM
         TB_AGENCY_INFO
+        WHERE <include refid="readCondition" />
         ORDER BY
         agency_code
         <!-- LIMIT #{pageIndex}, #{pageSize} -->
@@ -25,10 +50,11 @@
     <select id="getAgencyCnt" resultType="int" parameterType="hashmap">
         SELECT COUNT(agency_code)
         FROM TB_AGENCY_INFO
+        WHERE <include refid="readCondition"/>;
     </select>
 
     <!-- 단건 조회 -->
-    <select id="selectAgency" resultType="kr.happytravel.erp.sales.model.AgencyModel">
+    <select id="selectAgency" resultType="kr.happytravel.erp.sales.model.sales.AgencyModel">
         SELECT
         agency_code,
         agency_name,
@@ -40,12 +66,12 @@
         is_used
         FROM
         TB_AGENCY_INFO
-        WHERE
-        agency_code = #{agency_code}
+        WHERE <include refid="readCondition" />
+        AND agency_code = #{agencyCode}
     </select>
 
     <!-- 신규 등록 -->
-    <insert id="insertAgency">
+    <insert id="insertAgency" parameterType="hashmap">
         INSERT INTO TB_AGENCY_INFO (
         agency_code,
         agency_name,
@@ -56,14 +82,14 @@
         price,
         is_used
         ) VALUES (
-        #{agency_code},
-        #{agency_name},
+        #{agencyCode},
+        #{agencyName},
         #{phone},
         #{country},
         #{region},
         #{address},
         #{price},
-        #{is_used}
+        #{isUsed}
         )
     </insert>
 
@@ -71,22 +97,24 @@
     <update id="updateAgency">
         UPDATE TB_AGENCY_INFO
         SET
-        agency_name = #{agency_name},
+        agency_name = #{agencyName},
         phone = #{phone},
         country = #{country},
         region = #{region},
         address = #{address},
         price = #{price},
-        is_used = #{is_used}
+        is_used = #{isUsed}
         WHERE
-        agency_code = #{agency_code}
+        agency_code = #{agencyCode}
     </update>
 
-    <!-- 단건 삭제 -->
-    <delete id="deleteAgency">
-        DELETE FROM TB_AGENCY_INFO
+    <!-- 단건 IS_USED 비활성화  -->
+    <update id="updateAgencyYN" parameterType="map">
+        UPDATE TB_AGENCY_INFO
+        SET IS_USED = 'N'
         WHERE
-        agency_code = #{agency_code}
-    </delete>
+        AGENCY_CODE = #{agencyCode}
+        AND <include refid="CRUDCondition"/>;
+    </update>
 
 </mapper>

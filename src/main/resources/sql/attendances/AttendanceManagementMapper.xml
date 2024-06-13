@@ -13,7 +13,8 @@
 			end_date,
 			assign_code,
 			assign_emp_id,
-			creation_date
+			creation_date,
+			reason
 		FROM
 			TB_ATTENDANCE_MANAGEMENT
 		ORDER BY
@@ -31,11 +32,12 @@
 			end_date,
 			assign_code,
 			assign_emp_id,
-			creation_date
+			creation_date,
+			reason
 		FROM
 			TB_ATTENDANCE_MANAGEMENT
 		WHERE
-			attendance_code = #{attendance_code}
+			attendance_code = #{attendanceCode}
 	</select>
 
 	<!-- 신규 등록 -->
@@ -48,16 +50,20 @@
 				end_date,
 				assign_code,
 				assign_emp_id,
-				creation_date
+				creation_date,
+		        reason,
+		        title
 		) VALUES (
-				 #{attendance_code},
-				 #{emp_id},
-				 #{attendance_type_code},
-				 #{start_date},
-				 #{end_date},
-				 #{assign_code},
-				 #{assign_emp_id},
-				 #{creation_date}
+				 #{attendanceCode},
+				 #{empId},
+				 #{attendanceTypeCode},
+				 #{startDate},
+				 #{endDate},
+				 #{assignCode},
+				 #{assignEmpId},
+				 #{creationDate},
+		         #{reason},
+				 #{title}
 		)
 	</insert>
 
@@ -65,22 +71,43 @@
 	<update id="updateAttendanceManagement">
 		UPDATE TB_ATTENDANCE_MANAGEMENT
 		SET
-			emp_id = #{emp_id},
-			attendance_type_code = #{attendance_type_code},
-			start_date = #{start_date},
-			end_date = #{end_date},
-			assign_code = #{assign_code},
-			assign_emp_id = #{assign_emp_id},
-			creation_date = #{creation_date}
+			emp_id = #{empId},
+			attendance_type_code = #{attendanceTypeCode},
+			start_date = #{startDate},
+			end_date = #{endDate},
+			assign_code = #{assignCode},
+			assign_emp_id = #{assignEmpId},
+			creation_date = #{creationDate},
+			reason = #{reason}
 		WHERE
-			attendance_code = #{attendance_code}
+			attendance_code = #{attendanceCode}
 	</update>
 
 	<!-- 단건 삭제 -->
 	<delete id="deleteAttendanceManagement">
 		DELETE FROM TB_ATTENDANCE_MANAGEMENT
 		WHERE
-			attendance_code = #{attendance_code}
+			attendance_code = #{attendanceCode}
 	</delete>
 
+	<!-- 작성날짜 조회 -->
+	<select id="getMaxAttendanceTypeCode" resultType="string" parameterType="string">
+		SELECT
+			MAX(attendance_type_code)
+		FROM
+			TB_ATTENDANCE_MANAGEMENT
+		WHERE
+			attendance_type_code LIKE CONCAT(#{creationDate}, '%')
+	</select>
+
+	<!-- 부서 코드로 부장 ID 조회 -->
+	<select id="getManagerIdByDeptCode" resultType="string" parameterType="string">
+		SELECT
+			emp_id
+		FROM
+			TB_EMPLOYMENT_INFO
+		WHERE
+			dept_code = #{deptCode}
+		  AND pos_code = '1500'
+	</select>
 </mapper>

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happytravel.erp.hr.dao.EmpDao">
+
+    <resultMap id="EmpResultMap" type="kr.happytravel.erp.hr.model.EmpModel">
+        <id property="empId" column="EMP_ID" />
+        <result property="empName" column="EMP_NAME" />
+        <result property="deptCode" column="DEPT_CODE" />
+        <result property="posCode" column="POS_CODE" />
+        <result property="joinDate" column="JOIN_DATE" />
+        <result property="ssn" column="SSN" />
+        <result property="zipCode" column="ZIP_CODE" />
+        <result property="address" column="ADDRESS" />
+        <result property="addressDetail" column="ADDRESS_DETAIL" />
+        <result property="phone" column="PHONE" />
+        <result property="mobile" column="MOBILE" />
+        <result property="statusCode" column="STATUS_CODE" />
+        <result property="leaveDate" column="LEAVE_DATE" />
+        <result property="bankCode" column="BANK_CODE" />
+        <result property="accountNo" column="ACCOUNT_NO" />
+        <result property="salary" column="SALARY" />
+        <result property="remarks" column="REMARKS" />
+        <result property="deptName" column="DEPT_NAME" />
+        <result property="posName" column="POS_NAME" />
+        <result property="isUsed" column="IS_USED" />
+        <result property="statCode" column="STAT_CODE" />
+        <result property="statName" column="STAT_NAME" />
+        <result property="bankName" column="BANK_NAME" />
+    </resultMap>
+
+    <!-- 사원 전체 조회 -->
+    <select id="totalEmpList" resultType="kr.happytravel.erp.hr.model.EmpModel">
+        select emp.EMP_ID
+        ,emp.PASSWORD
+        ,emp.PHOTO_URL
+        ,emp.EMP_NAME
+        ,emp.JOIN_DATE
+        ,emp.SSN
+        ,emp.ZIP_CODE
+        ,emp.ADDRESS
+        ,emp.ADDRESS_DETAIL
+        ,emp.PHONE
+        ,emp.MOBILE
+        ,emp.DEPT_CODE
+        ,emp.POS_CODE
+        ,emp.STATUS_CODE
+        ,emp.LEAVE_DATE
+        ,emp.BANK_CODE
+        ,emp.ACCOUNT_NO
+        ,emp.SALARY
+        ,emp.REMAERKS
+        ,dep.DEPT_CODE
+        ,dep.DEPT_NAME
+        ,pos.POS_CODE
+        ,pos.POS_NAME
+        from TB_EMPLOYMENT_INFO emp
+        inner join TB_DEPARTMENT_INFO dep
+        join TB_POSITION_INFO pos
+        on emp.DEPT_CODE = dep.DEPT_CODE and emp.POS_CODE = pos.POS_CODE
+        order by emp.EMP_ID;
+    </select>
+
+    <!-- 사원 검색 조회 -->
+    <select id="searchEmplist" resultType="kr.happytravel.erp.hr.model.EmpModel" resultMap="EmpResultMap">
+        SELECT emp.EMP_ID
+            ,emp.EMP_NAME
+            ,emp.DEPT_CODE
+            ,emp.POS_CODE
+            ,dep.DEPT_NAME
+            ,pos.POS_NAME
+        FROM TB_EMPLOYMENT_INFO emp
+        JOIN TB_DEPARTMENT_INFO dep ON emp.DEPT_CODE = dep.DEPT_CODE
+        JOIN TB_POSITION_INFO pos ON emp.POS_CODE = pos.POS_CODE
+        <where>
+            <if test="searchType == 'emp_id'">
+                emp.EMP_ID like concat('%', #{searchQuery}, '%')
+            </if>
+            <if test="searchType == 'emp_name'">
+                emp.EMP_NAME like concat('%', #{searchQuery}, '%')
+            </if>
+            <if test="searchType == 'dept_code'">
+                dep.DEPT_NAME like concat('%', #{searchQuery}, '%')
+            </if>
+            <if test="searchType == 'pos_code'">
+                pos.POS_NAME like concat('%', #{searchQuery}, '%')
+            </if>
+            <if test="searchType != 'dept_code' and searchType != 'pos_code'">
+                ${searchType} like concat('%', #{searchQuery}, '%')
+            </if>
+        </where>
+    </select>
+
+    <!-- 사원 단건 조회 (수정할때 필요한가..?)-->
+    <select id="getEmpInfo" parameterType="map"  resultType="kr.happytravel.erp.hr.model.EmpModel">
+        select emp.EMP_ID
+        ,emp.PASSWORD
+        ,emp.PHOTO_URL
+        ,emp.EMP_NAME
+        ,emp.JOIN_DATE
+        ,emp.SSN
+        ,emp.ZIP_CODE
+        ,emp.ADDRESS
+        ,emp.ADDRESS_DETAIL
+        ,emp.PHONE
+        ,emp.MOBILE
+        ,emp.DEPT_CODE
+        ,emp.POS_CODE
+        ,emp.STATUS_CODE
+        ,emp.LEAVE_DATE
+        ,emp.BANK_CODE
+        ,emp.ACCOUNT_NO
+        ,emp.SALARY
+        ,emp.REMAERKS
+        from TB_EMPLOYMENT_INFO emp
+        where emp.EMP_ID = #{empId};
+    </select>
+
+    <!-- 부서 목록 조회 -->
+    <select id="getDeptName"  resultType="kr.happytravel.erp.hr.model.EmpModel">
+        select dep.DEPT_CODE
+            ,dep.DEPT_NAME
+            ,dep.IS_USED
+        from TB_DEPARTMENT_INFO dep
+        where IS_USED = 'Y';
+    </select>
+
+    <!-- 직급 목록 조회 -->
+    <select id="getPosList" resultType="kr.happytravel.erp.hr.model.EmpModel">
+        select pos.POS_CODE
+            ,pos.POS_NAME
+            ,pos.IS_USED
+        from TB_POSITION_INFO pos
+        where IS_USED = 'Y';
+    </select>
+
+    <!-- 재직 상태 목록 조회 -->
+    <select id="getEmpStatusList" resultType="kr.happytravel.erp.hr.model.EmpModel">
+        select stat.STAT_CODE
+            ,stat.STAT_NAME
+            ,stat.IS_USED
+        from TB_EMPLOYMENT_STATUS_INFO stat
+        where IS_USED = 'Y';
+    </select>
+
+    <!-- 은행 목록 조회 -->
+    <select id="getBankList" resultType="kr.happytravel.erp.hr.model.EmpModel">
+        select bnk.BANK_CODE
+            ,bnk.BANK_NAME
+            ,bnk.IS_USED
+        from TB_BANK_INFO bnk
+        where IS_USED = 'Y';
+    </select>
+
+    <!-- 마지막 사원번호 조회 -->
+    <select id="generateNewEmpId" resultType="java.lang.String">
+        select EMP_ID
+        from TB_EMPLOYMENT_INFO
+        order by EMP_ID desc
+        limit 1;
+    </select>
+
+    <!-- 사원 정보 중복 체크 -->
+    <select id="checkDuplicate" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_EMPLOYMENT_INFO
+        <where>
+            <choose>
+                <when test="field == 'ssn'">
+                    ssn = #{value}
+                </when>
+                <when test="field == 'mobile'">
+                    mobile = #{value}
+                </when>
+                <when test="field == 'bank'">
+                    CONCAT(bank_code, '-', account_no) = #{value}
+                </when>
+            </choose>
+        </where>
+    </select>
+
+    <!-- 현재 연도에 해당하는 마지막 사원번호 조회 -->
+    <select id="findLastEmpIdByYear" parameterType="java.lang.String" resultType="java.lang.String">
+        select EMP_ID
+        from TB_EMPLOYMENT_INFO
+        where EMP_ID like concat(#{year}, '%')
+        order by EMP_ID desc
+        limit 1;
+    </select>
+
+    <insert id="saveEmp" parameterType="kr.happytravel.erp.hr.model.EmpModel">
+        INSERT INTO TB_EMPLOYMENT_INFO (
+            EMP_ID
+            ,PASSWORD
+            ,PHOTO_URL
+            ,EMP_NAME
+            ,DEPT_CODE
+            ,POS_CODE
+            ,JOIN_DATE
+            ,SSN
+            ,ZIP_CODE
+            ,ADDRESS
+            ,ADDRESS_DETAIL
+            ,PHONE
+            ,MOBILE
+            ,STATUS_CODE
+            ,LEAVE_DATE
+            ,BANK_CODE
+            ,ACCOUNT_NO
+            ,SALARY
+            ,REMAERKS)
+        VALUES (
+            #{empId}
+            ,#{password}
+            ,#{photoUrl}
+            ,#{empName}
+            ,#{deptCode}
+            ,#{posCode}
+            ,#{joinDate}
+            ,#{ssn}
+            ,#{zipCode}
+            ,#{address}
+            ,#{addressDetail}
+            ,#{phone}
+            ,#{mobile}
+            ,#{statusCode}
+            ,#{leaveDate}
+            ,#{bankCode}
+            ,#{accountNo}
+            ,#{salary}
+            ,#{remaerks}
+            )
+    </insert>
+
+    <!-- 사원 정보 수정 -->
+    <update id="updateEmp" parameterType="kr.happytravel.erp.hr.model.EmpModel">
+        UPDATE TB_EMPLOYMENT_INFO
+        SET EMP_ID = #{empId},
+            PASSWORD = #{password},
+            PHOTO_URL = #{photoUrl},
+            EMP_NAME = #{empName},
+            DEPT_CODE = #{deptCode},
+            POS_CODE = #{posCode},
+            JOIN_DATE = #{joinDate},
+            SSN = #{ssn},
+            ZIP_CODE = #{zipCode},
+            ADDRESS = #{address},
+            ADDRESS_DETAIL = #{addressDetail},
+            PHONE = #{phone},
+            MOBILE = #{mobile},
+            STATUS_CODE = #{statusCode},
+            LEAVE_DATE = #{leaveDate},
+            BANK_CODE = #{bankCode},
+            ACCOUNT_NO = #{accountNo},
+            SALARY = #{salary},
+            REMAERKS = #{remaerks}
+        WHERE EMP_ID = #{empId}
+    </update>
+
+
+
+</mapper>

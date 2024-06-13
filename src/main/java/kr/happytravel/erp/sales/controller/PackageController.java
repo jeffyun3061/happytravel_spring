@@ -1,6 +1,7 @@
 package kr.happytravel.erp.sales.controller;
 
-import kr.happytravel.erp.sales.model.PackageModel;
+import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
+import kr.happytravel.erp.sales.model.sales.packages.PackageModel;
 import kr.happytravel.erp.sales.service.PackageService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -24,37 +25,29 @@ public class PackageController {
 
     // Create
     @PostMapping("/package")
-    public ResponseEntity<String> createPackage(@RequestBody PackageModel packageModel, HttpServletRequest request,
-                                                HttpServletResponse response, HttpSession session) throws Exception {
+    public ResponseEntity<Boolean> createPackage(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
+                                                 HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to create package: " + packageModel);
-            int result = packageService.insertPackage(packageModel);
-            logger.info("Created package, result: " + result);
-            return ResponseEntity.ok("Package created successfully");
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            logger.info("Received request to create package: " + paramMap);
+            return ResponseEntity.ok(packageService.insertPackage(paramMap) == 1);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
+            return ResponseEntity.ok(false);
         }
     }
 
     // Read (List)
     @GetMapping("/package-list")
-    public ResponseEntity<List<PackageModel>> getPackageList(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+    public ResponseEntity<List<PackageListDTO>> getPackageList(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                              HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request with parameters: " + paramMap);
-            List<PackageModel> packages = packageService.getPackageList(paramMap);
+            List<PackageListDTO> packages = packageService.getPackageList(paramMap);
             logger.info("Fetched " + packages.size() + " packages.");
             return ResponseEntity.ok(packages);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
@@ -71,56 +64,48 @@ public class PackageController {
             }
             logger.info("Fetched package: " + packageModel);
             return ResponseEntity.ok(packageModel);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
     // Update
     @PutMapping("/package")
-    public ResponseEntity<String> updatePackage(@RequestBody PackageModel packageModel, HttpServletRequest request,
-                                                HttpServletResponse response, HttpSession session) throws Exception {
+    public ResponseEntity<Boolean> updatePackage(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
+                                                 HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to update package: " + packageModel);
-            int result = packageService.updatePackage(packageModel);
-            if (result == 0) {
-                logger.warn("No package updated: " + packageModel);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Package not found for update");
-            }
-            logger.info("Updated package, result: " + result);
-            return ResponseEntity.ok("Package updated successfully");
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
+            logger.info("Received request to update package: " + paramMap);
+            return ResponseEntity.ok(packageService.updatePackage(paramMap) == 1);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
+            return ResponseEntity.ok(false);
         }
     }
 
-    // Delete
-    @DeleteMapping("/package")
-    public ResponseEntity<String> deletePackage(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                                HttpServletResponse response, HttpSession session) throws Exception {
+    // Y/N UPDATE
+    @PutMapping("/package-yn")
+    public ResponseEntity<Boolean> updatePackageYN(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+                                             HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to delete package with parameters: " + paramMap);
-            int result = packageService.deletePackage(paramMap);
-            if (result == 0) {
-                logger.warn("No package deleted with parameters: " + paramMap);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Package not found for deletion");
-            }
-            logger.info("Deleted package, result: " + result);
-            return ResponseEntity.ok("Package deleted successfully");
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
+            logger.info("Received request to Y/N package with parameters: " + paramMap);
+            return ResponseEntity.ok(packageService.updatePackageYN(paramMap) == 1);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
+            return ResponseEntity.ok(false);
+        }
+    }
+
+    @PutMapping("/package-assign")
+    public ResponseEntity<Boolean> assignPackage(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+                                                   HttpServletResponse response, HttpSession session) throws Exception {
+        try {
+            logger.info("Received request to assingn package with parameters: " + paramMap);
+            return ResponseEntity.ok(packageService.assignPackage(paramMap) == 1);
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.ok(false);
         }
     }
 }
+

@@ -80,6 +80,30 @@ public class AttendanceManagementController {
         }
     }
 
+    // 작성 날짜 조회
+    @GetMapping("/maxAttendanceTypeCode")
+    public ResponseEntity<String> getMaxAttendanceTypeCode(@RequestParam String creationDate) {
+        try {
+            String maxCode = attendanceManagementService.getMaxAttendanceTypeCode(creationDate);
+            return ResponseEntity.ok(maxCode);
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    // 로그인 부서아이디로 부장 조회
+    @GetMapping("/managerIdByDeptCode")
+    public ResponseEntity<String> getManagerIdByDeptCode(@RequestParam String deptCode) {
+        try {
+            String managerId = attendanceManagementService.getManagerIdByDeptCode(deptCode);
+            return ResponseEntity.ok(managerId);
+        } catch (Exception e) {
+            logger.error("An error occurred while fetching manager ID by department code:", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
     // Update
     @PutMapping("/attendanceManagement")
     public ResponseEntity<String> updateAttendanceManagement(@RequestBody AttendanceManagementModel attendanceManagement, HttpServletRequest request,
@@ -123,4 +147,6 @@ public class AttendanceManagementController {
             throw e;
         }
     }
+
+
 }

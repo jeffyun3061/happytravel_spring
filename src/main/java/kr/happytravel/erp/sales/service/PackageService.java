@@ -1,12 +1,14 @@
 package kr.happytravel.erp.sales.service;
 
-import kr.happytravel.erp.sales.model.PackageModel;
+import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
+import kr.happytravel.erp.sales.model.sales.packages.PackageModel;
+
 import java.util.List;
 import java.util.Map;
 
 public interface PackageService {
     // 전체 조회
-    List<PackageModel> getPackageList(Map<String, Object> paramMap) throws Exception;
+    List<PackageListDTO> getPackageList(Map<String, Object> paramMap) throws Exception;
 
     // 전체 조회 카운트
     int getPackageCnt(Map<String, Object> paramMap) throws Exception;
@@ -15,11 +17,15 @@ public interface PackageService {
     PackageModel selectPackage(Map<String, Object> paramMap) throws Exception;
 
     // 단건 등록
-    int insertPackage(PackageModel packageModel) throws Exception;
+    int insertPackage(Map<String, Object> paramMap) throws Exception;
 
     // 단건 수정
-    int updatePackage(PackageModel packageModel) throws Exception;
+    int updatePackage(Map<String, Object> paramMap) throws Exception;
 
     // 단건 삭제
-    int deletePackage(Map<String, Object> paramMap) throws Exception;
+    int updatePackageYN(Map<String, Object> paramMap) throws Exception;
+
+    // 패키지  assign 승인 or 반려, default 대기중 1000
+    int assignPackage(Map<String, Object> paramMap) throws Exception;
+
 }

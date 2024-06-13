@@ -1,4 +1,4 @@
-package kr.happytravel.erp.attendances.model;
+package kr.happytravel.erp.sales.model.sales.packages;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -17,18 +17,23 @@ import java.util.Date;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AttendanceManagementModel {
-    private String attendanceCode; // ATTENDANCE_CODE
-    private String empId;   // EMP_ID
-    private String attendanceTypeCode; // ATTENDANCE_TYPE_CODE
+public class PackageModel {
+    private String packageCode;
+    private String packageName;
+    private String country;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
-    private Date startDate; // START_DATE
+    private Date startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
-    private Date endDate; // END_DATE
-    private String assignCode; // ASSIGN_CODE
-    private String assignEmpId; // ASSIGN_EMP_ID
+    private Date endDate;
+    private String hotelCode;
+    private String flightCode;
+    private String agencyCode;
+    private int totalPrice;
+    private int salePrice;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
-    private Date creationDate; // CREATE_DATE
-    private String reason; // REASON
-    private String title; // TITLE
+    private Date saleStartDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
+    private Date saleEndDate;
+    private int saleAmount;
+    private String assignCode;
 }

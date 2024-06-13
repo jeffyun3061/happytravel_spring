@@ -15,7 +15,11 @@
 		       EMP.DEPT_CODE,
 		       DEPT.DEPT_NAME,
 		       EMP.POS_CODE,
-		       POS.POS_NAME
+		       POS.POS_NAME,
+		       CASE
+		           WHEN DATE_FORMAT(EMP.LEAVE_DATE, '%Y%m') = #{salaryDate} THEN 'FALSE'
+		           ELSE 'TRUE'
+		       END AS LEAVE_STAT
 		FROM TB_EMPLOYMENT_INFO EMP
 		LEFT JOIN TB_DEPARTMENT_INFO DEPT
 		       ON EMP.DEPT_CODE = DEPT.DEPT_CODE
@@ -25,7 +29,13 @@
 		WHERE LEAVE_DATE IS NULL
 		      OR LEAVE_DATE > STR_TO_DATE(#{salaryDate}, '%Y%m')
 	</select>
-	<!-- 급여 총계 - 조회 -->
+	<!-- 급여 총계 - 조회 - 체크 -->
+	<select id="checkIfTotalSalaryDataExists" resultType="boolean">
+		SELECT COUNT(*) > 0
+		FROM TB_SALARY_DATA_INFO
+		WHERE SALARY_DATE = #{salaryDate}
+	</select>
+	<!-- 급여 총계 - 조회 - True -->
 	<select id="selectAllTotalSalaryData" resultType="kr.happytravel.erp.salary.model.SalaryDataModel">
 		SELECT SALARY_DATE,
 		       SALARY_ITEM_CODE,
@@ -34,19 +44,27 @@
 		WHERE SALARY_DATE = #{salaryDate}
 		GROUP BY SALARY_DATE, SALARY_ITEM_CODE
 	</select>
+	<!-- 급여 총계 - 조회 - False -->
+	<select id="selectDefaultTotalSalaryData" resultType="kr.happytravel.erp.salary.model.SalaryDataModel">
+		SELECT '000000' AS SALARY_DATE,
+		       SALARY_ITEM_CODE,
+		       0 AS AMOUNT
+		FROM TB_SALARY_DATA_INFO
+		GROUP BY SALARY_ITEM_CODE
+	</select>
 	<!-- ==================================================================================================== -->
-	<!-- 급여 기본 정보 - 조회 -->
-	<select id="selectInitSalaryData" resultType="int">
-		SELECT COUNT(*)
+	<!-- 급여 기본 정보 - 존재 체크 -->
+	<select id="selectInitSalaryData" resultType="boolean">
+		SELECT COUNT(*) > 0
 		FROM TB_SALARY_DATA_INFO
 		WHERE EMP_ID = #{empId}
-		      AND SALARY_DATE = "000000"
+		      AND SALARY_DATE = '000000'
 	</select>
 	<!-- 급여 기본 정보 - 추가 -->
 	<insert id="insertInitSalaryData" parameterType="list">
 		INSERT INTO TB_SALARY_DATA_INFO (EMP_ID, SALARY_DATE, SALARY_ITEM_CODE, AMOUNT)
 		VALUES
-		<foreach collection="list" item="salary" separator=",">
+		<foreach collection="salaryDataModelList" item="salary" separator=",">
 			(#{salary.empId}, #{salary.salaryDate}, #{salary.salaryItemCode}, #{salary.amount})
 		</foreach>
 	</insert>
@@ -61,8 +79,17 @@
 		</foreach>
 	</update>
 	<!-- ==================================================================================================== -->
-	<!-- 월급 내역 - 일괄 처리 & 단건 처리 -->
-	<insert id="insertSalaryData">
+	<!-- 급여 내역 - 체크 - 일괄 처리 & 단건 처리 -->
+	<select id="existSalaryData" resultType="boolean" parameterType="map">
+		SELECT COUNT(*) > 0
+		FROM TB_SALARY_DATA_INFO
+		WHERE SALARY_DATE = #{salaryDate}
+	    <if test="empId != null and empId != ''">
+			AND EMP_ID = #{empId}
+	    </if>
+	</select>
+	<!-- 급여 내역 - 생성 - 일괄 처리 & 단건 처리 -->
+	<insert id="insertSalaryData" parameterType="map">
 		INSERT INTO TB_SALARY_DATA_INFO (EMP_ID, SALARY_DATE, SALARY_ITEM_CODE, AMOUNT)
 		SELECT EMP_ID,
 		       #{salaryDate},
@@ -74,7 +101,14 @@
 			AND EMP_ID = #{empId}
 		</if>
 	</insert>
-	<!-- 월급 내역 - 수정 -->
+	<!-- 급여 내역 - 조회 -->
+	<select id="selectAllSalaryData" resultType="kr.happytravel.erp.salary.model.SalaryDataModel" parameterType="map">
+		SELECT *
+		FROM TB_SALARY_DATA_INFO
+		WHERE EMP_ID = #{empId}
+		      AND SALARY_DATE = #{salaryDate}
+	</select>
+	<!-- 급여 내역 - 수정 -->
 	<update id="updateSalaryData" parameterType="map">
 		<foreach collection="salaryDataModelList" item="salary" separator=";">
 			UPDATE TB_SALARY_DATA_INFO
@@ -136,7 +170,7 @@
 		       ON EMP.POS_CODE = POS.POS_CODE
 	</select>
 	<!-- 급여 지급 상세 내역 - 조회 -->
-	<select id="selectAllSalaryPaymentDetail" resultType="kr.happytravel.erp.salary.model.SalaryPaymentDetailModel">
+	<select id="selectAllSalaryPaymentDetail" resultType="kr.happytravel.erp.salary.model.SalaryPaymentDetailModel" parameterType="map">
 		SELECT EMP_ID,
 		       SUBSTRING(SALARY_DATE, 5, 2) AS SALARY_MONTH,
 		       SUM(CASE WHEN SALARY_ITEM_CODE = '1100' THEN AMOUNT ELSE 0 END) AS 'ITEM1100',

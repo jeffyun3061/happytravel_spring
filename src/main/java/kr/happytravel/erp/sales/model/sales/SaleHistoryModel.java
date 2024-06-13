@@ -1,26 +1,32 @@
-package kr.happytravel.erp.salary.model;
+package kr.happytravel.erp.sales.model.sales;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
+
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class EmploymentModel {
-	private String empId; // EMP_ID
-	private String empName; // EMP_NAME
-	private String deptCode; // DEPT_CODE
-	private String deptName; // DEPT_NAME
-	private String posCode; // POS_CODE
-	private String posName; // POS_NAME
-	private boolean leaveStat; // LEAVE_STAT
+public class SaleHistoryModel {
+    // pk
+    private int seq;
+    private String packageCode;
+    // 인원수
+    private int count;
+    private String paymentCode;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMddHHmm")
+    private Date paymentDate;
+
+
 }
