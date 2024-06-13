@@ -34,6 +34,7 @@ public class PackageDTO {
     private Date saleEndDate;
     private int saleAmount;
     private String assignCode;
+    private String countryCode;
     private String country;
 
     private String flightCode;
