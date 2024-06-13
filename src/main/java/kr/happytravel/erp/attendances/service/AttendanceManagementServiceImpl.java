@@ -1,6 +1,8 @@
 package kr.happytravel.erp.attendances.service;
 
 import kr.happytravel.erp.attendances.dao.AttendanceManagementDao;
+import kr.happytravel.erp.attendances.model.AttendanceConfirmResponse;
+import kr.happytravel.erp.attendances.model.AttendanceManageResponse;
 import kr.happytravel.erp.attendances.model.AttendanceManagementModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,8 +17,23 @@ public class AttendanceManagementServiceImpl implements AttendanceManagementServ
     private final AttendanceManagementDao attendanceManagementDao;
 
     @Override
-    public List<AttendanceManagementModel> getAttendanceManagementList(Map<String, Object> paramMap) throws Exception {
-        return attendanceManagementDao.getAttendanceManagementList(paramMap);
+    public List<AttendanceManageResponse> getAttendanceManagementList() throws Exception {
+        return attendanceManagementDao.getAttendanceManagementList();
+    }
+
+    @Override
+    public void updateAssignCodeToApproved(String AttendanceCode) throws Exception {
+        attendanceManagementDao.updateAssignCodeToApproved(AttendanceCode);
+    }
+
+    @Override
+    public void updateAssignCodeToRejected(String AttendanceCode) throws Exception {
+        attendanceManagementDao.updateAssignCodeToRejected(AttendanceCode);
+    }
+
+    @Override
+    public List<AttendanceConfirmResponse> getAttendanceConfirmList() throws Exception {
+        return attendanceManagementDao.getAttendanceConfirmList();
     }
 
 

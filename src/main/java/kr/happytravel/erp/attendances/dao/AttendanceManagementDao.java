@@ -2,6 +2,8 @@ package kr.happytravel.erp.attendances.dao;
 
 
 
+import kr.happytravel.erp.attendances.model.AttendanceConfirmResponse;
+import kr.happytravel.erp.attendances.model.AttendanceManageResponse;
 import kr.happytravel.erp.attendances.model.AttendanceManagementModel;
 import org.apache.ibatis.annotations.Param;
 
@@ -10,7 +12,24 @@ import java.util.Map;
 
 public interface AttendanceManagementDao {
     // 전체 조회
-    List<AttendanceManagementModel> getAttendanceManagementList(Map<String, Object> paramMap) throws Exception;
+    List<AttendanceManageResponse> getAttendanceManagementList() throws Exception;
+
+    /**
+     * 근태 상태가 대기인 근태코드를 결재완료로 변경
+     * @param AttendanceCode
+     * @throws Exception
+     */
+    void updateAssignCodeToApproved(String AttendanceCode) throws Exception;
+
+    /**
+     * 근태 상태가 대기인 근태코드를 반려로 변경
+     * @param AttendanceCode
+     * @throws Exception
+     */
+    void updateAssignCodeToRejected(String AttendanceCode) throws Exception;
+
+    List<AttendanceConfirmResponse> getAttendanceConfirmList() throws Exception;
+
 
     // 단건 조회
     AttendanceManagementModel selectAttendanceManagement(Map<String, Object> paramMap) throws Exception;

@@ -1,5 +1,7 @@
 package kr.happytravel.erp.attendances.controller;
 
+import kr.happytravel.erp.attendances.model.AttendanceConfirmResponse;
+import kr.happytravel.erp.attendances.model.AttendanceManageResponse;
 import kr.happytravel.erp.attendances.model.AttendanceManagementModel;
 import kr.happytravel.erp.attendances.service.AttendanceManagementService;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +18,14 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/attendances")
+@RequestMapping("/attendance")
 @RequiredArgsConstructor
 public class AttendanceManagementController {
     private final Logger logger = LogManager.getLogger(this.getClass());
     private final AttendanceManagementService attendanceManagementService;
 
     // Create
-    @PostMapping("/attendanceManagement")
+    @PostMapping("/attendances")
     public ResponseEntity<String> createAttendanceManagement(@RequestBody AttendanceManagementModel attendanceManagement, HttpServletRequest request,
                                                              HttpServletResponse response, HttpSession session) throws Exception {
         try {
@@ -41,12 +43,11 @@ public class AttendanceManagementController {
     }
 
     // Read (List)
-    @GetMapping("/attendanceManagement-list")
-    public ResponseEntity<List<AttendanceManagementModel>> getAttendanceManagementList(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                                                   HttpServletResponse response, HttpSession session) throws Exception {
+    @GetMapping("/attendanceManagement")
+    public ResponseEntity<List<AttendanceManageResponse>> getAttendanceManagementList() throws Exception {
         try {
-            logger.info("Received request with parameters: " + paramMap);
-            List<AttendanceManagementModel> attendanceManagements = attendanceManagementService.getAttendanceManagementList(paramMap);
+            logger.info("Received request to get attendanceManagements: ");
+            List<AttendanceManageResponse> attendanceManagements = attendanceManagementService.getAttendanceManagementList();
             logger.info("Fetched " + attendanceManagements.size() + " attendanceManagements.");
             return ResponseEntity.ok(attendanceManagements);
         } catch (IllegalArgumentException e) {
@@ -58,19 +59,38 @@ public class AttendanceManagementController {
         }
     }
 
-    // Read (Single)
-    @GetMapping("/attendanceManagement")
-    public ResponseEntity<AttendanceManagementModel> getAttendanceManagement(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                                         HttpServletResponse response, HttpSession session) throws Exception {
+    @PatchMapping("/attendanceManagement/{attendanceCode}")
+    public ResponseEntity<String> updateAttendanceStatus(
+            @PathVariable String attendanceCode,
+            @RequestParam("status") String status) {
+        logger.info("Received request to update attendance code " + attendanceCode + " to status: " + status);
+
         try {
-            logger.info("Received request to get attendanceManagements with parameters: " + paramMap);
-            AttendanceManagementModel attendanceManagement = attendanceManagementService.selectAttendanceManagement(paramMap);
-            if (attendanceManagement == null) {
-                logger.warn("AttendanceManagement not found with parameters: " + paramMap);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+
+            if ("approved".equalsIgnoreCase(status)) {
+                attendanceManagementService.updateAssignCodeToApproved(attendanceCode);
+                return ResponseEntity.ok("Attendance code updated to approved");
+            } else if ("rejected".equalsIgnoreCase(status)) {
+                attendanceManagementService.updateAssignCodeToRejected(attendanceCode);
+                return ResponseEntity.ok("Attendance code updated to rejected");
+            } else {
+                logger.warn("Invalid status: " + status);
+                return ResponseEntity.badRequest().body("Invalid status: " + status);
             }
-            logger.info("Fetched agency: " + attendanceManagement);
-            return ResponseEntity.ok(attendanceManagement);
+        } catch (Exception e) {
+            logger.error("An error occurred while updating attendance code:", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating attendance code");
+        }
+    }
+
+    // Read (list)
+    @GetMapping("/attendanceConfirm")
+    public ResponseEntity<List<AttendanceConfirmResponse>> getAttendanceConfirmList() throws Exception {
+        try {
+            logger.info("Received request to get attendanceConfirm: ");
+            List<AttendanceConfirmResponse> attendanceConfirm = attendanceManagementService.getAttendanceConfirmList();
+            logger.info("Fetched " + attendanceConfirm + " attendanceConfirm.");
+            return ResponseEntity.ok(attendanceConfirm);
         } catch (IllegalArgumentException e) {
             logger.warn("Invalid argument: " + e.getMessage());
             throw e;
