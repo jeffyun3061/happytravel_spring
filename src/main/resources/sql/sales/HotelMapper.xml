@@ -55,7 +55,7 @@
         WHERE <include refid="readCondition"/>;
     </select>
 
-    <select id="selectHotel" resultType="kr.happytravel.erp.sales.model.HotelModel" parameterType="hashmap">
+    <select id="selectHotel" resultType="kr.happytravel.erp.sales.dto.HotelDto" parameterType="hashmap">
         SELECT
         h.hotel_code,
         h.hotel_name,
@@ -66,7 +66,7 @@
         h.is_used
         FROM TB_HOTEL_INFO h
         LEFT JOIN TB_COUNTRY_INFO c ON h.COUNTRY_CODE = c.COUNTRY_CODE
-        WHERE hotel_code = #{hotel_code}
+        WHERE hotel_code = #{hotelCode}
         AND EXISTS (
             SELECT 1
             FROM happytravel.TB_EMPLOYMENT_INFO

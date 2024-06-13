@@ -27,7 +27,7 @@ public class HotelController {
     public ResponseEntity<Boolean> insertHotel(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
                                               HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to create package: " + paramMap);
+            logger.info("Received request to create hotel: " + paramMap);
             return ResponseEntity.ok(hotelService.insertHotel(paramMap) == 1);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
@@ -53,11 +53,16 @@ public class HotelController {
     }
 
     // Read (Single)
-    @GetMapping("/hotel")
+    @GetMapping("/hotel-detail")
     public ResponseEntity<HotelDto> getHotel(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to get hotel with parameters: " + paramMap);
+            // 파라미터 확인
+            if (!paramMap.containsKey("hotelCode") || !paramMap.containsKey("empId")) {
+                logger.warn("Missing required parameters: hotelCode or empId");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            }
             HotelDto hotelDto = hotelService.selectHotel(paramMap);
             if (hotelDto == null) {
                 logger.warn("Hotel not found with parameters: " + paramMap);
@@ -89,7 +94,7 @@ public class HotelController {
     public ResponseEntity<Boolean> updateHotelYN(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                  HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to Y/N package with parameters: " + paramMap);
+            logger.info("Received request to Y/N hotel with parameters: " + paramMap);
             return ResponseEntity.ok(hotelService.updateHotelYN(paramMap) == 1);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
