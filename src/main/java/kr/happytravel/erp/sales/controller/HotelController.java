@@ -35,14 +35,30 @@ public class HotelController {
         }
     }
 
+    @GetMapping("/hotel-count")
+    public ResponseEntity<?> getHotelCnt(@RequestParam(required = true) Map<String, Object> paramMap) {
+        try {
+            logger.info("Received request with parameters: " + paramMap);
+            int result = hotelService.getHotelCnt(paramMap);
+            if (result == 0) {
+                logger.warn("HotelCnt not found with parameters: " + paramMap);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+
+    }
+
     // Read (List)
     @GetMapping("/hotel-list")
     public ResponseEntity<List<HotelDto>> getHotelList(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                          HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request with parameters: " + paramMap);
-            String empId = Optional.ofNullable((String) paramMap.get("empId")).orElse("EMP30002"); // 기본 empId 설정
-            paramMap.put("empId", empId);
+
             List<HotelDto> hotels = hotelService.getHotelList(paramMap);
             logger.info("Fetched " + hotels.size() + " hotels.");
             return ResponseEntity.ok(hotels);

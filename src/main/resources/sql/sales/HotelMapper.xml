@@ -43,16 +43,18 @@
         TB_HOTEL_INFO h
         LEFT JOIN TB_COUNTRY_INFO c ON h.country_code = c.country_code
         WHERE <include refid="readCondition" />
+        AND IS_USED != 'N'
         ORDER BY
         h.hotel_code
-        <!-- LIMIT #{pageIndex}, #{pageSize} -->
+        LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <!-- 전체 목록 카운트 -->
     <select id="getHotelCnt" resultType="int" parameterType="map">
-        SELECT COUNT(hotelCode)
+        SELECT COUNT(hotel_code)
         FROM TB_HOTEL_INFO
-        WHERE <include refid="readCondition"/>;
+        WHERE <include refid="readCondition"/>
+        AND IS_USED != 'N'
     </select>
 
     <select id="selectHotel" resultType="kr.happytravel.erp.sales.dto.HotelDto" parameterType="hashmap">
