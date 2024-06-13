@@ -93,8 +93,8 @@ public class HotelController {
     }
 
     // Update
-    @PutMapping("/hotel/{hotelCode}")
-    public ResponseEntity<Boolean> updateHotel(@PathVariable String hotelCode, @RequestBody Map<String, Object> paramMap, HttpServletRequest request,
+    @PutMapping("/hotel")
+    public ResponseEntity<Boolean> updateHotel(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to update hotel: " + paramMap);
