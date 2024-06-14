@@ -70,7 +70,7 @@ public class EmpModel {
     private String salary;
     @Setter
     @Getter
-    private String remaerks;
+    private String remarks;
 
     @Setter
     @Getter

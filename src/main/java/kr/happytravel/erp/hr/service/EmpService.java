@@ -2,7 +2,6 @@ package kr.happytravel.erp.hr.service;
 
 
 import kr.happytravel.erp.hr.model.EmpModel;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -36,12 +35,9 @@ public interface EmpService {
     // 사원 정보 중복 체크
     boolean checkDuplicate(String field, String value) throws Exception;
 
-    //신규 사원 등록
+    /** 신규 사원 등록 */
     void saveEmp(EmpModel saveEmpInfo) throws Exception;
 
     /** 사원 정보 수정 */
     void updateEmp(EmpModel updateEmpInfo) throws Exception;
-
-    /** 사원 사진 저장 */
-    String uploadImg(MultipartFile file) throws Exception;
 }

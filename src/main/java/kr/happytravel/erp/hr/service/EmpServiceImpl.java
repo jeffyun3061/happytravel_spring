@@ -5,11 +5,7 @@ import kr.happytravel.erp.hr.model.EmpModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.Year;
 import java.util.List;
 
@@ -20,6 +16,8 @@ private final EmpDao empDao;
 
     @Value("${IDPhoto.rootPath}")
     private String rootPath;
+    @Value("${IDPhoto.rootPath_mac}")
+    private String rootPathMac;
     @Value("${IDPhoto.subPath}")
     private String subPath;
 
@@ -106,21 +104,5 @@ private final EmpDao empDao;
         empDao.updateEmp(updateEmpInfo);
     }
 
-    /** 사원 사진 저장 */
-    @Override
-    public String uploadImg(MultipartFile file) throws Exception {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        File saveFile = new File(rootPath, fileName);
-
-        try {
-            file.transferTo(saveFile);
-
-            String fileUrl = subPath + "/" + fileName;
-
-            return fileUrl;
-        } catch (IOException e) {
-            throw new Exception("파일 업로드 중 오류가 발생했습니다.", e);
-        }
-    }
 
 }

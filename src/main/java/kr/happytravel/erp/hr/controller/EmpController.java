@@ -1,21 +1,28 @@
 package kr.happytravel.erp.hr.controller;
+
 import kr.happytravel.erp.hr.model.EmpModel;
 import kr.happytravel.erp.hr.service.EmpService;
-
 import kr.happytravel.erp.salary.service.SalaryDataService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -27,6 +34,15 @@ public class EmpController {
     private final Logger logger = LogManager.getLogger(this.getClass());
     private final EmpService empService;
     private final SalaryDataService salaryDataService;
+
+    @Value("${IDPhoto.rootPath}")
+    private String rootPath;
+    @Value("${IDPhoto.mainPath}")
+    private String mainPath;
+    @Value("${IDPhoto.rootPath_mac}")
+    private String rootPathMac;
+    @Value("${IDPhoto.subPath}")
+    private String subPath;
 
     /** 사원 전체 조회 */
     @GetMapping("/emp-list")
@@ -152,18 +168,39 @@ public class EmpController {
 
     /** 신규 사원 등록 */
     @PostMapping("/emp/save")
-    public ResponseEntity<String> saveEmp(@RequestBody EmpModel saveEmpInfo) {
+    public ResponseEntity<String> saveEmp(@RequestPart("employee") EmpModel saveEmpInfo, @RequestPart(value = "file", required = false) MultipartFile file){
         try {
-            logger.info("Received request to save emp with parameters: " + saveEmpInfo);
-            if (empService.checkDuplicate("ssn", saveEmpInfo.getSsn())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate SSN");
+            logger.info("Received request to save emp with parameters: {}", saveEmpInfo);
+            logger.info("Received request to save emp with file: {}", file);
+
+//         if (empService.checkDuplicate("ssn", saveEmpInfo.getSsn())) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate SSN");
+//         }
+//         if (empService.checkDuplicate("mobile", saveEmpInfo.getMobile())) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Mobile");
+//         }
+//         if (empService.checkDuplicate("bank_code", saveEmpInfo.getBankCode() + "-" + saveEmpInfo.getAccountNo())) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Bank Account");
+//         }
+            // 파일 처리
+            if (file != null && !file.isEmpty()) { // 파일이 null이 아니고 비어 있지 않은지 확인
+                String fileName = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 가져와서 클린 패스를 적용
+                Path uploadPath = File.separator.equals("/") ? Paths.get(rootPath, mainPath, subPath) : Paths.get(rootPathMac, subPath);// 업로드 경로를 설정 (예: "uploads/12345")
+
+                if (!Files.exists(uploadPath)) { // 업로드 경로가 존재하지 않으면
+                    Files.createDirectories(uploadPath); // 업로드 경로 디렉토리를 생성
+                }
+                try (InputStream inputStream = file.getInputStream()) { // 파일의 InputStream을 얻어 try-with-resources 구문을 사용하여 자동으로 닫힘 처리
+                    Path filePath = uploadPath.resolve(fileName); // 파일 경로를 생성 (예: "uploads/12345/filename.png")
+                    Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING); // InputStream을 파일 경로에 복사, 기존 파일이 있을 경우 덮어쓰기
+
+                    // 파일 URL 설정
+                    saveEmpInfo.setPhotoUrl(filePath.toString()); // 저장된 파일의 URL을 설정
+                } catch (IOException e) { // 파일 저장 중 오류가 발생한 경우
+                    throw new RuntimeException("파일 저장 중 오류 발생: " + fileName, e); // 예외를 던져 호출자가 인지할 수 있도록 처리
+                }
             }
-            if (empService.checkDuplicate("mobile", saveEmpInfo.getMobile())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Mobile");
-            }
-            if (empService.checkDuplicate("bank_code", saveEmpInfo.getBankCode() + "-" + saveEmpInfo.getAccountNo())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Bank Account");
-            }
+
             empService.saveEmp(saveEmpInfo);
             salaryDataService.initSalaryData(saveEmpInfo.getEmpId(), Integer.parseInt(saveEmpInfo.getSalary()));
             return ResponseEntity.ok("Employee saved successfully");
@@ -182,7 +219,7 @@ public class EmpController {
 
     /** 사원 정보 수정 */
     @PutMapping("/emp/update")
-    public ResponseEntity<String> updateEmp(@RequestBody EmpModel updateEmpInfo) {
+    public ResponseEntity<String> updateEmp(@RequestPart("employee") EmpModel updateEmpInfo, @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
             logger.info("Received request to update emp with parameters: " + updateEmpInfo);
 
@@ -205,20 +242,6 @@ public class EmpController {
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
-        }
-    }
-
-    /** 사원 사진 저장 */
-    @PostMapping("/emp/upload-photo")
-    public ResponseEntity<Map<String, Object>> saveEmpImg(@RequestParam("file") MultipartFile file) {
-        Map<String, Object> result = new HashMap<>();
-        try{
-            String fileUrl = empService.uploadImg(file);
-            result.put("fileUrl", fileUrl);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            result.put("error", "파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         }
     }
 
