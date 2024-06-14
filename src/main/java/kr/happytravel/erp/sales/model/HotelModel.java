@@ -18,7 +18,6 @@ public class HotelModel {
     private String hotelName;
     private String phone;
     private String country;
-    private String region;
     private String address;
     private int price;
     private String isUsed;

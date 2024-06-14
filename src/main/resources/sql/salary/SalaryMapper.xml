@@ -25,9 +25,10 @@
 		       ON EMP.DEPT_CODE = DEPT.DEPT_CODE
 		LEFT JOIN TB_POSITION_INFO POS
 		       ON EMP.POS_CODE = POS.POS_CODE
-		  <!-- 퇴직 제외, 단 퇴직 일자 이전은 불러옴 -->
-		WHERE LEAVE_DATE IS NULL
-		      OR LEAVE_DATE > STR_TO_DATE(#{salaryDate}, '%Y%m')
+		<!-- 퇴직 제외, 단 퇴직 일자 이전은 불러옴 -->
+		WHERE DATE_FORMAT(EMP.JOIN_DATE, '%Y%m') <![CDATA[ <= ]]> #{salaryDate}
+		      AND (EMP.LEAVE_DATE IS NULL
+		          OR EMP.LEAVE_DATE > STR_TO_DATE(#{salaryDate}, '%Y%m'))
 	</select>
 	<!-- 급여 총계 - 조회 - 체크 -->
 	<select id="checkIfTotalSalaryDataExists" resultType="boolean">
@@ -79,27 +80,25 @@
 		</foreach>
 	</update>
 	<!-- ==================================================================================================== -->
-	<!-- 급여 내역 - 체크 - 일괄 처리 & 단건 처리 -->
-	<select id="existSalaryData" resultType="boolean" parameterType="map">
-		SELECT COUNT(*) > 0
-		FROM TB_SALARY_DATA_INFO
-		WHERE SALARY_DATE = #{salaryDate}
-	    <if test="empId != null and empId != ''">
-			AND EMP_ID = #{empId}
-	    </if>
-	</select>
 	<!-- 급여 내역 - 생성 - 일괄 처리 & 단건 처리 -->
 	<insert id="insertSalaryData" parameterType="map">
-		INSERT INTO TB_SALARY_DATA_INFO (EMP_ID, SALARY_DATE, SALARY_ITEM_CODE, AMOUNT)
-		SELECT EMP_ID,
-		       #{salaryDate},
-		       SALARY_ITEM_CODE,
-		       AMOUNT
-		FROM TB_SALARY_DATA_INFO
-		WHERE SALARY_DATE = '000000'
-		<if test="empId != null and empId != ''">
-			AND EMP_ID = #{empId}
-		</if>
+		<foreach collection="employmentModelList" item="emp" separator=";">
+			INSERT INTO TB_SALARY_DATA_INFO (EMP_ID, SALARY_DATE, SALARY_ITEM_CODE, AMOUNT)
+			SELECT #{emp.empId},
+				   #{salaryDate},
+				   SALARY_ITEM_CODE,
+				   AMOUNT
+			FROM TB_SALARY_DATA_INFO
+			WHERE EMP_ID = #{emp.empId}
+			      AND SALARY_DATE = '000000'
+			      AND NOT EXISTS (
+				      SELECT 1
+				      FROM TB_SALARY_DATA_INFO
+				      WHERE EMP_ID = #{emp.empId}
+				            AND SALARY_DATE = #{salaryDate}
+				            AND SALARY_ITEM_CODE = TB_SALARY_DATA_INFO.SALARY_ITEM_CODE
+			      )
+		</foreach>
 	</insert>
 	<!-- 급여 내역 - 조회 -->
 	<select id="selectAllSalaryData" resultType="kr.happytravel.erp.salary.model.SalaryDataModel" parameterType="map">
@@ -114,11 +113,10 @@
 			UPDATE TB_SALARY_DATA_INFO
 			SET AMOUNT = #{salary.amount}
 			WHERE EMP_ID = #{empId}
-			      AND SALARY_DATE = #{salaryDate}
+			      AND SALARY_DATE = #{salary.salaryDate}
 			      AND SALARY_ITEM_CODE = #{salary.salaryItemCode}
 		</foreach>
 	</update>
-
 	<!-- ==================================================================================================== -->
 	<!-- 급여 지급 내역 - 조회 -->
 	<select id="selectAllSalaryPayment" resultType="kr.happytravel.erp.salary.model.SalaryPaymentModel">
@@ -163,38 +161,40 @@
 		       GROUP BY EMP_ID, SUBSTRING(SALARY_DATE, 1, 4)
 		     ) AS SAL
 		LEFT JOIN TB_EMPLOYMENT_INFO EMP
-		       ON SAL.EMP_ID = EMP.EMP_ID
+		          ON SAL.EMP_ID = EMP.EMP_ID
 		LEFT JOIN TB_DEPARTMENT_INFO DEPT
-		       ON EMP.DEPT_CODE = DEPT.DEPT_CODE
+		          ON EMP.DEPT_CODE = DEPT.DEPT_CODE
 		LEFT JOIN TB_POSITION_INFO POS
-		       ON EMP.POS_CODE = POS.POS_CODE
+		          ON EMP.POS_CODE = POS.POS_CODE
 	</select>
 	<!-- 급여 지급 상세 내역 - 조회 -->
 	<select id="selectAllSalaryPaymentDetail" resultType="kr.happytravel.erp.salary.model.SalaryPaymentDetailModel" parameterType="map">
-		SELECT EMP_ID,
-		       SUBSTRING(SALARY_DATE, 5, 2) AS SALARY_MONTH,
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '1100' THEN AMOUNT ELSE 0 END) AS 'ITEM1100',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '1200' THEN AMOUNT ELSE 0 END) AS 'ITEM1200',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '1300' THEN AMOUNT ELSE 0 END) AS 'ITEM1300',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '1400' THEN AMOUNT ELSE 0 END) AS 'ITEM1400',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '1500' THEN AMOUNT ELSE 0 END) AS 'ITEM1500',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '1600' THEN AMOUNT ELSE 0 END) AS 'ITEM1600',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '1700' THEN AMOUNT ELSE 0 END) AS 'ITEM1700',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '2100' THEN AMOUNT ELSE 0 END) AS 'ITEM2100',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '2200' THEN AMOUNT ELSE 0 END) AS 'ITEM2200',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '2300' THEN AMOUNT ELSE 0 END) AS 'ITEM2300',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '2400' THEN AMOUNT ELSE 0 END) AS 'ITEM2400',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '2500' THEN AMOUNT ELSE 0 END) AS 'ITEM2500',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '2600' THEN AMOUNT ELSE 0 END) AS 'ITEM2600',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '8100' THEN AMOUNT ELSE 0 END) AS 'ITEM8100',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '8200' THEN AMOUNT ELSE 0 END) AS 'ITEM8200',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '8300' THEN AMOUNT ELSE 0 END) AS 'ITEM8300',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '8400' THEN AMOUNT ELSE 0 END) AS 'ITEM8400',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '9100' THEN AMOUNT ELSE 0 END) AS 'ITEM9100',
-		       SUM(CASE WHEN SALARY_ITEM_CODE = '9200' THEN AMOUNT ELSE 0 END) AS 'ITEM9200'
-		FROM TB_SALARY_DATA_INFO
-		WHERE EMP_ID = #{empId}
-		      AND SUBSTRING(SALARY_DATE, 1, 4) = #{salaryYear}
-		GROUP BY EMP_ID, SALARY_DATE
+		SELECT MN.NUM AS SALARY_MONTH,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '1100' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM1100,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '1200' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM1200,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '1300' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM1300,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '1400' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM1400,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '1500' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM1500,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '1600' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM1600,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '1700' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM1700,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '2100' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM2100,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '2200' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM2200,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '2300' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM2300,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '2400' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM2400,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '2500' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM2500,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '2600' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM2600,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '8100' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM8100,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '8200' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM8200,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '8300' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM8300,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '8400' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM8400,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '9100' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM9100,
+		       COALESCE(SUM(CASE WHEN SAL.SALARY_ITEM_CODE = '9200' THEN SAL.AMOUNT ELSE 0 END), 0) AS ITEM9200
+		FROM MONTH_NUMBER MN
+		LEFT JOIN TB_SALARY_DATA_INFO SAL
+		     ON MN.NUM = SUBSTRING(SAL.SALARY_DATE, 5, 2)
+		     AND SAL.EMP_ID = #{empId}
+		     AND SUBSTRING(SALARY_DATE, 1, 4) = #{salaryYear}
+		GROUP BY MN.NUM
+		ORDER BY MN.NUM
 	</select>
 </mapper>

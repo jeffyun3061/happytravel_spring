@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.happytravel.erp.attendances.dao.AttendanceManagementDao">
+
+	<!-- Attendance Management 조회 -->
+	<select id="getAttendanceManagementList" resultType="kr.happytravel.erp.attendances.model.AttendanceManageResponse">
+		SELECT
+			am.ATTENDANCE_CODE AS attendanceCode,
+			am.EMP_ID AS empId,
+			ei.EMP_NAME AS empName,
+			pi.POS_NAME AS positionName,
+			di.DEPT_NAME AS departmentName,
+			ati.ATTENDANCE_TYPE_NAME AS attendanceTypeName,
+			am.START_DATE AS startDate,
+			am.END_DATE AS endDate,
+			am.REASON AS reason,
+			am.CREATION_DATE AS creationDate,
+			am.TITLE AS title
+		FROM
+			TB_ATTENDANCE_MANAGEMENT am
+				JOIN TB_EMPLOYMENT_INFO ei ON am.EMP_ID = ei.EMP_ID
+				JOIN TB_ATTENDANCE_TYPE_INFO ati ON am.ATTENDANCE_TYPE_CODE = ati.ATTENDANCE_TYPE_CODE
+				JOIN TB_POSITION_INFO pi ON ei.POS_CODE = pi.POS_CODE
+				JOIN TB_DEPARTMENT_INFO di ON ei.DEPT_CODE = di.DEPT_CODE
+		WHERE
+			am.ASSIGN_CODE = '1000'
+		ORDER BY
+		    am.CREATION_DATE
+	</select>
+
+	<!-- 휴가 승인 -->
+	<update id="updateAssignCodeToApproved">
+		UPDATE TB_ATTENDANCE_MANAGEMENT
+		SET ASSIGN_CODE = '2000'
+		WHERE ATTENDANCE_CODE = #{attendanceCode}
+	</update>
+
+	<!-- 휴가 반려 -->
+	<update id="updateAssignCodeToRejected">
+		UPDATE TB_ATTENDANCE_MANAGEMENT
+		SET ASSIGN_CODE = '3000'
+		WHERE ATTENDANCE_CODE = #{attendanceCode}
+	</update>
+
+	<!-- 휴가 처리 리스트 -->
+	<select id="getAttendanceConfirmList" resultType="kr.happytravel.erp.attendances.model.AttendanceConfirmResponse">
+		SELECT
+		    am.EMP_ID AS empId,
+		    ei.EMP_NAME AS empName,
+		    pi.POS_NAME AS positionName,
+		    di.DEPT_NAME AS departmentName,
+		    ati.ATTENDANCE_TYPE_NAME AS attendanceTypeName,
+		    am.START_DATE AS startDate,
+		    am.END_DATE AS endDate,
+		    am.REASON AS reason,
+		    assign_ei.EMP_NAME AS assignEmpName
+		FROM
+		    TB_ATTENDANCE_MANAGEMENT am
+		        JOIN TB_EMPLOYMENT_INFO ei ON am.EMP_ID = ei.EMP_ID
+		        JOIN TB_ATTENDANCE_TYPE_INFO ati ON am.ATTENDANCE_TYPE_CODE = ati.ATTENDANCE_TYPE_CODE
+		        JOIN TB_POSITION_INFO pi ON ei.POS_CODE = pi.POS_CODE
+		        JOIN TB_DEPARTMENT_INFO di ON ei.DEPT_CODE = di.DEPT_CODE
+				JOIN TB_EMPLOYMENT_INFO assign_ei ON am.ASSIGN_EMP_ID = assign_ei.EMP_ID
+		WHERE
+		    am.ASSIGN_CODE = '2000'
+	</select>
+</mapper>

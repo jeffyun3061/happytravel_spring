@@ -21,18 +21,18 @@ public class PackageModel {
     private String packageCode;
     private String packageName;
     private String country;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date startDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date endDate;
     private String hotelCode;
     private String flightCode;
     private String agencyCode;
     private int totalPrice;
     private int salePrice;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date saleStartDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date saleEndDate;
     private int saleAmount;
     private String assignCode;

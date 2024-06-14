@@ -1,7 +1,8 @@
 package kr.happytravel.erp.sales.controller;
 
+import kr.happytravel.erp.sales.model.sales.packages.CountryDTO;
+import kr.happytravel.erp.sales.model.sales.packages.PackageDTO;
 import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
-import kr.happytravel.erp.sales.model.sales.packages.PackageModel;
 import kr.happytravel.erp.sales.service.PackageService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +26,7 @@ public class PackageController {
 
     // Create
     @PostMapping("/package")
-    public ResponseEntity<Boolean> createPackage(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
+    public ResponseEntity<Boolean> createPackage(@RequestBody(required = true) Map<String, Object> paramMap, HttpServletRequest request,
                                                  HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to create package: " + paramMap);
@@ -36,10 +37,27 @@ public class PackageController {
         }
     }
 
+    @GetMapping("/package-count")
+    public ResponseEntity<?> getPackageCnt(@RequestParam(required = true) Map<String, Object> paramMap) {
+        try {
+            logger.info("Received request with parameters: " + paramMap);
+            int result = packageService.getPackageCnt(paramMap);
+            if (result == 0) {
+                logger.warn("PackageCnt not found with parameters: " + paramMap);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+
+    }
+
     // Read (List)
     @GetMapping("/package-list")
     public ResponseEntity<List<PackageListDTO>> getPackageList(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                                             HttpServletResponse response, HttpSession session) throws Exception {
+                                                               HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request with parameters: " + paramMap);
             List<PackageListDTO> packages = packageService.getPackageList(paramMap);
@@ -52,18 +70,18 @@ public class PackageController {
     }
 
     // Read (Single)
-    @GetMapping("/package")
-    public ResponseEntity<PackageModel> getPackage(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                                   HttpServletResponse response, HttpSession session) throws Exception {
+    @GetMapping("/package-detail")
+    public ResponseEntity<PackageDTO> getPackage(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+                                                 HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to get package with parameters: " + paramMap);
-            PackageModel packageModel = packageService.selectPackage(paramMap);
-            if (packageModel == null) {
+            PackageDTO packageDTO = packageService.selectPackage(paramMap);
+            if (packageDTO == null) {
                 logger.warn("Package not found with parameters: " + paramMap);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
-            logger.info("Fetched package: " + packageModel);
-            return ResponseEntity.ok(packageModel);
+            logger.info("Fetched package: " + packageDTO);
+            return ResponseEntity.ok(packageDTO);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -86,7 +104,7 @@ public class PackageController {
     // Y/N UPDATE
     @PutMapping("/package-yn")
     public ResponseEntity<Boolean> updatePackageYN(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                             HttpServletResponse response, HttpSession session) throws Exception {
+                                                   HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to Y/N package with parameters: " + paramMap);
             return ResponseEntity.ok(packageService.updatePackageYN(paramMap) == 1);
@@ -98,13 +116,24 @@ public class PackageController {
 
     @PutMapping("/package-assign")
     public ResponseEntity<Boolean> assignPackage(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                                   HttpServletResponse response, HttpSession session) throws Exception {
+                                                 HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to assingn package with parameters: " + paramMap);
             return ResponseEntity.ok(packageService.assignPackage(paramMap) == 1);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.ok(false);
+        }
+    }
+
+    @GetMapping("/get-countries")
+    public ResponseEntity<List<CountryDTO>> getCountries(@RequestParam Map<String, Object> paramMap) throws Exception {
+        try {
+            logger.info("Received request to get country informations");
+            return ResponseEntity.ok(packageService.getCountries(paramMap));
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }

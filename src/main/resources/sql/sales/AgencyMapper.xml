@@ -30,16 +30,17 @@
     <!-- 전체 에이전시 목록 조회 -->
     <select id="getAgencyList" resultType="kr.happytravel.erp.sales.model.sales.AgencyModel" parameterType="hashmap">
         SELECT
-        agency_code,
-        agency_name,
-        phone,
-        country,
-        region,
-        address,
-        price,
-        is_used
+        a.agency_code,
+        a.agency_name,
+        a.phone,
+        a.region,
+        a.address,
+        a.price,
+        a.is_used,
+        c.korean_name as country
         FROM
-        TB_AGENCY_INFO
+        TB_AGENCY_INFO a
+        LEFT JOIN TB_COUNTRY_INFO c ON a.country_code = c.country_code
         WHERE <include refid="readCondition" />
         ORDER BY
         agency_code
@@ -56,18 +57,25 @@
     <!-- 단건 조회 -->
     <select id="selectAgency" resultType="kr.happytravel.erp.sales.model.sales.AgencyModel">
         SELECT
-        agency_code,
-        agency_name,
-        phone,
-        country,
-        region,
-        address,
-        price,
-        is_used
+        a.agency_code,
+        a.agency_name,
+        a.phone,
+        c.korean_name as country
+        a.address,
+        a.price,
+        a.is_used
         FROM
-        TB_AGENCY_INFO
+        TB_AGENCY_INFO a
+        LEFT JOIN TB_COUNTRY_INFO c ON f.COUNTRY_CODE = c.COUNTRY_CODE
         WHERE <include refid="readCondition" />
         AND agency_code = #{agencyCode}
+    </select>
+
+    <select id="getLastAgencyCode" resultType="string">
+        SELECT agency_code
+        FROM TB_AGENCY_INFO
+        ORDER BY agency_code DESC
+        LIMIT 1
     </select>
 
     <!-- 신규 등록 -->
@@ -76,7 +84,7 @@
         agency_code,
         agency_name,
         phone,
-        country,
+        countryCode,
         region,
         address,
         price,
@@ -85,7 +93,7 @@
         #{agencyCode},
         #{agencyName},
         #{phone},
-        #{country},
+        #{countryCode},
         #{region},
         #{address},
         #{price},
@@ -103,9 +111,11 @@
         region = #{region},
         address = #{address},
         price = #{price},
-        is_used = #{isUsed}
+        is_used = #{isUsed},
+        country_code = #{country_code}
         WHERE
         agency_code = #{agencyCode}
+        AND <include refid="CRUDCondition"/>;
     </update>
 
     <!-- 단건 IS_USED 비활성화  -->

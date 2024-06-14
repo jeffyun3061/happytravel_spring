@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happytravel.erp.mypage.dao.MyPageDao">
+
+    <!-- 마이페이지 사용자 정보 조회 -->
+    <select id="selectEmployInfo" resultType="kr.happytravel.erp.mypage.model.EmployModel">
+        SELECT
+            emp_id AS empId,
+            photo_url AS photoUrl,
+            join_date AS joinDate,
+            mobile,
+            salary
+        FROM
+            TB_EMPLOYMENT_INFO
+        WHERE
+            emp_id = #{emp_id}
+    </select>
+
+    <!-- 부서별 공지사항 조회 -->
+    <select id="selectNotices" resultType="kr.happytravel.erp.mypage.model.NoticeModel">
+        SELECT
+            (SELECT e.emp_name FROM TB_EMPLOYMENT_INFO e WHERE e.emp_id = n.emp_id) AS empName,
+            n.creation_date AS creationDate,
+            n.title,
+            n.content
+        FROM
+            TB_NOTICES n
+        WHERE n.dept_code = #{dept_code}
+    </select>
+
+    <!-- 출퇴근 조회 -->
+    <select id="selectAttendance" resultType="kr.happytravel.erp.mypage.model.AttendanceModel">
+        SELECT
+            in_time AS inTime,
+            out_time AS outTime
+        FROM
+            TB_ATTENDANCE
+        WHERE
+            emp_id = #{emp_id} AND today = #{today}
+    </select>
+
+    <!-- 근태 조회 -->
+    <select id="selectAttendanceManagement" resultType="kr.happytravel.erp.mypage.model.AttendanceManagementModel">
+        SELECT
+            am.title,
+            am.attendance_type_code AS attendanceTypeCode,
+            am.start_date AS startDate,
+            am.end_date AS endDate,
+            am.assign_code AS assignCode,
+            am.reason,
+            a.attendance_type_name AS attendanceTypeName,
+            ast.assign_name AS assignName
+        FROM
+            TB_ATTENDANCE_MANAGEMENT am
+                LEFT JOIN
+            TB_ATTENDANCE_TYPE_INFO a ON am.attendance_type_code = a.attendance_type_code
+                LEFT JOIN
+            TB_ASSIGN_STATUS_TYPE_INFO ast ON am.assign_code = ast.assign_code
+        WHERE
+            am.emp_id = #{emp_id}
+    </select>
+</mapper>

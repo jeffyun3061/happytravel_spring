@@ -1,9 +1,10 @@
 package kr.happytravel.erp.sales.controller;
 
 
+import kr.happytravel.erp.sales.dto.FlightDto;
 import kr.happytravel.erp.sales.model.sales.FlightModel;
-import kr.happytravel.erp.sales.model.sales.HotelModel;
 import kr.happytravel.erp.sales.service.FlightService;
+import kr.happytravel.erp.util.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,9 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/sales")
@@ -27,24 +29,30 @@ public class FlightController {
 
     // Create
     @PostMapping("/flight")
-    public ResponseEntity<String> createFlight(@RequestBody FlightModel flight, HttpServletRequest request,
+    public ResponseEntity<String> insertFlight(@RequestBody FlightDto flight, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to create hotel: " + flight);
-            return ResponseEntity.ok("Hotel created successfully");
+
+            String lastFlightCode = flightService.getLastFlightCode();
+            String newFlightCode = CodeGenerator.generateNewCode(lastFlightCode, "F");
+
+            flight.setFlightCode(newFlightCode);
+
+            flightService.insertFlight(flight);
+            return ResponseEntity.ok("Hotel created successfully with code: " + newFlightCode);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            return ResponseEntity.ok("error");
+            return ResponseEntity.ok("Error creating flight");
         }
     }
 
+    // Read (List)
     @GetMapping("/flight-list")
     public ResponseEntity<List<FlightModel>> getFlightList(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                          HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request with parameters: " + paramMap);
-            String empId = Optional.ofNullable((String) paramMap.get("empId")).orElse("EMP30002"); // 기본 empId 설정
-            paramMap.put("empId", empId);
             List<FlightModel> flights = flightService.getFlightList(paramMap);
             logger.info("Fetched " + flights.size() + " flights.");
             return ResponseEntity.ok(flights);
@@ -56,17 +64,17 @@ public class FlightController {
 
     // Read (Single)
     @GetMapping("/flight")
-    public ResponseEntity<FlightModel> getFlight(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-                                               HttpServletResponse response, HttpSession session) throws Exception {
+    public ResponseEntity<FlightModel> getFlight(FlightDto flight, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+                                                 HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to get flight with parameters: " + paramMap);
-            FlightModel flight = flightService.selectFlight(paramMap);
+            FlightModel flightModel = flightService.selectFlight(flight);
             if (flight == null) {
                 logger.warn("Flight not found with parameters: " + paramMap);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
             logger.info("Fetched flight: " + flight);
-            return ResponseEntity.ok(flight);
+            return ResponseEntity.ok(flightModel);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -74,12 +82,43 @@ public class FlightController {
     }
 
     // Update
-    @PutMapping("/flight")
-    public ResponseEntity<Boolean> updateFlight(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
+    @PutMapping("/flight/{flightCode}")
+    public ResponseEntity<Boolean> updateFlight(@PathVariable String flightCode, @RequestBody Map<String, Object> paramMap, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
+
             logger.info("Received request to update flight: " + paramMap);
-            return ResponseEntity.ok(flightService.updateFlight(paramMap) == 1);
+
+            // empId 확인 및 로그 출력
+            String empId = (String) paramMap.get("empId");
+            if (empId == null) {
+                empId = "EMP30002";
+                paramMap.put("empId", empId);
+            }
+            logger.info("empId: " + empId);
+
+            // flightCode를 paramMap에 추가
+            paramMap.put("flightCode", flightCode);
+            logger.info("flightCode: " + flightCode);
+
+
+            // 날짜 형식 변환
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyyMMddHHmm");
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String departureTimeStr = (String) paramMap.get("departure_time");
+            String arrivalTimeStr = (String) paramMap.get("arrival_time");
+
+            try {
+                paramMap.put("departure_time", outputFormat.format(inputFormat.parse(departureTimeStr)));
+                paramMap.put("arrival_time", outputFormat.format(inputFormat.parse(arrivalTimeStr)));
+            } catch (ParseException e) {
+                logger.error("Date format is incorrect: " + e.getMessage(), e);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
+            }
+
+            boolean updateResult = flightService.updateFlight(paramMap) == 1;
+            return ResponseEntity.ok(updateResult);
+
         }  catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.ok(false);

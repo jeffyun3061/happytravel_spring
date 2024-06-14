@@ -1,6 +1,5 @@
 package kr.happytravel.erp.salary.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import kr.happytravel.erp.salary.model.EmploymentModel;
+import kr.happytravel.erp.salary.model.SalaryCalculateModel;
 import kr.happytravel.erp.salary.model.SalaryDataModel;
 import kr.happytravel.erp.salary.model.SalaryItemModel;
 import kr.happytravel.erp.salary.model.SalaryPaymentDetailModel;
@@ -135,25 +135,13 @@ public class SalaryController {
 
 	// 월급 내역 - 수정
 	@PatchMapping("/update/{salaryDate}/{empId}")
-	public ResponseEntity<Void> updateSalaryData(@PathVariable String salaryDate, @PathVariable String empId, @RequestParam Map<String, Object> paramMap) throws Exception {
-		// paramMap -> { "1100": 1000, "1200": 2000, "1300": 1500, "1400": 1200 }
+	public ResponseEntity<Void> updateSalaryData(@PathVariable String salaryDate, @PathVariable String empId, @RequestBody List<SalaryDataModel> updateSalaryDataModelList) throws Exception {
 		try {
 			// 로그 메시지로 요청 파라미터 기록
-			logger.info("Received request for salary data update for employee ID: {} on date: {} with parameters: {}", empId, salaryDate, paramMap);
-
-			List<SalaryDataModel> salaryDataModelList = new ArrayList<SalaryDataModel>();
-
-			// 모든 급여 항목 조회
-			List<SalaryItemModel> salaryItemList = salaryItemService.selectAllSalaryItem();
-			for (SalaryItemModel salaryItemModel : salaryItemList) {
-				String salaryItemCode = salaryItemModel.getSalaryItemCode();
-				// 급여 항목 코드로 금액 추출
-				int amount = (int) paramMap.get(salaryItemCode);
-				salaryDataModelList.add(new SalaryDataModel(empId, salaryDate, salaryItemCode, amount));
-			}
+			logger.info("Received request for salary data update for employee ID: {} on date: {} with parameters: {}", empId, salaryDate, updateSalaryDataModelList);
 
 			// 급여 데이터 업데이트
-			salaryDataService.updateSalaryData(empId, salaryDate, salaryDataModelList);
+			salaryDataService.updateSalaryData(empId, salaryDate, updateSalaryDataModelList);
 			logger.info("Successfully updated salary data for employee ID: {} on date: {}", empId, salaryDate);
 			return ResponseEntity.noContent().build();
 		} catch (IllegalArgumentException e) {
@@ -227,10 +215,8 @@ public class SalaryController {
 
 	// 급여 기본 데이터 관련 테스트
 	@GetMapping("/test1")
-	public void test1(@RequestParam Map<String, Object> paramMap) throws Exception {
-		// localhost/salary/test1?emp_id=EMP30001&salary=120000000
-		String empId = (String) paramMap.get("emp_id");
-		int salary = (int) paramMap.get("salary");
+	public void test1(@RequestParam String empId, @RequestParam int salary) throws Exception {
+		// localhost/salary/test1?emp_id=EMP30001&salary=120000
 		salaryDataService.initSalaryData(empId, salary);
 	}
 
