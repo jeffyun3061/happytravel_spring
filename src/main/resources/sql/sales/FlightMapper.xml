@@ -22,7 +22,7 @@
         FROM happytravel.TB_EMPLOYMENT_INFO
         WHERE DEPT_CODE = 3000
         AND STATUS_CODE = 1000
-        AND POS_CODE NOT IN (1000, 1100)
+<!--        AND POS_CODE NOT IN (1000, 1100)-->
         AND EMP_ID = #{empId}
         )
     </sql>
@@ -45,9 +45,10 @@
         TB_FLIGHT_INFO f
         LEFT JOIN TB_COUNTRY_INFO c ON f.country_code = c.country_code
         WHERE <include refid="readCondition" />
+        AND IS_USED != 'N'
         ORDER BY
         flight_code
-        <!--        LIMIT #{pageIndex}, #{pageSize}-->
+        LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <!-- 전체 목록 카운트 -->
@@ -55,6 +56,7 @@
         SELECT COUNT(flightCode)
         FROM TB_FLIGHT_INFO
         WHERE <include refid="readCondition" />
+        AND IS_USED != 'N'
     </select>
 
     <!-- 단건 조회 -->
@@ -100,17 +102,17 @@
         is_used
         country_code
         ) VALUES (
-        #{flightCode},
+        (SELECT CONCAT('F', LPAD(IFNULL(MAX(CAST(SUBSTRING(hotel_code, 2) AS UNSIGNED)) + 1, 1), 3, '0'))
         #{airline},
-        #{flightNumber},
+        #{flight_number},
         #{phone},
         #{departure},
-        #{departureTime},
+        #{departure_time},
         #{destination},
-        #{arrivalTime},
+        #{arrival_time},
         #{price},
         #{isUsed},
-        #{countryCode}
+        #{country_code}
         )
     </insert>
 
@@ -138,8 +140,14 @@
         UPDATE TB_FLIGHT_INFO
         SET IS_USED = 'N'
         WHERE
-        FLIGHT_CODE = #{flightCode}
+        FLIGHT_CODE = #{flight_code}
         AND <include refid="CRUDCondition"/>;
     </update>
+
+    <select id="getCountries" resultType="kr.happytravel.erp.sales.dto.CountryDto" parameterType="hashmap">
+        SELECT *
+        FROM TB_COUNTRY_INFO
+        ORDER BY KOREAN_NAME
+    </select>
 
 </mapper>

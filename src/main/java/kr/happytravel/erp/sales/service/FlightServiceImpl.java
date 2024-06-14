@@ -1,8 +1,8 @@
 package kr.happytravel.erp.sales.service;
 
 import kr.happytravel.erp.sales.dao.FlightDao;
+import kr.happytravel.erp.sales.dto.CountryDto;
 import kr.happytravel.erp.sales.dto.FlightDto;
-import kr.happytravel.erp.sales.model.sales.FlightModel;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,11 +20,12 @@ public class FlightServiceImpl implements FlightService {
     private final FlightDao flightDao;
 
     @Override
-    public List<FlightModel> getFlightList(Map<String, Object> paramMap) throws Exception {
-        logger.info("Fetching flight list with parameters: " + paramMap);
-        List<FlightModel> flightList = flightDao.getFlightList(paramMap);
-        logger.info("Fetched flight list: " + flightList);
-        return flightList;
+    public List<FlightDto> getFlightList(Map<String, Object> paramMap) throws Exception {
+        // limit와 offset를 정수형으로 변환
+        paramMap.put("limit", Integer.parseInt(paramMap.get("limit").toString()));
+        paramMap.put("offset", Integer.parseInt(paramMap.get("offset").toString()));
+
+        return flightDao.getFlightList(paramMap);
     }
 
     @Override
@@ -33,19 +34,14 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public String getLastFlightCode() {
-        return flightDao.getLastFlightCode();
+    public FlightDto selectFlight(Map<String, Object> paramMap) throws Exception {
+        return flightDao.selectFlight(paramMap);
     }
 
     @Override
-    public FlightModel selectFlight(FlightDto flight) throws Exception {
-        return flightDao.selectFlight(flight);
-    }
-
-    @Override
-    public int insertFlight(FlightDto flight) throws Exception {
+    public int insertFlight(Map<String, Object> paramMap) throws Exception {
         logger.info("Starting for insertFlight");
-        int result = flightDao.insertFlight(flight);
+        int result = flightDao.insertFlight(paramMap);
         logger.info("Insert result: " + result);
         return result;
     }
@@ -64,5 +60,11 @@ public class FlightServiceImpl implements FlightService {
         int result = flightDao.updateFlightYN(paramMap);
         logger.info("Update Y/N result: " + result);
         return result;
+    }
+
+    @Override
+    public List<CountryDto> getCountries(Map<String, Object> paramMap) throws Exception {
+        logger.info("Selecting Countries from DAO");
+        return flightDao.getCountries(paramMap);
     }
 }

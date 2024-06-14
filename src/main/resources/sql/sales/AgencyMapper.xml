@@ -22,7 +22,7 @@
         FROM happytravel.TB_EMPLOYMENT_INFO
         WHERE DEPT_CODE = 3000
         AND STATUS_CODE = 1000
-        AND POS_CODE NOT IN (1000, 1100)
+<!--        AND POS_CODE NOT IN (1000, 1100)-->
         AND EMP_ID = #{empId}
         )
     </sql>
@@ -42,20 +42,22 @@
         TB_AGENCY_INFO a
         LEFT JOIN TB_COUNTRY_INFO c ON a.country_code = c.country_code
         WHERE <include refid="readCondition" />
+        AND IS_USED != 'N'
         ORDER BY
         agency_code
-        <!-- LIMIT #{pageIndex}, #{pageSize} -->
+        LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <!-- 전체 목록 카운트 -->
     <select id="getAgencyCnt" resultType="int" parameterType="hashmap">
         SELECT COUNT(agency_code)
         FROM TB_AGENCY_INFO
-        WHERE <include refid="readCondition"/>;
+        WHERE <include refid="readCondition"/>
+        AND IS_USED != 'N'
     </select>
 
     <!-- 단건 조회 -->
-    <select id="selectAgency" resultType="kr.happytravel.erp.sales.model.sales.AgencyModel">
+    <select id="selectAgency" resultType="kr.happytravel.erp.sales.dto.AgencyDto" parameterType="hashmap">
         SELECT
         a.agency_code,
         a.agency_name,
@@ -67,15 +69,15 @@
         FROM
         TB_AGENCY_INFO a
         LEFT JOIN TB_COUNTRY_INFO c ON f.COUNTRY_CODE = c.COUNTRY_CODE
-        WHERE <include refid="readCondition" />
-        AND agency_code = #{agencyCode}
-    </select>
-
-    <select id="getLastAgencyCode" resultType="string">
-        SELECT agency_code
-        FROM TB_AGENCY_INFO
-        ORDER BY agency_code DESC
-        LIMIT 1
+        WHERE
+        agency_code = #{agencyCode}
+        AND EXISTS (
+        SELECT 1
+        FROM happytravel.TB_EMPLOYMENT_INFO
+        WHERE EMP_ID = #{empId}
+        AND (DEPT_CODE = 3000 OR DEPT_CODE = 9000)
+        AND STATUS_CODE = 1000
+        )
     </select>
 
     <!-- 신규 등록 -->
@@ -84,37 +86,37 @@
         agency_code,
         agency_name,
         phone,
-        countryCode,
+        country_code,
         region,
         address,
         price,
         is_used
         ) VALUES (
-        #{agencyCode},
-        #{agencyName},
+        (SELECT CONCAT('A', LPAD(IFNULL(MAX(CAST(SUBSTRING(agency_code, 2) AS UNSIGNED)) + 1, 1), 3, '0'))
+        #{agency_name},
         #{phone},
-        #{countryCode},
+        #{country_code},
         #{region},
         #{address},
         #{price},
-        #{isUsed}
+        #{is_used}
         )
     </insert>
 
     <!-- 단건 수정 -->
-    <update id="updateAgency">
+    <update id="updateAgency" parameterType="hashmap">
         UPDATE TB_AGENCY_INFO
         SET
-        agency_name = #{agencyName},
+        agency_name = #{agency_name},
         phone = #{phone},
         country = #{country},
         region = #{region},
         address = #{address},
         price = #{price},
-        is_used = #{isUsed},
+        is_used = #{is_used},
         country_code = #{country_code}
         WHERE
-        agency_code = #{agencyCode}
+        agency_code = #{agency_code}
         AND <include refid="CRUDCondition"/>;
     </update>
 
@@ -126,5 +128,11 @@
         AGENCY_CODE = #{agencyCode}
         AND <include refid="CRUDCondition"/>;
     </update>
+
+    <select id="getCountries" resultType="kr.happytravel.erp.sales.dto.CountryDto" parameterType="hashmap">
+        SELECT *
+        FROM TB_COUNTRY_INFO
+        ORDER BY KOREAN_NAME
+    </select>
 
 </mapper>

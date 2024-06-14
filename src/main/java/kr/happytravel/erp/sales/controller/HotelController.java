@@ -118,7 +118,7 @@ public class HotelController {
         }
     }
 
-    @GetMapping("/countries")
+    @GetMapping("/hotel-countries")
     public ResponseEntity<List<CountryDto>> getCountries(@RequestParam Map<String, Object> paramMap) throws Exception {
         try {
             logger.info("Received request to get country information");
