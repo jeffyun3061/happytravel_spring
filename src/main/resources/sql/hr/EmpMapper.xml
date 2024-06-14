@@ -49,7 +49,7 @@
         ,emp.BANK_CODE
         ,emp.ACCOUNT_NO
         ,emp.SALARY
-        ,emp.REMAERKS
+        ,emp.REMARKS
         ,dep.DEPT_CODE
         ,dep.DEPT_NAME
         ,pos.POS_CODE
@@ -111,7 +111,7 @@
         ,emp.BANK_CODE
         ,emp.ACCOUNT_NO
         ,emp.SALARY
-        ,emp.REMAERKS
+        ,emp.REMARKS
         from TB_EMPLOYMENT_INFO emp
         where emp.EMP_ID = #{empId};
     </select>
@@ -208,7 +208,7 @@
             ,BANK_CODE
             ,ACCOUNT_NO
             ,SALARY
-            ,REMAERKS)
+            ,REMARKS)
         VALUES (
             #{empId}
             ,#{password}
@@ -228,7 +228,7 @@
             ,#{bankCode}
             ,#{accountNo}
             ,#{salary}
-            ,#{remaerks}
+            ,#{remarks}
             )
     </insert>
 
@@ -253,7 +253,7 @@
             BANK_CODE = #{bankCode},
             ACCOUNT_NO = #{accountNo},
             SALARY = #{salary},
-            REMAERKS = #{remaerks}
+            REMARKS = #{remarks}
         WHERE EMP_ID = #{empId}
     </update>
 

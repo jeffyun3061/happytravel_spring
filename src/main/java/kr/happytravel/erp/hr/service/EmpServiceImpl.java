@@ -2,19 +2,24 @@ package kr.happytravel.erp.hr.service;
 
 import kr.happytravel.erp.hr.dao.EmpDao;
 import kr.happytravel.erp.hr.model.EmpModel;
-import kr.happytravel.erp.salary.service.SalaryDataServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.rmi.server.ExportException;
 import java.time.Year;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class EmpServiceImpl implements EmpService {
 private final EmpDao empDao;
+
+    @Value("${IDPhoto.rootPath}")
+    private String rootPath;
+    @Value("${IDPhoto.rootPath_mac}")
+    private String rootPathMac;
+    @Value("${IDPhoto.subPath}")
+    private String subPath;
 
     /** 전체사원조회 */
     @Override

@@ -4,7 +4,6 @@ package kr.happytravel.erp.hr.service;
 import kr.happytravel.erp.hr.model.EmpModel;
 
 import java.util.List;
-import java.util.Map;
 
 public interface EmpService {
     /** 사원 전체 조회 */
@@ -36,7 +35,7 @@ public interface EmpService {
     // 사원 정보 중복 체크
     boolean checkDuplicate(String field, String value) throws Exception;
 
-    //신규 사원 등록
+    /** 신규 사원 등록 */
     void saveEmp(EmpModel saveEmpInfo) throws Exception;
 
     /** 사원 정보 수정 */
