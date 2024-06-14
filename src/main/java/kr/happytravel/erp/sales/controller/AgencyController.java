@@ -2,11 +2,7 @@ package kr.happytravel.erp.sales.controller;
 
 import kr.happytravel.erp.sales.dto.AgencyDto;
 import kr.happytravel.erp.sales.dto.CountryDto;
-import kr.happytravel.erp.sales.dto.HotelDto;
-import kr.happytravel.erp.sales.model.sales.AgencyModel;
-import kr.happytravel.erp.sales.model.sales.FlightModel;
 import kr.happytravel.erp.sales.service.AgencyService;
-import kr.happytravel.erp.util.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/sales")
@@ -30,7 +25,7 @@ public class AgencyController {
 
     // Create
     @PostMapping("/agency")
-    public ResponseEntity<Boolean> insertHotel(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
+    public ResponseEntity<Boolean> insertAgency(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to create agency: " + paramMap);
@@ -61,18 +56,18 @@ public class AgencyController {
     public ResponseEntity<AgencyDto> getAgency(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                  HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to get hotel with parameters: " + paramMap);
+            logger.info("Received request to get agency with parameters: " + paramMap);
             // 파라미터 확인
             if (!paramMap.containsKey("agencyCode") || !paramMap.containsKey("empId")) {
-                logger.warn("Missing required parameters: hotelCode or empId");
+                logger.warn("Missing required parameters: agencyCode or empId");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
             }
             AgencyDto agencyDto = agencyService.selectAgency(paramMap);
             if (agencyDto == null) {
-                logger.warn("Hotel not found with parameters: " + paramMap);
+                logger.warn("agency not found with parameters: " + paramMap);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
-            logger.info("Fetched hotel: " + agencyDto);
+            logger.info("Fetched agency: " + agencyDto);
             return ResponseEntity.ok(agencyDto);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
