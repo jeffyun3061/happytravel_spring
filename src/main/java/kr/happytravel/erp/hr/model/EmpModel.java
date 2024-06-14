@@ -72,9 +72,11 @@ public class EmpModel {
     @Getter
     private String remarks;
 
+
     @Setter
     @Getter
     private String deptName;
+
     @Setter
     @Getter
     private String posName;
