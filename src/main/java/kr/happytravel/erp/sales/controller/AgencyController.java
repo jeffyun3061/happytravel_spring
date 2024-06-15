@@ -43,7 +43,7 @@ public class AgencyController {
         try {
             logger.info("Received request with parameters: " + paramMap);
             List<AgencyDto> agencies = agencyService.getAgencyList(paramMap);
-            logger.info("Fetched " + agencies.size() + " flights.");
+            logger.info("Fetched " + agencies.size() + " agencies.");
             return ResponseEntity.ok(agencies);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);

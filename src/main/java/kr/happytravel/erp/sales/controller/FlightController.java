@@ -54,7 +54,7 @@ public class FlightController {
 
     // Read (Single)
     @GetMapping("/flight-detail")
-    public ResponseEntity<FlightDto> getFlight(FlightDto flight, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+    public ResponseEntity<FlightDto> getFlight(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                  HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to get flight with parameters: " + paramMap);
@@ -65,10 +65,10 @@ public class FlightController {
             }
             FlightDto flightDto = flightService.selectFlight(paramMap);
             if (flightDto == null) {
-                logger.warn("Hotel not found with parameters: " + paramMap);
+                logger.warn("Flight not found with parameters: " + paramMap);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
-            logger.info("Fetched hotel: " + flightDto);
+            logger.info("Fetched flight: " + flightDto);
             return ResponseEntity.ok(flightDto);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
