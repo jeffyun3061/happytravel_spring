@@ -99,7 +99,7 @@
         #{country_code},
         #{address},
         #{price},
-        #{is_used}
+        'Y'
         )
     </insert>
 

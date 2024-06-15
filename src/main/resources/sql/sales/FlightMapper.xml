@@ -90,7 +90,7 @@
 
 
     <!-- 신규 등록 -->
-    <insert id="insertFlight">
+    <insert id="insertFlight" parameterType="hashmap">
         INSERT INTO TB_FLIGHT_INFO (
         flight_code,
         airline,
@@ -101,10 +101,10 @@
         destination,
         arrival_time,
         price,
-        is_used
+        is_used,
         country_code
         ) VALUES (
-        (SELECT CONCAT('F', LPAD(IFNULL(MAX(CAST(SUBSTRING(hotel_code, 2) AS UNSIGNED)) + 1, 1), 3, '0'))
+        (SELECT CONCAT('F', LPAD(IFNULL(MAX(CAST(SUBSTRING(flight_code, 2) AS UNSIGNED)) + 1, 1), 3, '0'))
         FROM TB_FLIGHT_INFO f),
         #{airline},
         #{flight_number},
@@ -114,17 +114,17 @@
         #{destination},
         #{arrival_time},
         #{price},
-        #{isUsed},
+        'Y',
         #{country_code}
-        )
+        );
     </insert>
 
     <!-- 단건 수정 -->
     <update id="updateFlight" parameterType="hashmap">
         UPDATE TB_FLIGHT_INFO
         SET
-        airline = #{airline},
         flight_number = #{flight_number},
+        airline = #{airline},
         phone = #{phone},
         departure = #{departure},
         departure_time = #{departure_time},

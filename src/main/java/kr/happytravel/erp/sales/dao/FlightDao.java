@@ -19,7 +19,7 @@ public interface FlightDao {
     FlightDto selectFlight(Map<String, Object> paramMap) throws Exception;
 
     // 항공권 단건 저장
-    int  insertFlight(Map<String, Object> paramMap) throws Exception;
+    int insertFlight(Map<String, Object> paramMap) throws Exception;
 
     // 항공권 단건 수정
     int updateFlight(Map<String, Object> paramMap) throws Exception;

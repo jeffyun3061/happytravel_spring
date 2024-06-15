@@ -77,12 +77,12 @@ public class FlightController {
     }
 
     @GetMapping("/flight-count")
-    public ResponseEntity<?> getHotelCnt(@RequestParam(required = true) Map<String, Object> paramMap) {
+    public ResponseEntity<?> getFlightCnt(@RequestParam(required = true) Map<String, Object> paramMap) {
         try {
             logger.info("Received request with parameters: " + paramMap);
             int result = flightService.getFlightCnt(paramMap);
             if (result == 0) {
-                logger.warn("HotelCnt not found with parameters: " + paramMap);
+                logger.warn("FlightCnt not found with parameters: " + paramMap);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
             }
             return ResponseEntity.ok(result);
