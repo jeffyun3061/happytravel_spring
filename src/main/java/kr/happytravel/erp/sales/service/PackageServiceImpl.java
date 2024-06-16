@@ -1,9 +1,7 @@
 package kr.happytravel.erp.sales.service;
 
 import kr.happytravel.erp.sales.dao.PackageDao;
-import kr.happytravel.erp.sales.model.sales.packages.CountryDTO;
-import kr.happytravel.erp.sales.model.sales.packages.PackageDTO;
-import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
+import kr.happytravel.erp.sales.model.sales.packages.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -81,5 +79,47 @@ public class PackageServiceImpl implements PackageService {
     public List<CountryDTO> getCountries(Map<String, Object> paramMap) throws Exception {
         logger.info("Selecting Countries from DAO");
         return packageDao.getCountries(paramMap);
+    }
+
+    @Override
+    public List<FlightListDTO> getFlightList(Map<String, Object> paramMap) throws Exception {
+        // limit와 offset를 정수형으로 변환
+        paramMap.put("limit", Integer.parseInt(paramMap.get("limit").toString()));
+        paramMap.put("offset", Integer.parseInt(paramMap.get("offset").toString()));
+
+        return packageDao.getFlightList(paramMap);
+    }
+
+    @Override
+    public int getFlightCnt(Map<String, Object> paramMap) throws Exception {
+        return packageDao.getFlightCnt(paramMap);
+    }
+
+    @Override
+    public List<HotelListDTO> getHotelList(Map<String, Object> paramMap) throws Exception {
+        // limit와 offset를 정수형으로 변환
+        paramMap.put("limit", Integer.parseInt(paramMap.get("limit").toString()));
+        paramMap.put("offset", Integer.parseInt(paramMap.get("offset").toString()));
+
+        return packageDao.getHotelList(paramMap);
+    }
+
+    @Override
+    public int getHotelCnt(Map<String, Object> paramMap) throws Exception {
+        return packageDao.getHotelCnt(paramMap);
+    }
+
+    @Override
+    public List<AgencyListDTO> getAgencyList(Map<String, Object> paramMap) throws Exception {
+        // limit와 offset를 정수형으로 변환
+        paramMap.put("limit", Integer.parseInt(paramMap.get("limit").toString()));
+        paramMap.put("offset", Integer.parseInt(paramMap.get("offset").toString()));
+
+        return packageDao.getAgencyList(paramMap);
+    }
+
+    @Override
+    public int getAgencyCnt(Map<String, Object> paramMap) throws Exception {
+        return packageDao.getAgencyCnt(paramMap);
     }
 }
