@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.*;
+import com.google.firebase.cloud.StorageClient;
+import com.google.cloud.storage.Blob;
 
 @RestController
 @RequestMapping("/sales")
@@ -90,6 +92,42 @@ public class HotelController {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @PostMapping("/getImageUrl")
+    public ResponseEntity<?> getImageUrl(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
+                                         HttpServletResponse response, HttpSession session) throws Exception {
+        try {
+            String hotelCode = (String) paramMap.get("hotelCode");
+            if (hotelCode == null) {
+                return ResponseEntity.badRequest().body("Hotel code is missing");
+            }
+
+            String imageUrl = fetchImageUrl(hotelCode);
+            if (imageUrl == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
+            }
+
+            return ResponseEntity.ok(imageUrl);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    private String fetchImageUrl(String hotelCode) {
+        String[] extensions = {"jpg", "jpeg", "png"};
+        for (String ext : extensions) {
+            String filePath = "images/" + hotelCode + "." + ext;
+            try {
+                Blob blob = StorageClient.getInstance().bucket().get(filePath);
+                if (blob != null && blob.exists()) {
+                    return blob.getMediaLink();
+                }
+            } catch (Exception e) {
+                // Log and ignore errors, continue with next extension
+            }
+        }
+        return null;
     }
 
     // Update
