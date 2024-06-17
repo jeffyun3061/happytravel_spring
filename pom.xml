@@ -40,6 +40,7 @@
             <version>${log4j2.version}</version>
         </dependency>
 
+
         <!-- Annotation @Resource 등 위해서 추가 -->
         <dependency>
             <groupId>javax.annotation</groupId>
