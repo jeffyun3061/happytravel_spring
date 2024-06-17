@@ -7,8 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -76,19 +81,33 @@ public class EmpController {
         }
     }
 
-    /** 사원 단건 조회 */
+
+/** 사원 단건 조회 */
     @GetMapping("/emp-info")
-    public ResponseEntity<EmpModel> getEmpInfo(@RequestParam String empId, HttpServletRequest request,
+    public ResponseEntity<Map<String, Object>> getEmpInfo(@RequestParam String empId, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to get emp with parameters: " + empId);
             EmpModel emp = empService.getEmpInfo(empId);
+            String photoUrl = emp.getPhotoUrl();
+            Path filePath = Paths.get(photoUrl).normalize();
+            System.out.println(filePath);
+            System.out.println(filePath.toUri());
+            Resource resource = new UrlResource(filePath.toUri());
             if(emp == null) {
                 logger.warn("Emp not found with parameters: " + empId);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
             logger.info("Fetched emp: " + emp);
-            return ResponseEntity.ok(emp);
+
+            byte[] imageData = StreamUtils.copyToByteArray(resource.getInputStream());
+            String base64ImageData = Base64.getEncoder().encodeToString(imageData);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("imageData", base64ImageData);
+            result.put("employee", emp);
+
+            return ResponseEntity.ok(result);
         } catch (IllegalArgumentException e) {
             logger.warn("Invalid argument: " + e.getMessage());
             throw e;
