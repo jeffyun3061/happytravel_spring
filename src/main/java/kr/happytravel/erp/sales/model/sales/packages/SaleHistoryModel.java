@@ -1,5 +1,6 @@
-package kr.happytravel.erp.sales.model.sales;
+package kr.happytravel.erp.sales.model.sales.packages;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -8,21 +9,24 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AgencyModel {
+public class SaleHistoryModel {
+    // pk
+    private int seq;
+    private String packageCode;
+    // 인원수
+    private int count;
+    private String paymentCode;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMddHHmm")
+    private Date paymentDate;
 
-    private String agencyCode; // AGENCY_CODE
-    private String agencyName; // AGENCY_NAME
-    private String phone; // PHONE
-    private String country; // COUNTRY
-    private String region; // REGION
-    private String address; // ADDRESS
-    private int price; // PRICE
-    private String isUsed; // IS_USED
 
 }
