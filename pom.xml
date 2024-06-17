@@ -182,16 +182,6 @@
             <version>8.1.0</version>
         </dependency>
 
-        <!-- SLF4J API -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.36</version>
-        </dependency>
-
-
-
-
         <!-- JUnit for testing -->
         <dependency>
             <groupId>junit</groupId>
