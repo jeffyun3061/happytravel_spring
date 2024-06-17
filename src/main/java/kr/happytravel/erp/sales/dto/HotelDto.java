@@ -18,9 +18,11 @@ public class HotelDto {
     private String hotelCode;
     private String hotelName;
     private String phone;
+    private String countryCode;
     private String country;
     private String address;
     private int price;
     private String isUsed;
+    private String imageUrl;
 }
 

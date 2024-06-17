@@ -21,5 +21,6 @@ public class HotelModel {
     private String address;
     private int price;
     private String isUsed;
+    private String imageUrl;
 
 }
