@@ -21,9 +21,9 @@ public class AttendanceManagementModel {
     private String attendanceCode; // ATTENDANCE_CODE
     private String empId;   // EMP_ID
     private String attendanceTypeCode; // ATTENDANCE_TYPE_CODE
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date startDate; // START_DATE
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date endDate; // END_DATE
     private String assignCode; // ASSIGN_CODE
     private String assignEmpId; // ASSIGN_EMP_ID
