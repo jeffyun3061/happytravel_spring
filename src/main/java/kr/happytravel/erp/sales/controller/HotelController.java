@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.*;
+import com.google.firebase.cloud.StorageClient;
+import com.google.cloud.storage.Blob;
 
 @RestController
 @RequestMapping("/sales")
@@ -92,6 +94,42 @@ public class HotelController {
         }
     }
 
+    @PostMapping("/getImageUrl")
+    public ResponseEntity<?> getImageUrl(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
+                                         HttpServletResponse response, HttpSession session) throws Exception {
+        try {
+            String hotelCode = (String) paramMap.get("hotelCode");
+            if (hotelCode == null) {
+                return ResponseEntity.badRequest().body("Hotel code is missing");
+            }
+
+            String imageUrl = fetchImageUrl(hotelCode);
+            if (imageUrl == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
+            }
+
+            return ResponseEntity.ok(imageUrl);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    private String fetchImageUrl(String hotelCode) {
+        String[] extensions = {"jpg", "jpeg", "png"};
+        for (String ext : extensions) {
+            String filePath = "images/" + hotelCode + "." + ext;
+            try {
+                Blob blob = StorageClient.getInstance().bucket().get(filePath);
+                if (blob != null && blob.exists()) {
+                    return blob.getMediaLink();
+                }
+            } catch (Exception e) {
+                // Log and ignore errors, continue with next extension
+            }
+        }
+        return null;
+    }
+
     // Update
     @PutMapping("/hotel")
     public ResponseEntity<Boolean> updateHotel(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
@@ -118,7 +156,7 @@ public class HotelController {
         }
     }
 
-    @GetMapping("/countries")
+    @GetMapping("/hotel-countries")
     public ResponseEntity<List<CountryDto>> getCountries(@RequestParam Map<String, Object> paramMap) throws Exception {
         try {
             logger.info("Received request to get country information");

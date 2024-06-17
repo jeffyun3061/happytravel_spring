@@ -1,10 +1,8 @@
 package kr.happytravel.erp.sales.controller;
 
 import kr.happytravel.erp.sales.dto.AgencyDto;
-import kr.happytravel.erp.sales.model.sales.AgencyModel;
-import kr.happytravel.erp.sales.model.sales.FlightModel;
+import kr.happytravel.erp.sales.dto.CountryDto;
 import kr.happytravel.erp.sales.service.AgencyService;
-import kr.happytravel.erp.util.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/sales")
@@ -28,35 +25,26 @@ public class AgencyController {
 
     // Create
     @PostMapping("/agency")
-    public ResponseEntity<String> createAgency(@RequestBody AgencyDto agency, HttpServletRequest request,
+    public ResponseEntity<Boolean> insertAgency(@RequestBody Map<String, Object> paramMap, HttpServletRequest request,
                                                HttpServletResponse response, HttpSession session) throws Exception {
         try {
-            logger.info("Received request to create hotel: " + agency);
-
-            String lastAgencyCode = agencyService.getLastAgencyCode();
-            String newAgencyCode = CodeGenerator.generateNewCode(lastAgencyCode, "A");
-
-            agency.setAgencyCode(newAgencyCode);
-
-            agencyService.insertAgency(agency);
-            return ResponseEntity.ok("Agency created successfully");
+            logger.info("Received request to create agency: " + paramMap);
+            return ResponseEntity.ok(agencyService.insertAgency(paramMap)==1);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            return ResponseEntity.ok("error");
+            return ResponseEntity.ok(false);
         }
     }
 
     // Read (List)
     @GetMapping("/agency-list")
-    public ResponseEntity<List<AgencyModel>> getAgencyList(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+    public ResponseEntity<List<AgencyDto>> getAgencyList(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                            HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request with parameters: " + paramMap);
-            String empId = Optional.ofNullable((String) paramMap.get("empId")).orElse("EMP30002"); // 기본 empId 설정
-            paramMap.put("empId", empId);
-            List<AgencyModel> agencys = agencyService.getAgencyList(paramMap);
-            logger.info("Fetched " + agencys.size() + " flights.");
-            return ResponseEntity.ok(agencys);
+            List<AgencyDto> agencies = agencyService.getAgencyList(paramMap);
+            logger.info("Fetched " + agencies.size() + " agencies.");
+            return ResponseEntity.ok(agencies);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             throw e;
@@ -64,24 +52,43 @@ public class AgencyController {
     }
 
     // Read (Single)
-    @GetMapping("/agency")
-    public ResponseEntity<AgencyModel> getAgency(AgencyDto agency, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+    @GetMapping("/agency-detail")
+    public ResponseEntity<AgencyDto> getAgency(@RequestParam Map<String, Object> paramMap, HttpServletRequest request,
                                                  HttpServletResponse response, HttpSession session) throws Exception {
         try {
             logger.info("Received request to get agency with parameters: " + paramMap);
-            AgencyModel agencyModel = agencyService.selectAgency(agency);
-            if (agency == null) {
-                logger.warn("Agency not found with parameters: " + paramMap);
+            // 파라미터 확인
+            if (!paramMap.containsKey("agencyCode") || !paramMap.containsKey("empId")) {
+                logger.warn("Missing required parameters: agencyCode or empId");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            }
+            AgencyDto agencyDto = agencyService.selectAgency(paramMap);
+            if (agencyDto == null) {
+                logger.warn("agency not found with parameters: " + paramMap);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
-            logger.info("Fetched agency: " + agency);
-            return ResponseEntity.ok(agencyModel);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
+            logger.info("Fetched agency: " + agencyDto);
+            return ResponseEntity.ok(agencyDto);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
-            throw e;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
+    @GetMapping("/agency-count")
+    public ResponseEntity<?> getAgencyCnt(@RequestParam(required = true) Map<String, Object> paramMap) {
+        try {
+            logger.info("Received request with parameters: " + paramMap);
+            int result = agencyService.getAgencyCnt(paramMap);
+            if (result == 0) {
+                logger.warn("AgencyCnt not found with parameters: " + paramMap);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
         }
     }
 
@@ -108,6 +115,17 @@ public class AgencyController {
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.ok(false);
+        }
+    }
+
+    @GetMapping("/agency-countries")
+    public ResponseEntity<List<CountryDto>> getCountries(@RequestParam Map<String, Object> paramMap) throws Exception {
+        try {
+            logger.info("Received request to get country information");
+            return ResponseEntity.ok(agencyService.getCountries(paramMap));
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }
