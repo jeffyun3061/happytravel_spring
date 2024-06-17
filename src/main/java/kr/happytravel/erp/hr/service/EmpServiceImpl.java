@@ -3,7 +3,6 @@ package kr.happytravel.erp.hr.service;
 import kr.happytravel.erp.hr.dao.EmpDao;
 import kr.happytravel.erp.hr.model.EmpModel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Year;
@@ -14,12 +13,6 @@ import java.util.List;
 public class EmpServiceImpl implements EmpService {
 private final EmpDao empDao;
 
-    @Value("${IDPhoto.rootPath}")
-    private String rootPath;
-    @Value("${IDPhoto.rootPath_mac}")
-    private String rootPathMac;
-    @Value("${IDPhoto.subPath}")
-    private String subPath;
 
     /** 전체사원조회 */
     @Override
@@ -82,6 +75,7 @@ private final EmpDao empDao;
         return currentYear + String.format("%04d", newEmpId);
     }
 
+    /** 사원 정보 중복 체크 */
     @Override
     public boolean checkDuplicate(String field, String value) throws Exception {
         try {
