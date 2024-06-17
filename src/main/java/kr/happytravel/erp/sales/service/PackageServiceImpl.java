@@ -5,7 +5,6 @@ import kr.happytravel.erp.sales.model.sales.packages.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,7 +81,7 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public List<FlightListDTO> getFlightList(Map<String, Object> paramMap) throws Exception {
+    public List<PartnerListDTO> getFlightList(Map<String, Object> paramMap) throws Exception {
         // limit와 offset를 정수형으로 변환
         paramMap.put("limit", Integer.parseInt(paramMap.get("limit").toString()));
         paramMap.put("offset", Integer.parseInt(paramMap.get("offset").toString()));
@@ -96,7 +95,7 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public List<HotelListDTO> getHotelList(Map<String, Object> paramMap) throws Exception {
+    public List<PartnerListDTO> getHotelList(Map<String, Object> paramMap) throws Exception {
         // limit와 offset를 정수형으로 변환
         paramMap.put("limit", Integer.parseInt(paramMap.get("limit").toString()));
         paramMap.put("offset", Integer.parseInt(paramMap.get("offset").toString()));
@@ -110,7 +109,7 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public List<AgencyListDTO> getAgencyList(Map<String, Object> paramMap) throws Exception {
+    public List<PartnerListDTO> getAgencyList(Map<String, Object> paramMap) throws Exception {
         // limit와 offset를 정수형으로 변환
         paramMap.put("limit", Integer.parseInt(paramMap.get("limit").toString()));
         paramMap.put("offset", Integer.parseInt(paramMap.get("offset").toString()));

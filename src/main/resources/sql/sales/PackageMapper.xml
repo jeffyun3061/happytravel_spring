@@ -262,11 +262,14 @@
     </select>
 
     <!-- 선택한 국가 항공권 목록 조회 -->
-    <select id="getFlightList" resultType="kr.happytravel.erp.sales.model.sales.packages.FlightListDTO"
+    <select id="getFlightList" resultType="kr.happytravel.erp.sales.model.sales.packages.PartnerListDTO"
             parameterType="hashmap">
         SELECT
-        flight_code,
-        airline,
+        flight_code as code,
+        airline as name,
+        destination as region,
+        f.country_code,
+        price,
         c.KOREAN_NAME as country
         FROM
         TB_FLIGHT_INFO f
@@ -274,7 +277,7 @@
         WHERE
         <include refid="readCondition"/>
         AND IS_USED != 'N'
-        AND COUNTRY_CODE = #{countryCode}
+        AND f.COUNTRY_CODE = #{countryCode}
         ORDER BY
         flight_code
         LIMIT #{limit} OFFSET #{offset}
@@ -291,12 +294,12 @@
     </select>
 
     <!-- 선택한 국가 호텔 목록 조회 -->
-    <select id="getHotelList" resultType="kr.happytravel.erp.sales.model.sales.packages.HotelListDTO"
+    <select id="getHotelList" resultType="kr.happytravel.erp.sales.model.sales.packages.PartnerListDTO"
             parameterType="hashmap">
         SELECT
-        hotel_code,
-        hotelName,
-        country_code,
+        hotel_code as code,
+        hotel_name as name,
+        h.country_code,
         region,
         price,
         c.KOREAN_NAME as country
@@ -306,7 +309,7 @@
         WHERE
         <include refid="readCondition"/>
         AND IS_USED != 'N'
-        AND COUNTRY_CODE = #{countryCode}
+        AND h.COUNTRY_CODE = #{countryCode}
         ORDER BY
         hotel_code
         LIMIT #{limit} OFFSET #{offset}
@@ -323,22 +326,22 @@
     </select>
 
     <!-- 선택한 국가 호텔 목록 조회 -->
-    <select id="getAgencyList" resultType="kr.happytravel.erp.sales.model.sales.packages.AgencyListDTO"
+    <select id="getAgencyList" resultType="kr.happytravel.erp.sales.model.sales.packages.PartnerListDTO"
             parameterType="hashmap">
         SELECT
-        agency_code,
-        agencyName,
-        country_code,
+        agency_code as code,
+        agency_name as name,
+        a.country_code,
         region,
         price,
         c.KOREAN_NAME as country
         FROM
-        TB_HOTEL_INFO a
+        TB_AGENCY_INFO a
         LEFT JOIN TB_COUNTRY_INFO c ON c.COUNTRY_CODE = a.COUNTRY_CODE
         WHERE
         <include refid="readCondition"/>
         AND IS_USED != 'N'
-        AND COUNTRY_CODE = #{countryCode}
+        AND a.COUNTRY_CODE = #{countryCode}
         ORDER BY
         agency_code
         LIMIT #{limit} OFFSET #{offset}

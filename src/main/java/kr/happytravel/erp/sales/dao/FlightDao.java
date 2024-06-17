@@ -2,7 +2,6 @@ package kr.happytravel.erp.sales.dao;
 
 import kr.happytravel.erp.sales.dto.CountryDto;
 import kr.happytravel.erp.sales.dto.FlightDto;
-import kr.happytravel.erp.sales.model.sales.FlightModel;
 
 import java.util.List;
 import java.util.Map;

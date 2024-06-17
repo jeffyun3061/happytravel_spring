@@ -29,15 +29,15 @@ public interface PackageDao {
 
     List<CountryDTO> getCountries(Map<String, Object> paramMap) throws Exception;
 
-    List<FlightListDTO> getFlightList(Map<String, Object> paramMap) throws Exception;
+    List<PartnerListDTO> getFlightList(Map<String, Object> paramMap) throws Exception;
 
     int getFlightCnt(Map<String, Object> paramMap) throws Exception;
 
-    List<HotelListDTO> getHotelList(Map<String, Object> paramMap) throws Exception;
+    List<PartnerListDTO> getHotelList(Map<String, Object> paramMap) throws Exception;
 
     int getHotelCnt(Map<String, Object> paramMap) throws Exception;
 
-    List<AgencyListDTO> getAgencyList(Map<String, Object> paramMap) throws Exception;
+    List<PartnerListDTO> getAgencyList(Map<String, Object> paramMap) throws Exception;
 
     int getAgencyCnt(Map<String, Object> paramMap) throws Exception;
 }

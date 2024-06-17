@@ -1,8 +1,6 @@
 package kr.happytravel.erp.sales.controller;
 
-import kr.happytravel.erp.sales.model.sales.packages.CountryDTO;
-import kr.happytravel.erp.sales.model.sales.packages.PackageDTO;
-import kr.happytravel.erp.sales.model.sales.packages.PackageListDTO;
+import kr.happytravel.erp.sales.model.sales.packages.*;
 import kr.happytravel.erp.sales.service.PackageService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -131,6 +129,87 @@ public class PackageController {
         try {
             logger.info("Received request to get country informations");
             return ResponseEntity.ok(packageService.getCountries(paramMap));
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("partner-flights")
+    public ResponseEntity<List<PartnerListDTO>> getFlightList(@RequestParam Map<String, Object> paramMap) throws Exception {
+        try {
+            logger.info("Received request to get flight list: " + paramMap );
+            return ResponseEntity.ok(packageService.getFlightList(paramMap));
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("partner-flight-count")
+    public ResponseEntity<?> getFlightCnt(@RequestParam Map<String, Object> paramMap) throws Exception {
+        try {
+            logger.info("Received request to get flight counts");
+            int result = packageService.getFlightCnt(paramMap);
+            if (result == 0) {
+                logger.warn("FlightCnt not found with parameters: " + paramMap);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("partner-hotels")
+    public ResponseEntity<List<PartnerListDTO>> getHotelList(@RequestParam Map<String, Object> paramMap) throws Exception {
+        try {
+            logger.info("Received request to get hotel list");
+            return ResponseEntity.ok(packageService.getHotelList(paramMap));
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("partner-hotel-count")
+    public ResponseEntity<?> getHotelCnt(@RequestParam Map<String, Object> paramMap) throws Exception {
+        try {
+            logger.info("Received request to get hotel counts");
+            int result = packageService.getHotelCnt(paramMap);
+            if (result == 0) {
+                logger.warn("HotelCnt not found with parameters: " + paramMap);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("partner-agencies")
+    public ResponseEntity<List<PartnerListDTO>> getAgencyList(@RequestParam Map<String, Object> paramMap) throws Exception {
+        try {
+            logger.info("Received request to get agency list");
+            return ResponseEntity.ok(packageService.getAgencyList(paramMap));
+        } catch (Exception e) {
+            logger.error("An error occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("partner-agency-count")
+    public ResponseEntity<?> getAgencyCnt(@RequestParam Map<String, Object> paramMap) throws Exception {
+        try {
+            logger.info("Received request to get agency counts");
+            int result = packageService.getAgencyCnt(paramMap);
+            if (result == 0) {
+                logger.warn("AgencyCnt not found with parameters: " + paramMap);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+            }
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("An error occurred: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

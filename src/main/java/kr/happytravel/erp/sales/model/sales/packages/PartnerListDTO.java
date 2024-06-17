@@ -10,9 +10,10 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AgencyListDTO {
-    private String agencyCode;
-    private String agencyName;
+public class PartnerListDTO {
+    private String code;
+    private String name;
+    private String country;
     private String countryCode;
     private String region;
     private int price;
