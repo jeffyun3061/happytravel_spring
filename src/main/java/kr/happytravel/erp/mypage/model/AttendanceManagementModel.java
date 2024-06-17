@@ -1,4 +1,4 @@
-package kr.happytravel.erp.attendances.model;
+package kr.happytravel.erp.mypage.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,17 +18,15 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AttendanceManagementModel {
-    private String attendanceCode; // ATTENDANCE_CODE
     private String empId;   // EMP_ID
     private String attendanceTypeCode; // ATTENDANCE_TYPE_CODE
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
     private Date startDate; // START_DATE
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
     private Date endDate; // END_DATE
     private String assignCode; // ASSIGN_CODE
-    private String assignEmpId; // ASSIGN_EMP_ID
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
-    private Date creationDate; // CREATE_DATE
     private String reason; // REASON
     private String title; // TITLE
+    private String attendanceTypeName; // ATTENDANCE_TYPE_NAME
+    private String assignName; // ASSIGN_NAME
 }

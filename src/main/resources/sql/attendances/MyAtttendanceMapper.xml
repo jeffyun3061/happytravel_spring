@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happytravel.erp.attendances.dao.MyAttendanceDao">
+    <select id="getMyAttendanceList" parameterType="string" resultType="kr.happytravel.erp.attendances.model.MyAttendanceResponseModel">
+            SELECT
+                IN_TIME as inTime,
+                OUT_TIME as outTime,
+                TODAY as day
+            FROM
+                TB_ATTENDANCE
+            WHERE
+                EMP_ID = #{empId}
+    </select>
+
+
+    <select id="getMyVacationList" parameterType="string" resultType="kr.happytravel.erp.attendances.model.MyVacationResponseModel">
+        SELECT
+            START_DATE as startDate,
+            END_DATE as endDate
+        FROM
+            TB_ATTENDANCE_MANAGEMENT
+        WHERE
+            EMP_ID = #{empId}
+            AND ATTENDANCE_TYPE_CODE IN ('5000', '5100', '5500')
+            AND ASSIGN_CODE = '2000'
+    </select>
+</mapper>
