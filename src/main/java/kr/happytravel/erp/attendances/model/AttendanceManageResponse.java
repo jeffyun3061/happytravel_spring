@@ -17,12 +17,9 @@ public class AttendanceManageResponse {
     private String positionName;
     private String departmentName;
     private String attendanceTypeName;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date startDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date endDate;
+    private String startDate;
+    private String endDate;
     private String reason;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date creationDate;
+    private String creationDate;
     private String title;
 }
