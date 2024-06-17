@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -39,8 +38,6 @@ public class EmpController {
     private String rootPath;
     @Value("${IDPhoto.mainPath}")
     private String mainPath;
-    @Value("${IDPhoto.rootPath_mac}")
-    private String rootPathMac;
     @Value("${IDPhoto.subPath}")
     private String subPath;
 
@@ -153,18 +150,6 @@ public class EmpController {
         }
     }
 
-    // 사원 정보 중복 체크
-    @GetMapping("/emp/check-duplicate")
-    public ResponseEntity<Boolean> checkDuplicate(@RequestParam String field, @RequestParam String value) {
-        try {
-            logger.info("Checking for duplicate field: " + field + ", value: " + value);
-            boolean isDuplicate = empService.checkDuplicate(field, value);
-            return ResponseEntity.ok(isDuplicate);
-        } catch (Exception e) {
-            logger.error("An error occurred while checking duplicate: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
-        }
-    }
 
     /** 신규 사원 등록 */
     @PostMapping("/emp/save")
@@ -173,20 +158,21 @@ public class EmpController {
             logger.info("Received request to save emp with parameters: {}", saveEmpInfo);
             logger.info("Received request to save emp with file: {}", file);
 
-//         if (empService.checkDuplicate("ssn", saveEmpInfo.getSsn())) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate SSN");
-//         }
-//         if (empService.checkDuplicate("mobile", saveEmpInfo.getMobile())) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Mobile");
-//         }
-//         if (empService.checkDuplicate("bank_code", saveEmpInfo.getBankCode() + "-" + saveEmpInfo.getAccountNo())) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Bank Account");
-//         }
+         if (empService.checkDuplicate("ssn", saveEmpInfo.getSsn())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate SSN");
+         }
+         if (empService.checkDuplicate("mobile", saveEmpInfo.getMobile())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Mobile");
+         }
+         if (empService.checkDuplicate("bank_code", saveEmpInfo.getBankCode() + "-" + saveEmpInfo.getAccountNo())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Bank Account");
+         }
             // 파일 처리
             if (file != null && !file.isEmpty()) { // 파일이 null이 아니고 비어 있지 않은지 확인
                 String fileName = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 가져와서 클린 패스를 적용
-                Path uploadPath = File.separator.equals("/") ? Paths.get(rootPath, mainPath, subPath) : Paths.get(rootPathMac, subPath);// 업로드 경로를 설정 (예: "uploads/12345")
 
+                Path uploadPath = getUploadPath();
+                System.out.println("uploadPath: "+uploadPath);
                 if (!Files.exists(uploadPath)) { // 업로드 경로가 존재하지 않으면
                     Files.createDirectories(uploadPath); // 업로드 경로 디렉토리를 생성
                 }
@@ -210,9 +196,23 @@ public class EmpController {
         }
     }
 
+    //공통모듈로 빼기
+    private Path getUploadPath() {
+        String os = System.getProperty("os.name").toLowerCase();
+        String basePath;
+        if (os.contains("win")) {
+            basePath = "\\\\serverr";
+        } else if (os.contains("mac")) {
+            basePath = "/Volumes";
+        } else {
+            throw new RuntimeException("지원되지 않는 운영 체제입니다: " + os);
+        }
+        return Paths.get(basePath, rootPath, mainPath, subPath);
+    }
+
     /** 비밀번호 수정 유효성 검사 */
     private boolean isValidPassword(String password) {
-        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\d\\s]).{8,}$";
+        String regex = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,}$";
         Pattern pattern = Pattern.compile(regex);
         return pattern.matcher(password).matches();
     }
@@ -223,19 +223,40 @@ public class EmpController {
         try {
             logger.info("Received request to update emp with parameters: " + updateEmpInfo);
 
-            if (!isValidPassword(updateEmpInfo.getPassword())) {
+            if (!isValidPassword(updateEmpInfo.getPassword()) && !updateEmpInfo.getPassword().equals("000000")  ) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Password");
             }
 
-            if (empService.checkDuplicate("ssn", updateEmpInfo.getSsn())) {
+            if (!empService.checkDuplicate("ssn", updateEmpInfo.getSsn())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate SSN");
             }
-            if (empService.checkDuplicate("mobile", updateEmpInfo.getMobile())) {
+            if (!empService.checkDuplicate("mobile", updateEmpInfo.getMobile())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Mobile");
             }
-            if (empService.checkDuplicate("bank_code", updateEmpInfo.getBankCode() + "-" + updateEmpInfo.getAccountNo())) {
+            if (!empService.checkDuplicate("bank_code", updateEmpInfo.getBankCode() + "-" + updateEmpInfo.getAccountNo())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Bank Account");
             }
+
+            // 파일 처리
+            if (file != null && !file.isEmpty()) { // 파일이 null이 아니고 비어 있지 않은지 확인
+                String fileName = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 가져와서 클린 패스를 적용
+
+                Path uploadPath = getUploadPath();
+                System.out.println("uploadPath: "+uploadPath);
+                if (!Files.exists(uploadPath)) { // 업로드 경로가 존재하지 않으면
+                    Files.createDirectories(uploadPath); // 업로드 경로 디렉토리를 생성
+                }
+                try (InputStream inputStream = file.getInputStream()) { // 파일의 InputStream을 얻어 try-with-resources 구문을 사용하여 자동으로 닫힘 처리
+                    Path filePath = uploadPath.resolve(fileName); // 파일 경로를 생성 (예: "uploads/12345/filename.png")
+                    Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING); // InputStream을 파일 경로에 복사, 기존 파일이 있을 경우 덮어쓰기
+
+                    // 파일 URL 설정
+                    updateEmpInfo.setPhotoUrl(filePath.toString()); // 저장된 파일의 URL을 설정
+                } catch (IOException e) { // 파일 저장 중 오류가 발생한 경우
+                    throw new RuntimeException("파일 저장 중 오류 발생: " + fileName, e); // 예외를 던져 호출자가 인지할 수 있도록 처리
+                }
+            }
+
             empService.updateEmp(updateEmpInfo);
             salaryDataService.initSalaryData(updateEmpInfo.getEmpId(), Integer.parseInt(updateEmpInfo.getSalary()));
             return ResponseEntity.ok("Employee updated successfully");

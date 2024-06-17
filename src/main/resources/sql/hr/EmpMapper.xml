@@ -172,8 +172,8 @@
                 <when test="field == 'mobile'">
                     mobile = #{value}
                 </when>
-                <when test="field == 'bank'">
-                    CONCAT(bank_code, '-', account_no) = #{value}
+                <when test="field == 'bank_code'">
+                    #{value} IN (SELECT CONCAT(bank_code, '-', account_no) FROM TB_EMPLOYMENT_INFO)
                 </when>
             </choose>
         </where>
