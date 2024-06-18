@@ -1,21 +1,20 @@
 package kr.happytravel.erp.sales.dao;
 
-import kr.happytravel.erp.sales.model.sales.AgencyModel;
+import kr.happytravel.erp.sales.dto.AgencyDto;
+import kr.happytravel.erp.sales.dto.CountryDto;
 import java.util.List;
 import java.util.Map;
 
 public interface AgencyDao {
 
     // 에이전시 전체 조회
-    List<AgencyModel> getAgencyList(Map<String, Object> paramMap) throws Exception;
+    List<AgencyDto> getAgencyList(Map<String, Object> paramMap) throws Exception;
 
     // 에이전시 전체 조회 카운트
     int getAgencyCnt(Map<String, Object> paramMap) throws Exception;
 
-    String getLastAgencyCode();
-
     // 에이전시 단건 조회
-    AgencyModel selectAgency(Map<String, Object> paramMap) throws Exception;
+    AgencyDto selectAgency(Map<String, Object> paramMap) throws Exception;
 
     // 에이전시 단건 등록
     int insertAgency(Map<String, Object> paramMap) throws Exception;
@@ -26,4 +25,6 @@ public interface AgencyDao {
     // 에이전시 단건 삭제
     int updateAgencyYN(Map<String, Object> paramMap) throws Exception;
 
+    // 국가별 조회
+    List<CountryDto> getCountries(Map<String, Object> paramMap);
 }

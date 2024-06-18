@@ -42,3 +42,6 @@ build/
 src/main/webapp/WEB-INF/applicationContext.xml
 src/main/webapp/WEB-INF/web.xml
 .idea
+
+# Firebase Storage 민감한 정보 파일 무시
+src/main/resources/serviceAccountKey.json

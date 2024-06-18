@@ -1,4 +1,4 @@
-package kr.happytravel.erp.sales.model.sales;
+package kr.happytravel.erp.sales.model.sales.packages;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -10,12 +10,11 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class HotelDTO {
-    private String hotelCode;
-    private String hotelName;
-    private String phone;
+public class PartnerListDTO {
+    private String code;
+    private String name;
+    private String country;
     private String countryCode;
-    private String address;
+    private String region;
     private int price;
-    private String isUsed;
 }

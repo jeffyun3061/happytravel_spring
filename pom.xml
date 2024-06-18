@@ -40,6 +40,7 @@
             <version>${log4j2.version}</version>
         </dependency>
 
+
         <!-- Annotation @Resource 등 위해서 추가 -->
         <dependency>
             <groupId>javax.annotation</groupId>
@@ -173,6 +174,13 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>3.12</version>
+        </dependency>
+
+        <!-- Firebase -->
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>8.1.0</version>
         </dependency>
 
         <!-- JUnit for testing -->

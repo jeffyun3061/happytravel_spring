@@ -25,7 +25,7 @@ public class AttendanceManagementController {
     private final AttendanceManagementService attendanceManagementService;
 
     // Create
-    @PostMapping("/attendances")
+    @PostMapping("/add")
     public ResponseEntity<String> createAttendanceManagement(@RequestBody AttendanceManagementModel attendanceManagement, HttpServletRequest request,
                                                              HttpServletResponse response, HttpSession session) throws Exception {
         try {

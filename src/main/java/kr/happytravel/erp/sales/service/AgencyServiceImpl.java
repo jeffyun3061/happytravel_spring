@@ -2,13 +2,13 @@ package kr.happytravel.erp.sales.service;
 
 import kr.happytravel.erp.sales.dao.AgencyDao;
 import kr.happytravel.erp.sales.dto.AgencyDto;
-import kr.happytravel.erp.sales.model.sales.AgencyModel;
-import kr.happytravel.erp.sales.model.sales.FlightModel;
+import kr.happytravel.erp.sales.dto.CountryDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -20,11 +20,13 @@ public class AgencyServiceImpl implements AgencyService {
     private final AgencyDao agencyDao;
 
     @Override
-    public List<AgencyModel> getAgencyList(Map<String, Object> paramMap) throws Exception {
+    public List<AgencyDto> getAgencyList(Map<String, Object> paramMap) throws Exception {
+        // limit와 offset를 정수형으로 변환
+        paramMap.put("limit", Integer.parseInt(paramMap.get("limit").toString()));
+        paramMap.put("offset", Integer.parseInt(paramMap.get("offset").toString()));
+
         logger.info("Fetching agency list with parameters: " + paramMap);
-        List<AgencyModel> agencyList = agencyDao.getAgencyList(paramMap);
-        logger.info("Fetched agency list: " + agencyList);
-        return agencyList;
+        return agencyDao.getAgencyList(paramMap);
     }
 
     @Override
@@ -33,19 +35,14 @@ public class AgencyServiceImpl implements AgencyService {
     }
 
     @Override
-    public String getLastAgencyCode() {
-        return agencyDao.getLastAgencyCode();
+    public AgencyDto selectAgency(Map<String, Object> paramMap) throws Exception {
+        return agencyDao.selectAgency(paramMap);
     }
 
     @Override
-    public AgencyModel selectAgency(AgencyDto agency) throws Exception {
-        return agencyDao.selectAgency((Map<String, Object>) agency);
-    }
-
-    @Override
-    public int insertAgency(AgencyDto agency) throws Exception {
+    public int insertAgency(Map<String, Object> paramMap) throws Exception {
         logger.info("Starting for insertAgency");
-        int result = agencyDao.insertAgency((Map<String, Object>) agency);
+        int result = agencyDao.insertAgency(paramMap);
         logger.info("Insert result: " + result);
         return result;
     }
@@ -64,6 +61,12 @@ public class AgencyServiceImpl implements AgencyService {
         int result = agencyDao.updateAgencyYN(paramMap);
         logger.info("Update Y/N result: " + result);
         return result;
+    }
+
+    @Override
+    public List<CountryDto> getCountries(Map<String, Object> paramMap) throws Exception {
+        logger.info("Selecting Countries from DAO");
+        return agencyDao.getCountries(paramMap);
     }
 
 }
