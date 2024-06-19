@@ -1,36 +1,30 @@
 package kr.happytravel.erp.hr.controller;
 
+import kr.happytravel.erp.common.comnUtils.FileUtil;
 import kr.happytravel.erp.hr.model.EmpModel;
 import kr.happytravel.erp.hr.service.EmpService;
 import kr.happytravel.erp.salary.service.SalaryDataService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/hr")
@@ -39,6 +33,9 @@ public class EmpController {
     private final Logger logger = LogManager.getLogger(this.getClass());
     private final EmpService empService;
     private final SalaryDataService salaryDataService;
+
+    @Autowired
+    private FileUtil fileUtil;
 
     @Value("${IDPhoto.rootPath}")
     private String rootPath;
@@ -66,23 +63,6 @@ public class EmpController {
         }
     }
 
-    /** 사원 검색 조회 */
-    @GetMapping("emp-list/search")
-    public ResponseEntity<List<EmpModel>> searchEmpList(@RequestParam String searchType, @RequestParam String searchQuery) {
-        try {
-            logger.info("Received search request with type: " + searchType + " and query: " + searchQuery);
-            List<EmpModel> searchResults = empService.searchEmpList(searchType, searchQuery);
-            return ResponseEntity.ok(searchResults);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid argument: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            logger.error("An error occurred during search: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-
-
 /** 사원 단건 조회 */
     @GetMapping("/emp-info")
     public ResponseEntity<Map<String, Object>> getEmpInfo(@RequestParam String empId, HttpServletRequest request,
@@ -90,7 +70,7 @@ public class EmpController {
         try {
             logger.info("Received request to get emp with parameters: " + empId);
             EmpModel emp = empService.getEmpInfo(empId);
-            Path filePath = getUploadPath().resolve( emp.getPhotoUrl());
+            Path filePath = fileUtil.getUploadPath().resolve( emp.getPhotoUrl());
 //            Path filePath = Paths.get(photoUrl).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             if(emp == null) {
@@ -168,9 +148,23 @@ public class EmpController {
         }
     }
 
+//    //공통모듈로 빼기
+//    private Path getUploadPath() {
+//        String os = System.getProperty("os.name").toLowerCase();
+//        String basePath;
+//        if (os.contains("win")) {
+//            basePath = "\\\\serverr";
+//        } else if (os.contains("mac")) {
+//            basePath = "/Volumes";
+//        } else {
+//            throw new RuntimeException("지원되지 않는 운영 체제입니다: " + os);
+//        }
+//        return Paths.get(basePath, rootPath, mainPath, subPath, File.separator);
+//    }
+
 
     /** 신규 사원 등록 */
-    @PostMapping("/emp/save")
+    @PostMapping("/emp-save")
     public ResponseEntity<String> saveEmp(@RequestPart("employee") EmpModel saveEmpInfo, @RequestPart(value = "file", required = false) MultipartFile file){
         try {
             logger.info("Received request to save emp with parameters: {}", saveEmpInfo);
@@ -185,24 +179,11 @@ public class EmpController {
          if (empService.checkDuplicate("bank_code", saveEmpInfo.getBankCode() + "-" + saveEmpInfo.getAccountNo())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate Bank Account");
          }
+
             // 파일 처리
-            if (file != null && !file.isEmpty()) { // 파일이 null이 아니고 비어 있지 않은지 확인
-                String fileName = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 가져와서 클린 패스를 적용
-
-                Path uploadPath = getUploadPath();
-                System.out.println("uploadPath: "+uploadPath);
-                if (!Files.exists(uploadPath)) { // 업로드 경로가 존재하지 않으면
-                    Files.createDirectories(uploadPath); // 업로드 경로 디렉토리를 생성
-                }
-                try (InputStream inputStream = file.getInputStream()) { // 파일의 InputStream을 얻어 try-with-resources 구문을 사용하여 자동으로 닫힘 처리
-                    Path filePath = uploadPath.resolve(fileName); // 파일 경로를 생성 (예: "uploads/12345/filename.png")
-                    Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING); // InputStream을 파일 경로에 복사, 기존 파일이 있을 경우 덮어쓰기
-
-                    // 파일 URL 설정
-                    saveEmpInfo.setPhotoUrl(fileName); // 저장된 파일의 URL을 설정
-                } catch (IOException e) { // 파일 저장 중 오류가 발생한 경우
-                    throw new RuntimeException("파일 저장 중 오류 발생: " + fileName, e); // 예외를 던져 호출자가 인지할 수 있도록 처리
-                }
+            String fileName = empService.handleFileUpload(file, rootPath, mainPath, subPath);
+            if (fileName != null) {
+               saveEmpInfo.setPhotoUrl(fileName);
             }
 
             empService.saveEmp(saveEmpInfo);
@@ -214,34 +195,17 @@ public class EmpController {
         }
     }
 
-    //공통모듈로 빼기
-    private Path getUploadPath() {
-        String os = System.getProperty("os.name").toLowerCase();
-        String basePath;
-        if (os.contains("win")) {
-            basePath = "\\\\serverr";
-        } else if (os.contains("mac")) {
-            basePath = "/Volumes";
-        } else {
-            throw new RuntimeException("지원되지 않는 운영 체제입니다: " + os);
-        }
-        return Paths.get(basePath, rootPath, mainPath, subPath, File.separator);
-    }
-
-    /** 비밀번호 수정 유효성 검사 */
-    private boolean isValidPassword(String password) {
-        String regex = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,}$";
-        Pattern pattern = Pattern.compile(regex);
-        return pattern.matcher(password).matches();
-    }
 
     /** 사원 정보 수정 */
-    @PutMapping("/emp/update")
+    @PutMapping("/emp-update")
     public ResponseEntity<String> updateEmp(@RequestPart("employee") EmpModel updateEmpInfo, @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
             logger.info("Received request to update emp with parameters: " + updateEmpInfo);
 
-            if (!isValidPassword(updateEmpInfo.getPassword()) && !updateEmpInfo.getPassword().equals("000000")  ) {
+            EmpModel currentEmpInfo = empService.getEmpInfo(updateEmpInfo.getEmpId());
+
+            // 비밀번호 유효성 검사: 수정된 비밀번호가 기존 비밀번호와 다른 경우에만 유효성 검사 수행
+            if (!updateEmpInfo.getPassword().equals(currentEmpInfo.getPassword()) && !empService.isValidPassword(updateEmpInfo.getPassword()) && !updateEmpInfo.getPassword().equals("000000")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Password");
             }
 
@@ -256,23 +220,9 @@ public class EmpController {
             }
 
             // 파일 처리
-            if (file != null && !file.isEmpty()) { // 파일이 null이 아니고 비어 있지 않은지 확인
-                String fileName = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 가져와서 클린 패스를 적용
-
-                Path uploadPath = getUploadPath();
-                System.out.println("uploadPath: "+uploadPath);
-                if (!Files.exists(uploadPath)) { // 업로드 경로가 존재하지 않으면
-                    Files.createDirectories(uploadPath); // 업로드 경로 디렉토리를 생성
-                }
-                try (InputStream inputStream = file.getInputStream()) { // 파일의 InputStream을 얻어 try-with-resources 구문을 사용하여 자동으로 닫힘 처리
-                    Path filePath = uploadPath.resolve(fileName); // 파일 경로를 생성 (예: "uploads/12345/filename.png")
-                    Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING); // InputStream을 파일 경로에 복사, 기존 파일이 있을 경우 덮어쓰기
-
-                    // 파일 URL 설정
-                    updateEmpInfo.setPhotoUrl(fileName); // 저장된 파일의 URL을 설정
-                } catch (IOException e) { // 파일 저장 중 오류가 발생한 경우
-                    throw new RuntimeException("파일 저장 중 오류 발생: " + fileName, e); // 예외를 던져 호출자가 인지할 수 있도록 처리
-                }
+            String fileName = empService.handleFileUpload(file, rootPath, mainPath, subPath);
+            if(fileName != null) {
+                updateEmpInfo.setPhotoUrl(fileName);
             }
 
             empService.updateEmp(updateEmpInfo);
