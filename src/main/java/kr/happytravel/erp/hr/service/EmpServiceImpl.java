@@ -1,18 +1,30 @@
 package kr.happytravel.erp.hr.service;
 
+import kr.happytravel.erp.common.comnUtils.FileUtil;
 import kr.happytravel.erp.hr.dao.EmpDao;
 import kr.happytravel.erp.hr.model.EmpModel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Year;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 public class EmpServiceImpl implements EmpService {
 private final EmpDao empDao;
 
+    @Autowired
+    private FileUtil fileUtil;
 
     /** 전체사원조회 */
     @Override
@@ -54,6 +66,14 @@ private final EmpDao empDao;
     @Override
     public List<EmpModel> getBankList() throws Exception {
         return empDao.getBankList();
+    }
+
+    /** 비밀번호 수정 유효성 검사 */
+    @Override
+    public boolean isValidPassword(String password) {
+        String regex = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,}$";
+        Pattern pattern = Pattern.compile(regex);
+        return pattern.matcher(password).matches();
     }
 
 
@@ -98,5 +118,42 @@ private final EmpDao empDao;
         empDao.updateEmp(updateEmpInfo);
     }
 
+    /** 파일 처리 */
+    @Override
+    public String handleFileUpload(MultipartFile file, String rootPath, String mainPath, String subPath) {
+        if(file == null || file.isEmpty()) {
+            return null;
+        }
+
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        Path uploadPath = fileUtil.getUploadPath();
+
+        try{
+            if(!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            try(InputStream inputStream = file.getInputStream()) {
+                Path filePath = uploadPath.resolve(fileName);
+                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("파일 저장 중 오류 발생: " + fileName, e);
+        }
+        return fileName;
+    }
+
+//    private Path getUploadPath(String rootPath, String mainPath, String subPath) {
+//        String os = System.getProperty("os.name").toLowerCase();
+//        String basePath;
+//        if(os.contains("win")) {
+//            basePath = "\\\\serverr";
+//        } else if (os.contains("mac")) {
+//            basePath = "/Volumes";
+//        } else {
+//            throw new RuntimeException("지원되지 않는 운영 체제입니다: " + os);
+//        }
+//        return Paths.get(basePath, rootPath, mainPath, subPath, File.separator);
+//    }
 
 }
