@@ -1,6 +1,7 @@
 package kr.happytravel.erp.attendances.service;
 
 import kr.happytravel.erp.attendances.model.AttendanceConfirmResponse;
+import kr.happytravel.erp.attendances.model.AttendanceConfirmResponseDto;
 import kr.happytravel.erp.attendances.model.AttendanceManageResponse;
 import kr.happytravel.erp.attendances.model.AttendanceManagementModel;
 
@@ -18,7 +19,9 @@ public interface AttendanceManagementService {
 
     void updateAssignCodeToRejected(String AttendanceCode) throws Exception;
 
-    List<AttendanceConfirmResponse> getAttendanceConfirmList() throws Exception;
+    AttendanceConfirmResponseDto getAttendanceConfirmList(int limit, int offset) throws Exception;
+
+    int getAttendanceConfirmListTotalCount() throws Exception;
 
     // 단건 등록
     int insertAttendanceManagement(AttendanceManagementModel attendanceManagement) throws Exception;

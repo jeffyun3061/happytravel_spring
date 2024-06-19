@@ -1,6 +1,7 @@
 package kr.happytravel.erp.attendances.controller;
 
 import kr.happytravel.erp.attendances.model.AttendanceConfirmResponse;
+import kr.happytravel.erp.attendances.model.AttendanceConfirmResponseDto;
 import kr.happytravel.erp.attendances.model.AttendanceManageResponse;
 import kr.happytravel.erp.attendances.model.AttendanceManagementModel;
 import kr.happytravel.erp.attendances.service.AttendanceManagementService;
@@ -85,10 +86,11 @@ public class AttendanceManagementController {
 
     // Read (list)
     @GetMapping("/attendanceConfirm")
-    public ResponseEntity<List<AttendanceConfirmResponse>> getAttendanceConfirmList() throws Exception {
+    public ResponseEntity<AttendanceConfirmResponseDto> getAttendanceConfirmList(@RequestParam(defaultValue = "5") int limit,
+                                                                                 @RequestParam(defaultValue = "0") int offset) throws Exception {
         try {
             logger.info("Received request to get attendanceConfirm: ");
-            List<AttendanceConfirmResponse> attendanceConfirm = attendanceManagementService.getAttendanceConfirmList();
+            AttendanceConfirmResponseDto attendanceConfirm = attendanceManagementService.getAttendanceConfirmList(limit, offset);
             logger.info("Fetched " + attendanceConfirm + " attendanceConfirm.");
             return ResponseEntity.ok(attendanceConfirm);
         } catch (IllegalArgumentException e) {

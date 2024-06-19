@@ -65,6 +65,17 @@
 				JOIN TB_EMPLOYMENT_INFO assign_ei ON am.ASSIGN_EMP_ID = assign_ei.EMP_ID
 		WHERE
 		    am.ASSIGN_CODE = '2000'
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<!-- 휴가 처리 리스트 총 개수 -->
+	<select id="getAttendanceConfirmListTotalCount" resultType="int">
+		SELECT
+		    COUNT(*)
+		FROM
+		    TB_ATTENDANCE_MANAGEMENT
+		WHERE
+		    ASSIGN_CODE = '2000'
 	</select>
 
 	<insert id="insertAttendanceManagement">
