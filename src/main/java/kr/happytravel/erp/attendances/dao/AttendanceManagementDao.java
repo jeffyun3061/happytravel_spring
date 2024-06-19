@@ -28,9 +28,9 @@ public interface AttendanceManagementDao {
      */
     void updateAssignCodeToRejected(String AttendanceCode) throws Exception;
 
-    List<AttendanceConfirmResponse> getAttendanceConfirmList() throws Exception;
+    List<AttendanceConfirmResponse> getAttendanceConfirmList(@Param("limit") int limit, @Param("offset") int offset) throws Exception;
 
-
+    int getAttendanceConfirmListTotalCount() throws Exception;
     // 단건 조회
     AttendanceManagementModel selectAttendanceManagement(Map<String, Object> paramMap) throws Exception;
 

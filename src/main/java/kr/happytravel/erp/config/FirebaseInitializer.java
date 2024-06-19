@@ -15,7 +15,6 @@ public class FirebaseInitializer {
     @Bean
     public void initializeFirebase() throws IOException {
         InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("serviceAccountKey.json");
-
         if (serviceAccount == null) {
             throw new IOException("File not found: serviceAccountKey.json");
         }
