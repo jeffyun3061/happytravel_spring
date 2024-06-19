@@ -170,5 +170,16 @@ public class AttendanceManagementController {
         }
     }
 
+    @GetMapping("/countAttendanceThisMonth")
+    public ResponseEntity<Integer> countAttendanceThisMonth(@RequestParam String empId) {
+        try {
+            int count = attendanceManagementService.countAttendanceThisMonth(empId);
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            logger.error("An error occurred while counting attendance this month:", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 
 }
