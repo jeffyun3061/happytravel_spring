@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -89,10 +90,8 @@ public class EmpController {
         try {
             logger.info("Received request to get emp with parameters: " + empId);
             EmpModel emp = empService.getEmpInfo(empId);
-            String photoUrl = emp.getPhotoUrl();
-            Path filePath = Paths.get(photoUrl).normalize();
-            System.out.println(filePath);
-            System.out.println(filePath.toUri());
+            Path filePath = getUploadPath().resolve( emp.getPhotoUrl());
+//            Path filePath = Paths.get(photoUrl).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             if(emp == null) {
                 logger.warn("Emp not found with parameters: " + empId);
@@ -200,7 +199,7 @@ public class EmpController {
                     Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING); // InputStream을 파일 경로에 복사, 기존 파일이 있을 경우 덮어쓰기
 
                     // 파일 URL 설정
-                    saveEmpInfo.setPhotoUrl(filePath.toString()); // 저장된 파일의 URL을 설정
+                    saveEmpInfo.setPhotoUrl(fileName); // 저장된 파일의 URL을 설정
                 } catch (IOException e) { // 파일 저장 중 오류가 발생한 경우
                     throw new RuntimeException("파일 저장 중 오류 발생: " + fileName, e); // 예외를 던져 호출자가 인지할 수 있도록 처리
                 }
@@ -226,7 +225,7 @@ public class EmpController {
         } else {
             throw new RuntimeException("지원되지 않는 운영 체제입니다: " + os);
         }
-        return Paths.get(basePath, rootPath, mainPath, subPath);
+        return Paths.get(basePath, rootPath, mainPath, subPath, File.separator);
     }
 
     /** 비밀번호 수정 유효성 검사 */
@@ -270,7 +269,7 @@ public class EmpController {
                     Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING); // InputStream을 파일 경로에 복사, 기존 파일이 있을 경우 덮어쓰기
 
                     // 파일 URL 설정
-                    updateEmpInfo.setPhotoUrl(filePath.toString()); // 저장된 파일의 URL을 설정
+                    updateEmpInfo.setPhotoUrl(fileName); // 저장된 파일의 URL을 설정
                 } catch (IOException e) { // 파일 저장 중 오류가 발생한 경우
                     throw new RuntimeException("파일 저장 중 오류 발생: " + fileName, e); // 예외를 던져 호출자가 인지할 수 있도록 처리
                 }
