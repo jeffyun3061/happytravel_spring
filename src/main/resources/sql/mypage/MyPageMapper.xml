@@ -27,7 +27,10 @@
         FROM
             TB_NOTICES n
         WHERE n.dept_code = #{dept_code}
+        ORDER BY n.creation_date DESC
+            LIMIT 5
     </select>
+
 
     <!-- 출퇴근 조회 -->
     <select id="selectAttendance" resultType="kr.happytravel.erp.mypage.model.AttendanceModel">
@@ -59,5 +62,9 @@
             TB_ASSIGN_STATUS_TYPE_INFO ast ON am.assign_code = ast.assign_code
         WHERE
             am.emp_id = #{emp_id}
+        ORDER BY
+            am.creation_date DESC
+            LIMIT 5
     </select>
+
 </mapper>
