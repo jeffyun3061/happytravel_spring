@@ -48,4 +48,6 @@ public interface AttendanceManagementDao {
 
     // 부장 조회
     String getManagerIdByDeptCode(@Param("deptCode") String deptCode) throws Exception;
+
+    int countAttendanceThisMonth(@Param("empId") String empId) throws Exception;
 }

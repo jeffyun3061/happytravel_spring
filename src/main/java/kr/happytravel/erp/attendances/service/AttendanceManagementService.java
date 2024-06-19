@@ -4,6 +4,7 @@ import kr.happytravel.erp.attendances.model.AttendanceConfirmResponse;
 import kr.happytravel.erp.attendances.model.AttendanceConfirmResponseDto;
 import kr.happytravel.erp.attendances.model.AttendanceManageResponse;
 import kr.happytravel.erp.attendances.model.AttendanceManagementModel;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -37,4 +38,6 @@ public interface AttendanceManagementService {
 
     // 부장 조회
     String getManagerIdByDeptCode(String deptCode) throws Exception;
+
+    int countAttendanceThisMonth(String empId) throws Exception;
 }

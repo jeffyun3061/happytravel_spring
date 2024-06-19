@@ -74,4 +74,9 @@ public class AttendanceManagementServiceImpl implements AttendanceManagementServ
     public String getManagerIdByDeptCode(String deptCode) throws Exception {
         return attendanceManagementDao.getManagerIdByDeptCode(deptCode);
     }
+
+    @Override
+    public int countAttendanceThisMonth(String empId) throws Exception {
+        return attendanceManagementDao.countAttendanceThisMonth(empId);
+    }
 }

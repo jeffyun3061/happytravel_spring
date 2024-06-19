@@ -127,4 +127,15 @@
 			dept_code = #{deptCode}
 		  AND pos_code = '1500'
 	</select>
+
+	<!-- 이번 달 출근 횟수 조회 -->
+	<select id="countAttendanceThisMonth" resultType="int" parameterType="string">
+		<![CDATA[
+		SELECT COUNT(*)
+		FROM TB_ATTENDANCE
+		WHERE EMP_ID = #{empId}
+		  AND today >= DATE_FORMAT(CURDATE(), '%Y%m01')
+		  AND today < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 1 MONTH), '%Y%m01');
+		]]>
+	</select>
 </mapper>
