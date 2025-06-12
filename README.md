@@ -1,3 +1,6 @@
+![image (3)](https://github.com/user-attachments/assets/d1e2429e-bf96-47e6-a524-0fe2345a0463)
+![image (3)](https://github.com/user-attachments/assets/d1e2429e-bf96-47e6-a524-0fe2345a0463)
+
 ## 🏢 Happy Travel – ERP 기업 자원 관리 시스템
 
 > 중소기업의 업무 흐름 자동화 및 자원 통합 관리를 목표로 한 내부용 ERP 시스템 구축 프로젝트
